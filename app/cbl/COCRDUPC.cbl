@@ -78,6 +78,10 @@
            88  FLG-CARDEXPYEAR-NOT-OK              VALUE '0'.                   
            88  FLG-CARDEXPYEAR-ISVALID             VALUE '1'.                   
            88  FLG-CARDEXPYEAR-BLANK               VALUE ' '.                   
+         05  WS-EDIT-CVV-FLAG                      PIC X(1).                    
+           88  FLG-CVV-NOT-OK                      VALUE '0'.                   
+           88  FLG-CVV-ISVALID                     VALUE '1'.                   
+           88  FLG-CVV-BLANK                       VALUE ' '.                   
          05  WS-RETURN-FLAG                        PIC X(1).                    
            88  WS-RETURN-FLAG-OFF                  VALUE LOW-VALUES.            
            88  WS-RETURN-FLAG-ON                   VALUE '1'.                   
@@ -104,9 +108,9 @@
            10  CARD-ACCT-ID-X                      PIC X(11).                   
            10  CARD-ACCT-ID-N REDEFINES CARD-ACCT-ID-X                          
                                                    PIC 9(11).                   
-           10  CARD-CVV-CD-X                       PIC X(03).                   
+           10  CARD-CVV-CD-X                       PIC X(04).                   
            10  CARD-CVV-CD-N REDEFINES  CARD-CVV-CD-X                           
-                                                   PIC 9(03).                   
+                                                   PIC 9(04).                   
            10  CARD-CARD-NUM-X                     PIC X(16).                   
            10  CARD-CARD-NUM-N REDEFINES  CARD-CARD-NUM-X                       
                                                    PIC 9(16).                   
@@ -198,6 +202,8 @@
                'Card expiry month must be between 1 and 12'.                    
            88  CARD-EXPIRY-YEAR-NOT-VALID          VALUE                        
                'Invalid card expiry year'.                                      
+           88  CARD-CVV-LENGTH-NOT-VALID           VALUE                        
+               'CVV must be a 3 or 4 digit number'.                             
            88  DID-NOT-FIND-ACCT-IN-CARDXREF       VALUE                        
                'Did not find this account in cards database'.                   
            88  DID-NOT-FIND-ACCTCARD-COMBO         VALUE                        
@@ -291,7 +297,7 @@
           05 CCUP-OLD-DETAILS.                                                  
              10 CCUP-OLD-ACCTID                    PIC X(11).                   
              10 CCUP-OLD-CARDID                    PIC X(16).                   
-             10 CCUP-OLD-CVV-CD                    PIC X(3).                    
+             10 CCUP-OLD-CVV-CD                    PIC X(4).                    
              10 CCUP-OLD-CARDDATA.                                              
                 20 CCUP-OLD-CRDNAME                PIC X(50).                   
                 20 CCUP-OLD-EXPIRAION-DATE.                                     
@@ -303,7 +309,7 @@
           05 CCUP-NEW-DETAILS.                                                  
              10 CCUP-NEW-ACCTID                    PIC X(11).                   
              10 CCUP-NEW-CARDID                    PIC X(16).                   
-             10 CCUP-NEW-CVV-CD                    PIC X(3).                    
+             10 CCUP-NEW-CVV-CD                    PIC X(4).                    
              10 CCUP-NEW-CARDDATA.                                              
                 20 CCUP-NEW-CRDNAME                PIC X(50).                   
                 20 CCUP-NEW-EXPIRAION-DATE.                                     
@@ -314,11 +320,11 @@
           05 CARD-UPDATE-RECORD.                                                
              10 CARD-UPDATE-NUM                   PIC X(16).                    
              10 CARD-UPDATE-ACCT-ID               PIC 9(11).                    
-             10 CARD-UPDATE-CVV-CD                PIC 9(03).                    
+             10 CARD-UPDATE-CVV-CD                PIC 9(04).                    
              10 CARD-UPDATE-EMBOSSED-NAME         PIC X(50).                    
              10 CARD-UPDATE-EXPIRAION-DATE        PIC X(10).                    
              10 CARD-UPDATE-ACTIVE-STATUS         PIC X(01).                    
-             10 FILLER                            PIC X(59).                    
+             10 FILLER                            PIC X(58).                    
                                                                                 
                                                                                 
        01  WS-COMMAREA                             PIC X(2000).                 
@@ -689,6 +695,7 @@
                SET FLG-CARDSTATUS-ISVALID  TO TRUE                              
                SET FLG-CARDEXPMON-ISVALID  TO TRUE                              
                SET FLG-CARDEXPYEAR-ISVALID TO TRUE                              
+               SET FLG-CVV-ISVALID         TO TRUE                              
                GO TO 1200-EDIT-MAP-INPUTS-EXIT                                  
            END-IF                                                               
                                                                                 
@@ -706,6 +713,9 @@
                                                                                 
            PERFORM 1260-EDIT-EXPIRY-YEAR                                        
               THRU 1260-EDIT-EXPIRY-YEAR-EXIT                                   
+                                                                                
+           PERFORM 1270-EDIT-CVV                                                
+              THRU 1270-EDIT-CVV-EXIT                                           
                                                                                 
            IF INPUT-ERROR                                                       
               CONTINUE                                                          
@@ -945,6 +955,44 @@
        1260-EDIT-EXPIRY-YEAR-EXIT.                                              
            EXIT                                                                 
            .                                                                    
+                                                                                
+      *****************************************************************        
+      * Validate that CVV-CD is either 3 or 4 digits and numeric.              
+      * A 3-digit CVV is stored left-justified with a trailing space,          
+      * a 4-digit CVV occupies all 4 bytes.  When no new CVV is supplied      
+      * (the BMS map does not currently expose CVV), the existing value      
+      * is preserved.                                                          
+      *****************************************************************        
+       1270-EDIT-CVV.                                                           
+           SET FLG-CVV-NOT-OK            TO TRUE                                
+                                                                                
+      *    Not supplied -> preserve the existing CVV from the record           
+           IF CCUP-NEW-CVV-CD   EQUAL LOW-VALUES                                
+           OR CCUP-NEW-CVV-CD   EQUAL SPACES                                    
+              MOVE CCUP-OLD-CVV-CD       TO CCUP-NEW-CVV-CD                     
+              SET FLG-CVV-BLANK         TO TRUE                                 
+           END-IF                                                               
+                                                                                
+      *    Must be 3 or 4 digits and fully numeric.                             
+      *    A 3-digit value is stored left-justified, leaving the 4th           
+      *    byte as a space; a 4-digit value occupies all 4 bytes.              
+           IF (CCUP-NEW-CVV-CD(4:1) = SPACE                                     
+               AND CCUP-NEW-CVV-CD(1:3) IS NUMERIC)                             
+           OR CCUP-NEW-CVV-CD(1:4) IS NUMERIC                                   
+              SET FLG-CVV-ISVALID       TO TRUE                                 
+           ELSE                                                                 
+              SET INPUT-ERROR           TO TRUE                                 
+              SET FLG-CVV-NOT-OK        TO TRUE                                 
+              IF WS-RETURN-MSG-OFF                                              
+                 SET CARD-CVV-LENGTH-NOT-VALID  TO TRUE                         
+              END-IF                                                            
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       1270-EDIT-CVV-EXIT.                                                      
+           EXIT                                                                 
+           .                                                                    
+                                                                                
        2000-DECIDE-ACTION.                                                      
            EVALUATE TRUE                                                        
       ******************************************************************        

@@ -73,9 +73,9 @@
            10  CARD-ACCT-ID-X                      PIC X(11).                   
            10  CARD-ACCT-ID-N REDEFINES CARD-ACCT-ID-X                          
                                                    PIC 9(11).                   
-           10  CARD-CVV-CD-X                       PIC X(03).                   
+           10  CARD-CVV-CD-X                       PIC X(04).                   
            10  CARD-CVV-CD-N REDEFINES  CARD-CVV-CD-X                           
-                                                   PIC 9(03).                   
+                                                   PIC 9(04).                   
            10  CARD-CARD-NUM-X                     PIC X(16).                   
            10  CARD-CARD-NUM-N REDEFINES  CARD-CARD-NUM-X                       
                                                    PIC 9(16).                   
