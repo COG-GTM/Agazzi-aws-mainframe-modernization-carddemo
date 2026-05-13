@@ -97,7 +97,7 @@
                10  EXP-CARD-EMBOSSED-NAME          PIC X(50).
                10  EXP-CARD-EXPIRAION-DATE         PIC X(10).
                10  EXP-CARD-ACTIVE-STATUS          PIC X(01).
-               10  FILLER                          PIC X(372).      
+               10  FILLER                          PIC X(373).      
       *
       * Ver: CardDemo_v2.0-44-gb6e9c27-254 Date: 2025-10-16 14:07:18 CDT
       *
