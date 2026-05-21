@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: carddemo
+
+  # Default profile uses H2 for development; use 'postgres' profile for PostgreSQL/Aurora
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:h2}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false  # Jobs are triggered via REST API, not at startup
+
+server:
+  port: 8080
+
+# JWT Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:carddemo-default-secret-key-for-development-only-change-in-production}
+    expiration-ms: 3600000  # 1 hour
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,batch
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+# H2 Profile (default for development)
+spring:
+  config:
+    activate:
+      on-profile: h2
+  datasource:
+    url: jdbc:h2:mem:carddemo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  flyway:
+    locations: classpath:db/migration
+
+---
+# PostgreSQL / Aurora Profile
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/carddemo}
+    username: ${DATABASE_USERNAME:carddemo}
+    password: ${DATABASE_PASSWORD:carddemo}
+    driver-class-name: org.postgresql.Driver
