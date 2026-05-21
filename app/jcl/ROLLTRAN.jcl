@@ -20,14 +20,19 @@
 //* EMERGENCY ROLLBACK JCL FOR TRANSACTION DATA (TRANSACT.VSAM.KSDS)
 //*
 //* This job restores the TRANSACT VSAM cluster from a GDG backup.
-//* Based on TRANBKP.jcl pattern.
+//* Based on TRANBKP.jcl and TRANFILE.jcl patterns.
 //*
 //* Steps:
 //*   STEP01 - Backup current (migrated) transaction data to GDG
-//*   STEP02 - Delete current VSAM cluster
-//*   STEP03 - Redefine VSAM cluster with original parameters
-//*   STEP04 - Restore data from pre-migration GDG backup
-//*   STEP05 - Validate restored record count
+//*   STEP02 - Close CICS files
+//*   STEP03 - Delete current VSAM cluster
+//*   STEP04 - Redefine VSAM cluster with original parameters
+//*   STEP05 - Restore data from pre-migration GDG backup
+//*   STEP06 - Define alternate index on processed timestamp
+//*   STEP07 - Define path for alternate index
+//*   STEP08 - Build alternate index
+//*   STEP09 - Open CICS files
+//*   STEP10 - Validate restored record count
 //*
 //* IMPORTANT: Review GDG generation number (-1) before execution.
 //*            Ensure the correct pre-migration backup is targeted.
@@ -51,9 +56,20 @@
 //        DSN=AWS.M2.CARDDEMO.TRANSACT.BKUP(+1)
 //*
 //* *******************************************************************
-//* STEP 2: DELETE CURRENT TRANSACTION VSAM CLUSTER
+//* STEP 2: CLOSE CICS FILES BEFORE ROLLBACK
 //* *******************************************************************
-//STEP02 EXEC PGM=IDCAMS,COND=(4,LT)
+//STEP02 EXEC PGM=SDSF
+//ISFOUT DD SYSOUT=*
+//CMDOUT DD SYSOUT=*
+//ISFIN  DD *
+ /F CICSAWSA,'CEMT SET FIL(TRANSACT) CLO'
+ /F CICSAWSA,'CEMT SET FIL(CXACAIX ) CLO'
+/*
+//*
+//* *******************************************************************
+//* STEP 3: DELETE CURRENT TRANSACTION VSAM CLUSTER
+//* *******************************************************************
+//STEP03 EXEC PGM=IDCAMS,COND=(4,LT)
 //SYSPRINT DD   SYSOUT=*
 //SYSIN    DD   *
    DELETE AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS -
@@ -65,9 +81,9 @@
 /*
 //*
 //* *******************************************************************
-//* STEP 3: REDEFINE TRANSACTION VSAM CLUSTER
+//* STEP 4: REDEFINE TRANSACTION VSAM CLUSTER
 //* *******************************************************************
-//STEP03 EXEC PGM=IDCAMS,COND=(4,LT)
+//STEP04 EXEC PGM=IDCAMS,COND=(4,LT)
 //SYSPRINT DD   SYSOUT=*
 //SYSIN    DD   *
    DEFINE CLUSTER (NAME(AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS) -
@@ -87,9 +103,9 @@
 /*
 //*
 //* *******************************************************************
-//* STEP 4: RESTORE DATA FROM PRE-MIGRATION GDG BACKUP
+//* STEP 5: RESTORE DATA FROM PRE-MIGRATION GDG BACKUP
 //* *******************************************************************
-//STEP04 EXEC PGM=IDCAMS,COND=(4,LT)
+//STEP05 EXEC PGM=IDCAMS,COND=(4,LT)
 //SYSPRINT DD   SYSOUT=*
 //BKUPDATA DD DISP=SHR,
 //         DSN=AWS.M2.CARDDEMO.TRANSACT.BKUP(-1)
@@ -100,9 +116,60 @@
 /*
 //*
 //* *******************************************************************
-//* STEP 5: VALIDATE RESTORED RECORD COUNT
+//* STEP 6: DEFINE ALTERNATE INDEX ON PROCESSED TIMESTAMP
 //* *******************************************************************
-//STEP05 EXEC PGM=IDCAMS,COND=(4,LT)
+//STEP06 EXEC PGM=IDCAMS,COND=(4,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+   DEFINE ALTERNATEINDEX (NAME(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX)-
+   RELATE(AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS)                    -
+   KEYS(26 304)                                                  -
+   NONUNIQUEKEY                                                  -
+   UPGRADE                                                       -
+   RECORDSIZE(350,350)                                           -
+   VOLUMES(AWSHJ1)                                               -
+   CYLINDERS(5,1))                                               -
+   DATA (NAME(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX.DATA))           -
+   INDEX (NAME(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX.INDEX))
+/*
+//*
+//* *******************************************************************
+//* STEP 7: DEFINE PATH FOR ALTERNATE INDEX
+//* *******************************************************************
+//STEP07 EXEC PGM=IDCAMS,COND=(4,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE PATH                                           -
+   (NAME(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX.PATH)        -
+    PATHENTRY(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX))
+/*
+//*
+//* *******************************************************************
+//* STEP 8: BUILD ALTERNATE INDEX
+//* *******************************************************************
+//STEP08 EXEC PGM=IDCAMS,COND=(4,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+   BLDINDEX                                                      -
+   INDATASET(AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS)                 -
+   OUTDATASET(AWS.M2.CARDDEMO.TRANSACT.VSAM.AIX)
+/*
+//*
+//* *******************************************************************
+//* STEP 9: REOPEN CICS FILES AFTER ROLLBACK
+//* *******************************************************************
+//STEP09 EXEC PGM=SDSF
+//ISFOUT DD SYSOUT=*
+//CMDOUT DD SYSOUT=*
+//ISFIN  DD *
+ /F CICSAWSA,'CEMT SET FIL(TRANSACT) OPE'
+ /F CICSAWSA,'CEMT SET FIL(CXACAIX ) OPE'
+/*
+//*
+//* *******************************************************************
+//* STEP 10: VALIDATE RESTORED RECORD COUNT
+//* *******************************************************************
+//STEP10 EXEC PGM=IDCAMS,COND=(4,LT)
 //SYSPRINT DD   SYSOUT=*
 //SYSIN    DD   *
    LISTCAT ENTRIES(AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS) ALL

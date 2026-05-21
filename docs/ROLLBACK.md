@@ -100,8 +100,12 @@ Execute rollback JCL to restore original VSAM structures:
 
 3. **Transaction Data** - Submit `ROLLTRAN.jcl`:
    - Backs up current migrated data to GDG audit trail
+   - Closes CICS files (`TRANSACT`, `CXACAIX`)
    - Deletes and redefines VSAM cluster with `KEYS(16 0)`
    - Restores data from pre-migration GDG backup `TRANSACT.BKUP(-1)`
+   - Rebuilds alternate index on processed timestamp `KEYS(26 304)`
+   - Defines path and builds alternate index
+   - Reopens CICS files
    - Validates record counts
 
 ### Phase 5: Program Logic Restoration
