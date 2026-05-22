@@ -79,7 +79,7 @@ CREATE TABLE account_card_xref (
 
 -- Transactions (from CVTRA05Y - TRAN-RECORD, RECLN 350)
 CREATE TABLE transactions (
-    tran_id           VARCHAR(16)    NOT NULL,
+    tran_id           VARCHAR(32)    NOT NULL,
     tran_type_cd      VARCHAR(2),
     tran_cat_cd       INT,
     tran_source       VARCHAR(10),
@@ -98,7 +98,7 @@ CREATE TABLE transactions (
 -- Daily Transactions (from CVTRA06Y - DALYTRAN-RECORD, RECLN 350)
 CREATE TABLE daily_transactions (
     id                BIGINT GENERATED ALWAYS AS IDENTITY,
-    tran_id           VARCHAR(16)    NOT NULL,
+    tran_id           VARCHAR(32)    NOT NULL,
     tran_type_cd      VARCHAR(2),
     tran_cat_cd       INT,
     tran_source       VARCHAR(10),

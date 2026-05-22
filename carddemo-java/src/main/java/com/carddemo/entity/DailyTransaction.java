@@ -22,7 +22,7 @@ public class DailyTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tran_id", length = 16, nullable = false)
+    @Column(name = "tran_id", length = 32, nullable = false)
     private String tranId;
 
     @Column(name = "tran_type_cd", length = 2)
