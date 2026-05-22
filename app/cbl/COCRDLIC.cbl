@@ -99,9 +99,9 @@
            10  CARD-ACCT-ID-X                      PIC X(11).                   
            10  CARD-ACCT-ID-N REDEFINES CARD-ACCT-ID-X                          
                                                    PIC 9(11).                   
-           10  CARD-CVV-CD-X                       PIC X(03).                   
+           10  CARD-CVV-CD-X                       PIC X(04).                   
            10  CARD-CVV-CD-N REDEFINES  CARD-CVV-CD-X                           
-                                                   PIC 9(03).                   
+                                                   PIC 9(04).                   
            10  FLG-PROTECT-SELECT-ROWS             PIC X(1).                    
            88  FLG-PROTECT-SELECT-ROWS-NO          VALUE '0'.                   
            88  FLG-PROTECT-SELECT-ROWS-YES         VALUE '1'.                   
