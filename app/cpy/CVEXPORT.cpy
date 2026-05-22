@@ -93,11 +93,11 @@
            05  EXPORT-CARD-DATA REDEFINES EXPORT-RECORD-DATA.
                10  EXP-CARD-NUM                    PIC X(16).
                10  EXP-CARD-ACCT-ID                PIC 9(11) COMP.
-               10  EXP-CARD-CVV-CD                 PIC 9(03) COMP.
+               10  EXP-CARD-CVV-CD                 PIC 9(04) COMP.
                10  EXP-CARD-EMBOSSED-NAME          PIC X(50).
                10  EXP-CARD-EXPIRAION-DATE         PIC X(10).
                10  EXP-CARD-ACTIVE-STATUS          PIC X(01).
-               10  FILLER                          PIC X(373).      
+               10  FILLER                          PIC X(372).      
       *
       * Ver: CardDemo_v2.0-44-gb6e9c27-254 Date: 2025-10-16 14:07:18 CDT
       *

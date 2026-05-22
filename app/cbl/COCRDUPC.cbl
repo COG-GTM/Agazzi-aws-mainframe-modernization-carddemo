@@ -104,9 +104,9 @@
            10  CARD-ACCT-ID-X                      PIC X(11).                   
            10  CARD-ACCT-ID-N REDEFINES CARD-ACCT-ID-X                          
                                                    PIC 9(11).                   
-           10  CARD-CVV-CD-X                       PIC X(03).                   
+           10  CARD-CVV-CD-X                       PIC X(04).                   
            10  CARD-CVV-CD-N REDEFINES  CARD-CVV-CD-X                           
-                                                   PIC 9(03).                   
+                                                   PIC 9(04).                   
            10  CARD-CARD-NUM-X                     PIC X(16).                   
            10  CARD-CARD-NUM-N REDEFINES  CARD-CARD-NUM-X                       
                                                    PIC 9(16).                   
@@ -291,7 +291,7 @@
           05 CCUP-OLD-DETAILS.                                                  
              10 CCUP-OLD-ACCTID                    PIC X(11).                   
              10 CCUP-OLD-CARDID                    PIC X(16).                   
-             10 CCUP-OLD-CVV-CD                    PIC X(3).                    
+             10 CCUP-OLD-CVV-CD                    PIC X(4).                    
              10 CCUP-OLD-CARDDATA.                                              
                 20 CCUP-OLD-CRDNAME                PIC X(50).                   
                 20 CCUP-OLD-EXPIRAION-DATE.                                     
@@ -303,7 +303,7 @@
           05 CCUP-NEW-DETAILS.                                                  
              10 CCUP-NEW-ACCTID                    PIC X(11).                   
              10 CCUP-NEW-CARDID                    PIC X(16).                   
-             10 CCUP-NEW-CVV-CD                    PIC X(3).                    
+             10 CCUP-NEW-CVV-CD                    PIC X(4).                    
              10 CCUP-NEW-CARDDATA.                                              
                 20 CCUP-NEW-CRDNAME                PIC X(50).                   
                 20 CCUP-NEW-EXPIRAION-DATE.                                     
@@ -314,11 +314,11 @@
           05 CARD-UPDATE-RECORD.                                                
              10 CARD-UPDATE-NUM                   PIC X(16).                    
              10 CARD-UPDATE-ACCT-ID               PIC 9(11).                    
-             10 CARD-UPDATE-CVV-CD                PIC 9(03).                    
+             10 CARD-UPDATE-CVV-CD                PIC 9(04).                    
              10 CARD-UPDATE-EMBOSSED-NAME         PIC X(50).                    
              10 CARD-UPDATE-EXPIRAION-DATE        PIC X(10).                    
              10 CARD-UPDATE-ACTIVE-STATUS         PIC X(01).                    
-             10 FILLER                            PIC X(59).                    
+             10 FILLER                            PIC X(58).                    
                                                                                 
                                                                                 
        01  WS-COMMAREA                             PIC X(2000).                 
