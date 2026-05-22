@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.carddemo.controller.AuthControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.78 s -- in com.carddemo.controller.AuthControllerTest

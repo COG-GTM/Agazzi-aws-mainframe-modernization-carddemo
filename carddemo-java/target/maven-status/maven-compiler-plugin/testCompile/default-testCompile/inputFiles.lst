@@ -1,0 +1,7 @@
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/CardDemoApplicationTests.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/batch/TransactionPostingTest.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/controller/AccountControllerTest.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/controller/AuthControllerTest.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/service/AccountServiceTest.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/service/AuthServiceTest.java
+/home/ubuntu/repos/aws-mainframe-modernization-carddemo/carddemo-java/src/test/java/com/carddemo/service/UserServiceTest.java
