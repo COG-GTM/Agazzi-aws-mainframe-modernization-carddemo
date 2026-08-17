@@ -84,6 +84,10 @@
          05  WS-PFK-FLAG                           PIC X(1).                    
            88  PFK-VALID                           VALUE '0'.                   
            88  PFK-INVALID                         VALUE '1'.                   
+         05  WS-USER-AUTH-FLAG                     PIC X(1).                    
+           88  WS-USER-NOT-VERIFIED                VALUES SPACES,               
+                                                          LOW-VALUES.           
+           88  WS-USER-VERIFIED                    VALUE '1'.                   
          05  CARD-NAME-CHECK                       PIC X(50)                    
                                                    VALUE LOW-VALUES.            
          05  FLG-YES-NO-CHECK                      PIC X(1)                     
@@ -208,6 +212,8 @@
                'Record changed by some one else. Please review'.                
            88  LOCKED-BUT-UPDATE-FAILED            VALUE                        
                'Update of record failed'.                                       
+           88  CARD-NOT-IN-THIS-ACCOUNT            VALUE                        
+               'Card does not belong to the account supplied'.                  
            88  XREF-READ-ERROR                     VALUE                        
                'Error reading Card Data File'.                                  
            88  CODING-TO-BE-DONE                   VALUE                        
@@ -248,6 +254,10 @@
                                                    VALUE 'COCRDSL'.             
           05  LIT-CARDDTLMAP                       PIC X(7)                     
                                                    VALUE 'CCRDSLA'.             
+          05 LIT-SIGNONPGM                         PIC X(8)                     
+                                                   VALUE 'COSGN00C'.            
+          05 LIT-USRSECFILE                        PIC X(8)                     
+                                                   VALUE 'USRSEC  '.            
           05 LIT-CARDFILENAME                      PIC X(8)                     
                                                    VALUE 'CARDDAT '.            
           05 LIT-CARDFILENAME-ACCT-PATH            PIC X(8)                     
@@ -386,8 +396,6 @@
       * Store passed data if  any                *                              
       *****************************************************************         
            IF EIBCALEN IS EQUAL TO 0                                            
-               OR (CDEMO-FROM-PROGRAM = LIT-MENUPGM                             
-               AND NOT CDEMO-PGM-REENTER)                                       
               INITIALIZE CARDDEMO-COMMAREA                                      
                          WS-THIS-PROGCOMMAREA                                   
               SET CDEMO-PGM-ENTER TO TRUE                                       
@@ -395,10 +403,36 @@
            ELSE                                                                 
               MOVE DFHCOMMAREA (1:LENGTH OF CARDDEMO-COMMAREA)  TO              
                                 CARDDEMO-COMMAREA                               
-              MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:                 
-                               LENGTH OF WS-THIS-PROGCOMMAREA ) TO              
-                                WS-THIS-PROGCOMMAREA                            
+      *****************************************************************         
+      *       The screen data trails the common commarea only when we           
+      *       are re-entered by our own transaction. Callers that pass           
+      *       the common commarea alone start a fresh update.                    
+      *****************************************************************         
+              IF EIBCALEN NOT LESS THAN LENGTH OF CARDDEMO-COMMAREA +           
+                                        LENGTH OF WS-THIS-PROGCOMMAREA          
+                 MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:              
+                                  LENGTH OF WS-THIS-PROGCOMMAREA ) TO           
+                                   WS-THIS-PROGCOMMAREA                         
+              ELSE                                                              
+                 INITIALIZE WS-THIS-PROGCOMMAREA                                
+                 SET CDEMO-PGM-ENTER TO TRUE                                    
+                 SET CCUP-DETAILS-NOT-FETCHED TO TRUE                           
+              END-IF                                                            
+                                                                                
+              IF CDEMO-FROM-PROGRAM = LIT-MENUPGM                               
+              AND NOT CDEMO-PGM-REENTER                                         
+                 INITIALIZE WS-THIS-PROGCOMMAREA                                
+                 SET CDEMO-PGM-ENTER TO TRUE                                    
+                 SET CCUP-DETAILS-NOT-FETCHED TO TRUE                           
+              END-IF                                                            
            END-IF                                                               
+      *****************************************************************         
+      * Card maintenance is an administrator function.                          
+      * The signed on user is re-verified against the security file             
+      * before any card record is read for update or rewritten.                 
+      *****************************************************************         
+           PERFORM 0100-CHECK-UPDATE-AUTHORITY                                  
+              THRU 0100-CHECK-UPDATE-AUTHORITY-EXIT                             
       *****************************************************************         
       * Remap PFkeys as needed.                                                 
       * Store the Mapped PF Key                                                 
@@ -461,7 +495,6 @@
                                               CDEMO-CARD-NUM                    
                    END-IF                                                       
                                                                                 
-                   SET  CDEMO-USRTYP-USER  TO TRUE                              
                    SET  CDEMO-PGM-ENTER    TO TRUE                              
                    MOVE LIT-THISMAPSET     TO CDEMO-LAST-MAPSET                 
                    MOVE LIT-THISMAP        TO CDEMO-LAST-MAP                    
@@ -558,6 +591,80 @@
            END-EXEC                                                             
            .                                                                    
        0000-MAIN-EXIT.                                                          
+           EXIT                                                                 
+           .                                                                    
+                                                                                
+      *****************************************************************         
+      * Re-verify the signed on user against the security file and     *        
+      * allow card maintenance for administrators only. The user type  *        
+      * carried in the commarea is not trusted, since programs in the  *        
+      * navigation path overwrite it.                                  *        
+      *****************************************************************         
+       0100-CHECK-UPDATE-AUTHORITY.                                             
+                                                                                
+           SET WS-USER-NOT-VERIFIED     TO TRUE                                 
+           MOVE SPACES                  TO CDEMO-USER-TYPE                      
+           INITIALIZE SEC-USER-DATA                                             
+                                                                                
+           IF CDEMO-USER-ID NOT EQUAL SPACES                                    
+           AND CDEMO-USER-ID NOT EQUAL LOW-VALUES                               
+              EXEC CICS READ                                                    
+                   DATASET   (LIT-USRSECFILE)                                   
+                   INTO      (SEC-USER-DATA)                                    
+                   LENGTH    (LENGTH OF SEC-USER-DATA)                          
+                   RIDFLD    (CDEMO-USER-ID)                                    
+                   KEYLENGTH (LENGTH OF CDEMO-USER-ID)                          
+                   RESP      (WS-RESP-CD)                                       
+                   RESP2     (WS-REAS-CD)                                       
+              END-EXEC                                                          
+                                                                                
+              IF WS-RESP-CD EQUAL DFHRESP(NORMAL)                               
+                 SET  WS-USER-VERIFIED  TO TRUE                                 
+                 MOVE SEC-USR-TYPE      TO CDEMO-USER-TYPE                      
+              END-IF                                                            
+           END-IF                                                               
+                                                                                
+           IF WS-USER-VERIFIED                                                  
+           AND CDEMO-USRTYP-ADMIN                                               
+              CONTINUE                                                          
+           ELSE                                                                 
+              PERFORM 0110-DENY-UPDATE-ACCESS                                   
+                 THRU 0110-DENY-UPDATE-ACCESS-EXIT                              
+           END-IF                                                               
+           .                                                                    
+       0100-CHECK-UPDATE-AUTHORITY-EXIT.                                        
+           EXIT                                                                 
+           .                                                                    
+                                                                                
+      *****************************************************************         
+      * Send an unverified user back to signon and a non administrator *        
+      * back to the main menu. Neither path returns here.              *        
+      *****************************************************************         
+       0110-DENY-UPDATE-ACCESS.                                                 
+                                                                                
+           INITIALIZE WS-THIS-PROGCOMMAREA                                      
+                                                                                
+           IF NOT WS-USER-VERIFIED                                              
+              EXEC CICS XCTL                                                    
+                   PROGRAM (LIT-SIGNONPGM)                                      
+              END-EXEC                                                          
+           END-IF                                                               
+                                                                                
+           MOVE ZEROS                   TO CDEMO-ACCT-ID                        
+                                           CDEMO-CARD-NUM                       
+           MOVE LOW-VALUES              TO CDEMO-ACCT-STATUS                    
+           MOVE LIT-THISTRANID          TO CDEMO-FROM-TRANID                    
+           MOVE LIT-THISPGM             TO CDEMO-FROM-PROGRAM                   
+           MOVE LIT-MENUTRANID          TO CDEMO-TO-TRANID                      
+           MOVE LIT-MENUPGM             TO CDEMO-TO-PROGRAM                     
+           SET  CDEMO-PGM-ENTER         TO TRUE                                 
+                                                                                
+           EXEC CICS XCTL                                                       
+                PROGRAM (LIT-MENUPGM)                                           
+                COMMAREA(CARDDEMO-COMMAREA)                                     
+           END-EXEC                                                             
+           .                                                                    
+       0110-DENY-UPDATE-ACCESS-EXIT.                                            
            EXIT                                                                 
            .                                                                    
                                                                                 
@@ -1391,7 +1498,17 @@
                                                                                 
            EVALUATE WS-RESP-CD                                                  
                WHEN DFHRESP(NORMAL)                                             
-                  SET FOUND-CARDS-FOR-ACCOUNT TO TRUE                           
+                  IF CARD-ACCT-ID EQUAL CC-ACCT-ID-N                            
+                     SET FOUND-CARDS-FOR-ACCOUNT     TO TRUE                    
+                  ELSE                                                          
+                     INITIALIZE CARD-RECORD                                     
+                     SET INPUT-ERROR                 TO TRUE                    
+                     SET FLG-ACCTFILTER-NOT-OK       TO TRUE                    
+                     SET FLG-CARDFILTER-NOT-OK       TO TRUE                    
+                     IF  WS-RETURN-MSG-OFF                                      
+                        SET CARD-NOT-IN-THIS-ACCOUNT TO TRUE                    
+                     END-IF                                                     
+                  END-IF                                                        
                WHEN DFHRESP(NOTFND)                                             
                   SET INPUT-ERROR                    TO TRUE                    
                   SET FLG-ACCTFILTER-NOT-OK          TO TRUE                    
@@ -1448,6 +1565,20 @@
               GO TO 9200-WRITE-PROCESSING-EXIT                                  
            END-IF                                                               
       *****************************************************************         
+      *    Does the card locked for update still belong to the account          
+      *    it was fetched for ?                                                 
+      *****************************************************************         
+           IF CARD-ACCT-ID NOT EQUAL CC-ACCT-ID-N                               
+              EXEC CICS UNLOCK                                                  
+                   FILE(LIT-CARDFILENAME)                                       
+              END-EXEC                                                          
+              SET INPUT-ERROR                    TO TRUE                        
+              IF  WS-RETURN-MSG-OFF                                             
+                  SET CARD-NOT-IN-THIS-ACCOUNT   TO TRUE                        
+              END-IF                                                            
+              GO TO 9200-WRITE-PROCESSING-EXIT                                  
+           END-IF                                                               
+      *****************************************************************         
       *    Did someone change the record while we were out ?                    
       *****************************************************************         
            PERFORM 9300-CHECK-CHANGE-IN-REC                                     
@@ -1459,8 +1590,8 @@
       * Prepare the update                                                      
       *****************************************************************         
            INITIALIZE CARD-UPDATE-RECORD                                        
-           MOVE CCUP-NEW-CARDID             TO CARD-UPDATE-NUM                  
-           MOVE CC-ACCT-ID-N                TO CARD-UPDATE-ACCT-ID              
+           MOVE CARD-NUM                    TO CARD-UPDATE-NUM                  
+           MOVE CARD-ACCT-ID                TO CARD-UPDATE-ACCT-ID              
            MOVE CCUP-NEW-CVV-CD             TO CARD-CVV-CD-X                    
            MOVE CARD-CVV-CD-N               TO CARD-UPDATE-CVV-CD               
            MOVE CCUP-NEW-CRDNAME            TO CARD-UPDATE-EMBOSSED-NAME        
