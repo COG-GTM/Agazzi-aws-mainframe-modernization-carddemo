@@ -5,6 +5,10 @@
       *              a) All cards if no context passed and admin user           
       *              b) Only the ones associated with ACCT in COMMAREA          
       *                 if user is not admin                                    
+      *              The signed on user type is re-read from USRSEC and         
+      *              non admin users are restricted to the account they         
+      *              were entitled to on entry. Screen filters can only         
+      *              narrow that set, never widen it.                           
       ******************************************************************
       * Copyright Amazon.com, Inc. or its affiliates.                   
       * All Rights Reserved.                                            
@@ -131,6 +135,21 @@
            88  WS-CONTEXT-FRESH-START              VALUE '0'.                   
            88  WS-CONTEXT-FRESH-START-NO           VALUE '1'.                   
       ******************************************************************        
+      * Authorization of the signed on user                                     
+      ******************************************************************        
+         05  WS-AUTH-DATA.                                                      
+            10  WS-AUTH-USER-ID                    PIC X(8)                     
+                                                   VALUE SPACES.                
+            10  WS-AUTH-USER-TYPE                  PIC X(1)                     
+                                                   VALUE SPACES.                
+              88  WS-AUTH-USER-IS-ADMIN            VALUE 'A'.                   
+            10  WS-AUTH-ENTITLED-ACCT-ID           PIC 9(11)                    
+                                                   VALUE ZEROS.                 
+            10  WS-XREF-ACCT-ID                    PIC 9(11)                    
+                                                   VALUE ZEROS.                 
+            10  WS-XREF-CARD-NUM                   PIC X(16)                    
+                                                   VALUE SPACES.                
+      ******************************************************************        
       * File and data Handling                                                  
       ******************************************************************        
          05 WS-FILE-HANDLING-VARS.                                              
@@ -186,6 +205,10 @@
              VALUE 'CCRDLIA'.                                                   
          05  LIT-MENUPGM                            PIC X(8)                    
              VALUE 'COMEN01C'.                                                  
+         05  LIT-SIGNONPGM                          PIC X(8)                    
+             VALUE 'COSGN00C'.                                                  
+         05  LIT-USRSEC-FILE                        PIC X(8)                    
+             VALUE 'USRSEC  '.                                                  
          05  LIT-MENUTRANID                         PIC X(4)                    
              VALUE 'CM00'.                                                      
          05  LIT-MENUMAPSET                         PIC X(7)                    
@@ -215,6 +238,8 @@
          05  LIT-CARD-FILE-ACCT-PATH                PIC X(8)                    
                                                                                 
                                                    VALUE 'CARDAIX '.            
+         05  LIT-CARD-XREF-FILE                     PIC X(8)                    
+                                                   VALUE 'CCXREF  '.            
       ******************************************************************        
       *Other common working storage Variables                                   
       ******************************************************************        
@@ -246,6 +271,10 @@
             10 WS-RETURN-FLAG                        PIC X(1).                  
            88  WS-RETURN-FLAG-OFF                  VALUE LOW-VALUES.            
            88  WS-RETURN-FLAG-ON                   VALUE '1'.                   
+      ******************************************************************        
+      *  Account this user was entitled to when the program was entered         
+      ******************************************************************        
+            10 WS-CA-ENTITLED-ACCT-ID                PIC 9(11).                 
       ******************************************************************        
       *  File Data Array         28 CHARS X 7 ROWS = 196                        
       ******************************************************************        
@@ -288,6 +317,9 @@
                                                                                 
       *CARD RECORD LAYOUT                                                       
        COPY CVACT02Y.                                                           
+                                                                                
+      *CARD CROSS REFERENCE RECORD LAYOUT                                       
+       COPY CVACT03Y.                                                           
                                                                                 
        LINKAGE SECTION.                                                         
        01  DFHCOMMAREA.                                                         
@@ -341,6 +373,11 @@
                SET CA-FIRST-PAGE        TO TRUE                                 
                SET CA-LAST-PAGE-NOT-SHOWN TO TRUE                               
            END-IF 
+      *****************************************************************         
+      * Establish who is signed on and what they are allowed to see             
+      *****************************************************************         
+           PERFORM 0100-CHECK-AUTHORIZATION                                     
+              THRU 0100-CHECK-AUTHORIZATION-EXIT                                
                                                                                 
       ******************************************************************        
       * Remap PFkeys as needed.                                                 
@@ -385,7 +422,7 @@
            AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM)                           
               MOVE LIT-THISTRANID   TO CDEMO-FROM-TRANID                        
               MOVE LIT-THISPGM      TO CDEMO-FROM-PROGRAM                       
-              SET  CDEMO-USRTYP-USER TO TRUE                                    
+              MOVE WS-AUTH-USER-TYPE TO CDEMO-USER-TYPE                         
               SET  CDEMO-PGM-ENTER  TO TRUE                                     
               MOVE LIT-THISMAPSET   TO CDEMO-LAST-MAPSET                        
               MOVE LIT-THISMAP      TO CDEMO-LAST-MAP                           
@@ -463,7 +500,10 @@
                                WS-THIS-PROGCOMMAREA                             
                     MOVE LIT-THISTRANID      TO CDEMO-FROM-TRANID               
                     MOVE LIT-THISPGM         TO CDEMO-FROM-PROGRAM              
-                    SET CDEMO-USRTYP-USER    TO TRUE                            
+                    MOVE WS-AUTH-USER-ID     TO CDEMO-USER-ID                   
+                    MOVE WS-AUTH-USER-TYPE   TO CDEMO-USER-TYPE                 
+                    MOVE WS-AUTH-ENTITLED-ACCT-ID                               
+                                             TO WS-CA-ENTITLED-ACCT-ID          
                     SET CDEMO-PGM-ENTER      TO TRUE                            
                     MOVE LIT-THISMAP         TO CDEMO-LAST-MAP                  
                     MOVE LIT-THISMAPSET      TO CDEMO-LAST-MAPSET               
@@ -519,7 +559,7 @@
                 AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM                       
                    MOVE LIT-THISTRANID    TO CDEMO-FROM-TRANID                  
                    MOVE LIT-THISPGM       TO CDEMO-FROM-PROGRAM                 
-                   SET  CDEMO-USRTYP-USER TO TRUE                               
+                   MOVE WS-AUTH-USER-TYPE TO CDEMO-USER-TYPE                    
                    SET  CDEMO-PGM-ENTER   TO TRUE                               
                    MOVE LIT-THISMAPSET    TO CDEMO-LAST-MAPSET                  
                    MOVE LIT-THISMAP       TO CDEMO-LAST-MAP                     
@@ -547,7 +587,7 @@
                 AND CDEMO-FROM-PROGRAM  EQUAL LIT-THISPGM                       
                    MOVE LIT-THISTRANID    TO CDEMO-FROM-TRANID                  
                    MOVE LIT-THISPGM       TO CDEMO-FROM-PROGRAM                 
-                   SET  CDEMO-USRTYP-USER TO TRUE                               
+                   MOVE WS-AUTH-USER-TYPE TO CDEMO-USER-TYPE                    
                    SET  CDEMO-PGM-ENTER   TO TRUE                               
                    MOVE LIT-THISMAPSET    TO CDEMO-LAST-MAPSET                  
                    MOVE LIT-THISMAP       TO CDEMO-LAST-MAP                     
@@ -619,6 +659,66 @@
            END-EXEC                                                             
            .                                                                    
        0000-MAIN-EXIT.                                                          
+           EXIT                                                                 
+           .                                                                    
+      *****************************************************************         
+      * Identify the signed on user and the data they may see.                  
+      * The user type in the commarea is not trusted, it is refreshed           
+      * from the security file. Non admin users may only see cards of           
+      * the account they were entitled to when this program was given           
+      * control. Anything unexpected sends the terminal back to signon.         
+      *****************************************************************         
+       0100-CHECK-AUTHORIZATION.                                                
+           MOVE SPACES               TO WS-AUTH-USER-TYPE                       
+                                                                                
+           IF CDEMO-USER-ID  EQUAL SPACES                                       
+           OR CDEMO-USER-ID  EQUAL LOW-VALUES                                   
+              GO TO 0100-CHECK-AUTHORIZATION-DENY                               
+           END-IF                                                               
+                                                                                
+           EXEC CICS READ                                                       
+                DATASET   (LIT-USRSEC-FILE)                                     
+                INTO      (SEC-USER-DATA)                                       
+                LENGTH    (LENGTH OF SEC-USER-DATA)                             
+                RIDFLD    (CDEMO-USER-ID)                                       
+                KEYLENGTH (LENGTH OF CDEMO-USER-ID)                             
+                RESP      (WS-RESP-CD)                                          
+                RESP2     (WS-REAS-CD)                                          
+           END-EXEC                                                             
+                                                                                
+           IF WS-RESP-CD NOT EQUAL DFHRESP(NORMAL)                              
+              GO TO 0100-CHECK-AUTHORIZATION-DENY                               
+           END-IF                                                               
+                                                                                
+           MOVE CDEMO-USER-ID        TO WS-AUTH-USER-ID                         
+           MOVE SEC-USR-TYPE         TO WS-AUTH-USER-TYPE                       
+           MOVE SEC-USR-TYPE         TO CDEMO-USER-TYPE                         
+                                                                                
+           IF WS-AUTH-USER-IS-ADMIN                                             
+              MOVE ZEROES            TO WS-CA-ENTITLED-ACCT-ID                  
+           ELSE                                                                 
+              IF CDEMO-FROM-PROGRAM NOT EQUAL LIT-THISPGM                       
+                 MOVE CDEMO-ACCT-ID  TO WS-CA-ENTITLED-ACCT-ID                  
+              END-IF                                                            
+           END-IF                                                               
+                                                                                
+           MOVE WS-CA-ENTITLED-ACCT-ID                                          
+                                     TO WS-AUTH-ENTITLED-ACCT-ID                
+                                                                                
+           IF  NOT WS-AUTH-USER-IS-ADMIN                                        
+           AND WS-AUTH-ENTITLED-ACCT-ID EQUAL ZEROES                            
+               MOVE 'NO ACCOUNT IN CONTEXT. NO CARDS TO SHOW'     
+                                     TO WS-ERROR-MSG                            
+           END-IF                                                               
+                                                                                
+           GO TO 0100-CHECK-AUTHORIZATION-EXIT                                  
+           .                                                                    
+       0100-CHECK-AUTHORIZATION-DENY.                                           
+           EXEC CICS XCTL                                                       
+                     PROGRAM (LIT-SIGNONPGM)                                    
+           END-EXEC                                                             
+           .                                                                    
+       0100-CHECK-AUTHORIZATION-EXIT.                                           
            EXIT                                                                 
            .                                                                    
        1000-SEND-MAP.                                                           
@@ -1027,6 +1127,19 @@
               MOVE CC-ACCT-ID TO CDEMO-ACCT-ID                                  
               SET FLG-ACCTFILTER-ISVALID TO TRUE                                
            END-IF                                                               
+      *                                                                         
+      *    Non admin users may only ask for their own account                   
+           IF  NOT WS-AUTH-USER-IS-ADMIN                                        
+           AND CC-ACCT-ID-N NOT EQUAL WS-AUTH-ENTITLED-ACCT-ID                  
+              SET INPUT-ERROR TO TRUE                                           
+              SET FLG-ACCTFILTER-NOT-OK TO TRUE                                 
+              SET FLG-PROTECT-SELECT-ROWS-YES TO TRUE                           
+              MOVE                                                              
+              'YOU ARE NOT AUTHORIZED TO VIEW CARDS OF THAT ACCOUNT'            
+                              TO WS-ERROR-MSG                                   
+              MOVE ZERO       TO CDEMO-ACCT-ID                                  
+              GO TO 2210-EDIT-ACCOUNT-EXIT                                      
+           END-IF                                                               
            .                                                                    
                                                                                 
        2210-EDIT-ACCOUNT-EXIT.                                                  
@@ -1064,9 +1177,56 @@
               MOVE CC-CARD-NUM-N TO CDEMO-CARD-NUM                              
               SET FLG-CARDFILTER-ISVALID TO TRUE                                
            END-IF                                                               
+      *                                                                         
+      *    Non admin users may only ask for a card of their own                 
+      *    account. The owning account comes from the card cross                
+      *    reference, never from the screen.                                    
+           IF NOT WS-AUTH-USER-IS-ADMIN                                         
+              PERFORM 2230-GET-CARD-XREF                                        
+                 THRU 2230-GET-CARD-XREF-EXIT                                   
+              IF  WS-AUTH-ENTITLED-ACCT-ID EQUAL ZEROES                         
+              OR  WS-XREF-ACCT-ID NOT EQUAL WS-AUTH-ENTITLED-ACCT-ID            
+                 SET INPUT-ERROR TO TRUE                                        
+                 SET FLG-CARDFILTER-NOT-OK TO TRUE                              
+                 SET FLG-PROTECT-SELECT-ROWS-YES TO TRUE                        
+                 MOVE                                                           
+              'YOU ARE NOT AUTHORIZED TO VIEW THAT CARD'                        
+                                 TO WS-ERROR-MSG                                
+                 MOVE ZERO       TO CDEMO-CARD-NUM                              
+                 GO TO 2220-EDIT-CARD-EXIT                                      
+              END-IF                                                            
+           END-IF                                                               
            .                                                                    
                                                                                 
        2220-EDIT-CARD-EXIT.                                                     
+           EXIT                                                                 
+           .                                                                    
+                                                                                
+      *****************************************************************         
+      * Read the card cross reference to find the account that owns             
+      * the card supplied on the screen. A card that cannot be read             
+      * is treated as owned by nobody.                                          
+      *****************************************************************         
+       2230-GET-CARD-XREF.                                                      
+           MOVE ZEROES               TO WS-XREF-ACCT-ID                         
+           MOVE CC-CARD-NUM          TO WS-XREF-CARD-NUM                        
+                                                                                
+           EXEC CICS READ                                                       
+                DATASET   (LIT-CARD-XREF-FILE)                                  
+                INTO      (CARD-XREF-RECORD)                                    
+                LENGTH    (LENGTH OF CARD-XREF-RECORD)                          
+                RIDFLD    (WS-XREF-CARD-NUM)                                    
+                KEYLENGTH (LENGTH OF WS-XREF-CARD-NUM)                          
+                RESP      (WS-RESP-CD)                                          
+                RESP2     (WS-REAS-CD)                                          
+           END-EXEC                                                             
+                                                                                
+           IF WS-RESP-CD EQUAL DFHRESP(NORMAL)                                  
+              MOVE XREF-ACCT-ID      TO WS-XREF-ACCT-ID                         
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       2230-GET-CARD-XREF-EXIT.                                                 
            EXIT                                                                 
            .                                                                    
                                                                                 
@@ -1381,6 +1541,20 @@
                                                                                 
        9500-FILTER-RECORDS.                                                     
            SET WS-DONOT-EXCLUDE-THIS-RECORD TO TRUE                             
+      *****************************************************************         
+      *    Ownership check. A non admin user only ever sees cards of            
+      *    the account they were entitled to on entry, whatever the             
+      *    filters on the screen ask for.                                       
+      *****************************************************************         
+           IF NOT WS-AUTH-USER-IS-ADMIN                                         
+              IF  WS-AUTH-ENTITLED-ACCT-ID NOT EQUAL ZEROES                     
+              AND CARD-ACCT-ID EQUAL WS-AUTH-ENTITLED-ACCT-ID                   
+                  CONTINUE                                                      
+              ELSE                                                              
+                  SET WS-EXCLUDE-THIS-RECORD  TO TRUE                           
+                  GO TO 9500-FILTER-RECORDS-EXIT                                
+              END-IF                                                            
+           END-IF                                                               
                                                                                 
            IF FLG-ACCTFILTER-ISVALID                                            
               IF  CARD-ACCT-ID = CC-ACCT-ID                                     
