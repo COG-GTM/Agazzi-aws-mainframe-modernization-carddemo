@@ -67,6 +67,12 @@
            88  PFK-VALID                           VALUE '0'.                   
            88  PFK-INVALID                         VALUE '1'.                   
       ******************************************************************        
+      *      Authorization of the signed on user                                
+      ******************************************************************        
+         05  WS-USER-AUTH-FLAG                     PIC X(1).                    
+           88  USER-AUTHORIZED                     VALUE '1'.                   
+           88  USER-NOT-AUTHORIZED                 VALUE '0'.                   
+      ******************************************************************        
       * Output edits                                                            
       ******************************************************************        
          05 CICS-OUTPUT-EDIT-VARS.                                              
@@ -156,6 +162,8 @@
                'Error reading Card Data File'.                                  
            88  CODING-TO-BE-DONE                   VALUE                        
                'Looks Good.... so far'.                                         
+           88  WS-USER-NOT-AUTHORIZED-MSG          VALUE                        
+               'Not authorized to view card details. Please sign on'.           
       ******************************************************************        
       *      Literals and Constants                                             
       ******************************************************************        
@@ -188,6 +196,8 @@
                                                    VALUE 'CARDDAT '.            
           05 LIT-CARDFILENAME-ACCT-PATH            PIC X(8)                     
                                                    VALUE 'CARDAIX '.            
+          05 LIT-USRSECFILENAME                    PIC X(8)                     
+                                                   VALUE 'USRSEC  '.            
       ******************************************************************        
       *Other common working storage Variables                                   
       ******************************************************************        
@@ -276,6 +286,19 @@
               MOVE DFHCOMMAREA(LENGTH OF CARDDEMO-COMMAREA + 1:                 
                                LENGTH OF WS-THIS-PROGCOMMAREA ) TO              
                                 WS-THIS-PROGCOMMAREA                            
+           END-IF                                                               
+      *****************************************************************         
+      * Only a user known to the security file may view card details.           
+      * The signed on user is re-read from USRSEC because the commarea          
+      * is supplied by the caller and cannot be trusted.                        
+      *****************************************************************         
+           PERFORM 0100-CHECK-USER-AUTH                                         
+              THRU 0100-CHECK-USER-AUTH-EXIT                                    
+                                                                                
+           IF USER-NOT-AUTHORIZED                                               
+              SET WS-USER-NOT-AUTHORIZED-MSG TO TRUE                            
+              PERFORM SEND-PLAIN-TEXT                                           
+                 THRU SEND-PLAIN-TEXT-EXIT                                      
            END-IF                                                               
       *****************************************************************         
       * Remap PFkeys as needed.                                                 
@@ -406,6 +429,46 @@
            END-EXEC                                                             
            .                                                                    
        0000-MAIN-EXIT.                                                          
+           EXIT                                                                 
+           .                                                                    
+                                                                                
+      *****************************************************************         
+      * Validate the signed on user against the security file.        *         
+      * Fails closed - the user must exist on USRSEC and carry a      *         
+      * known servicing role for card details to be shown.            *         
+      *****************************************************************         
+       0100-CHECK-USER-AUTH.                                                    
+                                                                                
+           SET USER-NOT-AUTHORIZED TO TRUE                                      
+           INITIALIZE SEC-USER-DATA                                             
+           MOVE SPACES TO CDEMO-USER-TYPE                                       
+                                                                                
+           IF CDEMO-USER-ID EQUAL SPACES                                        
+           OR CDEMO-USER-ID EQUAL LOW-VALUES                                    
+              GO TO 0100-CHECK-USER-AUTH-EXIT                                   
+           END-IF                                                               
+                                                                                
+           EXEC CICS READ                                                       
+                FILE      (LIT-USRSECFILENAME)                                  
+                RIDFLD    (CDEMO-USER-ID)                                       
+                KEYLENGTH (LENGTH OF CDEMO-USER-ID)                             
+                INTO      (SEC-USER-DATA)                                       
+                LENGTH    (LENGTH OF SEC-USER-DATA)                             
+                RESP      (WS-RESP-CD)                                          
+                RESP2     (WS-REAS-CD)                                          
+           END-EXEC                                                             
+                                                                                
+           IF WS-RESP-CD EQUAL DFHRESP(NORMAL)                                  
+              MOVE SEC-USR-TYPE       TO CDEMO-USER-TYPE                        
+              IF CDEMO-USRTYP-ADMIN OR CDEMO-USRTYP-USER                        
+                 SET USER-AUTHORIZED  TO TRUE                                   
+              ELSE                                                              
+                 MOVE SPACES          TO CDEMO-USER-TYPE                        
+              END-IF                                                            
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       0100-CHECK-USER-AUTH-EXIT.                                               
            EXIT                                                                 
            .                                                                    
                                                                                 
@@ -751,7 +814,20 @@
                                                                                 
            EVALUATE WS-RESP-CD                                                  
                WHEN DFHRESP(NORMAL)                                             
-                  SET FOUND-CARDS-FOR-ACCOUNT TO TRUE                           
+      *           A card may only be viewed within the account that             
+      *           owns it. Anything else is treated as not found so             
+      *           that a card number on its own discloses nothing.              
+                  IF CARD-ACCT-ID NOT EQUAL CC-ACCT-ID-N                        
+                     INITIALIZE CARD-RECORD                                     
+                     SET INPUT-ERROR                 TO TRUE                    
+                     SET FLG-ACCTFILTER-NOT-OK       TO TRUE                    
+                     SET FLG-CARDFILTER-NOT-OK       TO TRUE                    
+                     IF  WS-RETURN-MSG-OFF                                      
+                         SET DID-NOT-FIND-ACCTCARD-COMBO TO TRUE                
+                     END-IF                                                     
+                  ELSE                                                          
+                     SET FOUND-CARDS-FOR-ACCOUNT TO TRUE                        
+                  END-IF                                                        
                WHEN DFHRESP(NOTFND)                                             
                   SET INPUT-ERROR                    TO TRUE                    
                   SET FLG-ACCTFILTER-NOT-OK          TO TRUE                    
