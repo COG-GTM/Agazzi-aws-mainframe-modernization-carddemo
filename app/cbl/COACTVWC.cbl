@@ -64,6 +64,17 @@
            88  FLG-CUSTFILTER-ISVALID              VALUE '1'.                   
            88  FLG-CUSTFILTER-BLANK                VALUE ' '.                   
       ******************************************************************        
+      *      Authorization of the signed on user                                
+      ******************************************************************        
+         05  WS-AUTH-USER-ID                       PIC X(08).                   
+         05  WS-AUTH-USER-TYPE                     PIC X(01).                   
+           88  AUTH-USER-UNKNOWN                   VALUES SPACES                
+                                                          LOW-VALUES.           
+           88  AUTH-USER-ADMIN                     VALUE 'A'.                   
+           88  AUTH-USER-REGULAR                   VALUE 'U'.                   
+         05  WS-AUTH-CUST-ID                       PIC 9(09)                    
+                                                   VALUE ZEROES.                
+      ******************************************************************        
       * Output edits                                                            
       ******************************************************************        
       *  05  EDIT-FIELD-9-2                PIC +ZZZ,ZZZ,ZZZ.99.                 
@@ -134,6 +145,10 @@
                'Did not find associated customer in master file'.               
            88  XREF-READ-ERROR                     VALUE                        
                'Error reading account card xref File'.                          
+           88  ACCT-NOT-AUTHORIZED                 VALUE                        
+               'Account not found or not authorized for this user'.             
+           88  USER-NOT-VERIFIED                   VALUE                        
+               'Unable to verify signed on user. Please sign on again'.         
            88  CODING-TO-BE-DONE                   VALUE                        
                'Looks Good.... so far'.                                         
       *****************************************************************         
@@ -191,6 +206,8 @@
                                                    VALUE 'CARDAIX '.            
           05 LIT-CARDXREFNAME-ACCT-PATH            PIC X(8)                     
                                                    VALUE 'CXACAIX '.            
+          05 LIT-USRSECFILENAME                    PIC X(8)                     
+                                                   VALUE 'USRSEC  '.            
           05 LIT-ALL-ALPHA-FROM                    PIC X(52)                    
              VALUE                                                              
              'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.            
@@ -690,10 +707,27 @@
            
            MOVE CDEMO-ACCT-ID TO WS-CARD-RID-ACCT-ID                            
                                                                                 
+      *    Identify the signed on user before any data is read                  
+           PERFORM 9100-GETUSRSEC-BYUSER                                        
+              THRU 9100-GETUSRSEC-BYUSER-EXIT                                   
+                                                                                
+           IF FLG-ACCTFILTER-NOT-OK                                             
+              GO TO 9000-READ-ACCT-EXIT                                         
+           END-IF                                                               
+                                                                                
            PERFORM 9200-GETCARDXREF-BYACCT                                      
               THRU 9200-GETCARDXREF-BYACCT-EXIT                                 
                                                                                 
       *    IF DID-NOT-FIND-ACCT-IN-CARDXREF                                     
+           IF FLG-ACCTFILTER-NOT-OK                                             
+              GO TO 9000-READ-ACCT-EXIT                                         
+           END-IF                                                               
+                                                                                
+      *    Only the owning customer or an administrator may go on to            
+      *    read the account and customer master records                         
+           PERFORM 9150-CHECK-ACCT-AUTHORIZATION                                
+              THRU 9150-CHECK-ACCT-AUTHORIZATION-EXIT                           
+                                                                                
            IF FLG-ACCTFILTER-NOT-OK                                             
               GO TO 9000-READ-ACCT-EXIT                                         
            END-IF                                                               
@@ -720,6 +754,100 @@
        9000-READ-ACCT-EXIT.                                                     
            EXIT                                                                 
            .                                                                    
+       9100-GETUSRSEC-BYUSER.                                                   
+                                                                                
+      *    Establish who is signed on from the security file itself             
+      *    rather than trusting the user type carried in the commarea           
+           SET AUTH-USER-UNKNOWN         TO TRUE                                
+           MOVE ZEROES                   TO WS-AUTH-CUST-ID                     
+           MOVE CDEMO-USER-ID            TO WS-AUTH-USER-ID                     
+                                                                                
+           IF WS-AUTH-USER-ID EQUAL LOW-VALUES                                  
+           OR WS-AUTH-USER-ID EQUAL SPACES                                      
+              SET INPUT-ERROR            TO TRUE                                
+              SET FLG-ACCTFILTER-NOT-OK  TO TRUE                                
+              IF WS-RETURN-MSG-OFF                                              
+                 SET USER-NOT-VERIFIED   TO TRUE                                
+              END-IF                                                            
+              GO TO 9100-GETUSRSEC-BYUSER-EXIT                                  
+           END-IF                                                               
+                                                                                
+           EXEC CICS READ                                                       
+                DATASET   (LIT-USRSECFILENAME)                                  
+                RIDFLD    (WS-AUTH-USER-ID)                                     
+                KEYLENGTH (LENGTH OF WS-AUTH-USER-ID)                           
+                INTO      (SEC-USER-DATA)                                       
+                LENGTH    (LENGTH OF SEC-USER-DATA)                             
+                RESP      (WS-RESP-CD)                                          
+                RESP2     (WS-REAS-CD)                                          
+           END-EXEC                                                             
+                                                                                
+           EVALUATE WS-RESP-CD                                                  
+               WHEN DFHRESP(NORMAL)                                             
+                  IF SEC-USR-ID NOT EQUAL WS-AUTH-USER-ID                       
+                     SET INPUT-ERROR           TO TRUE                          
+                     SET FLG-ACCTFILTER-NOT-OK TO TRUE                          
+                     IF WS-RETURN-MSG-OFF                                       
+                        SET USER-NOT-VERIFIED  TO TRUE                          
+                     END-IF                                                     
+                  ELSE                                                          
+                     MOVE SEC-USR-TYPE         TO WS-AUTH-USER-TYPE             
+                     IF NOT SEC-USR-NO-CUST-ID                                  
+                     AND SEC-USR-CUST-ID-X IS NUMERIC                           
+                        MOVE SEC-USR-CUST-ID   TO WS-AUTH-CUST-ID               
+                     END-IF                                                     
+                  END-IF                                                        
+               WHEN OTHER                                                       
+                  SET INPUT-ERROR              TO TRUE                          
+                  SET FLG-ACCTFILTER-NOT-OK    TO TRUE                          
+                  IF WS-RETURN-MSG-OFF                                          
+                     SET USER-NOT-VERIFIED     TO TRUE                          
+                  END-IF                                                        
+           END-EVALUATE                                                         
+                                                                                
+      *    Neither an administrator nor a customer of this institution          
+           IF NOT FLG-ACCTFILTER-NOT-OK                                         
+           AND NOT AUTH-USER-ADMIN                                              
+           AND (NOT AUTH-USER-REGULAR OR WS-AUTH-CUST-ID EQUAL ZEROES)          
+              SET INPUT-ERROR               TO TRUE                             
+              SET FLG-ACCTFILTER-NOT-OK     TO TRUE                             
+              IF WS-RETURN-MSG-OFF                                              
+                 SET ACCT-NOT-AUTHORIZED    TO TRUE                             
+              END-IF                                                            
+           END-IF                                                               
+           .                                                                    
+       9100-GETUSRSEC-BYUSER-EXIT.                                              
+           EXIT                                                                 
+           .                                                                    
+       9150-CHECK-ACCT-AUTHORIZATION.                                           
+                                                                                
+      *    Administrators may view any account                                  
+           IF AUTH-USER-ADMIN                                                   
+              GO TO 9150-CHECK-ACCT-AUTHORIZATION-EXIT                          
+           END-IF                                                               
+                                                                                
+      *    A regular user may only view accounts cross referenced to            
+      *    the customer they are entitled to                                    
+           IF AUTH-USER-REGULAR                                                 
+           AND WS-AUTH-CUST-ID NOT EQUAL ZEROES                                 
+           AND WS-AUTH-CUST-ID EQUAL XREF-CUST-ID                               
+              GO TO 9150-CHECK-ACCT-AUTHORIZATION-EXIT                          
+           END-IF                                                               
+                                                                                
+      *    Not entitled. Discard what the cross reference returned so           
+      *    that no account or customer data is read or displayed                
+           INITIALIZE CARD-XREF-RECORD                                          
+           MOVE ZEROES                   TO CDEMO-CUST-ID                       
+                                            CDEMO-CARD-NUM                      
+           SET INPUT-ERROR               TO TRUE                                
+           SET FLG-ACCTFILTER-NOT-OK     TO TRUE                                
+           IF WS-RETURN-MSG-OFF                                                 
+              SET ACCT-NOT-AUTHORIZED    TO TRUE                                
+           END-IF                                                               
+           .                                                                    
+       9150-CHECK-ACCT-AUTHORIZATION-EXIT.                                      
+           EXIT                                                                 
+           .                                                                    
        9200-GETCARDXREF-BYACCT.                                                 
                                                                                 
       *    Read the Card file. Access via alternate index ACCTID                
@@ -742,6 +870,11 @@
                   SET INPUT-ERROR                 TO TRUE                       
                   SET FLG-ACCTFILTER-NOT-OK       TO TRUE                       
                   IF WS-RETURN-MSG-OFF                                          
+                   IF NOT AUTH-USER-ADMIN                                       
+      *             Same wording as an unauthorized account so that a           
+      *             regular user cannot enumerate account numbers               
+                    SET ACCT-NOT-AUTHORIZED       TO TRUE                       
+                   ELSE                                                         
                     MOVE WS-RESP-CD               TO ERROR-RESP                 
                     MOVE WS-REAS-CD               TO ERROR-RESP2                
                     STRING                                                      
@@ -755,6 +888,7 @@
                     DELIMITED BY SIZE                                           
                     INTO WS-RETURN-MSG                                          
                     END-STRING                                                  
+                   END-IF                                                       
                   END-IF                                                        
                WHEN OTHER                                                       
                   SET INPUT-ERROR                 TO TRUE                       
@@ -791,6 +925,9 @@
                   SET FLG-ACCTFILTER-NOT-OK       TO TRUE                       
       *           SET DID-NOT-FIND-ACCT-IN-ACCTDAT TO TRUE                      
                   IF WS-RETURN-MSG-OFF                                          
+                   IF NOT AUTH-USER-ADMIN                                       
+                    SET ACCT-NOT-AUTHORIZED       TO TRUE                       
+                   ELSE                                                         
                     MOVE WS-RESP-CD               TO ERROR-RESP                 
                     MOVE WS-REAS-CD               TO ERROR-RESP2                
                     STRING                                                      
@@ -804,6 +941,7 @@
                     DELIMITED BY SIZE                                           
                     INTO WS-RETURN-MSG                                          
                     END-STRING                                                  
+                   END-IF                                                       
                   END-IF                                                        
       *                                                                         
                WHEN OTHER                                                       
