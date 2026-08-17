@@ -37,9 +37,19 @@
          05 WS-TRANID                  PIC X(04) VALUE 'CT01'.
          05 WS-MESSAGE                 PIC X(80) VALUE SPACES.
          05 WS-TRANSACT-FILE             PIC X(08) VALUE 'TRANSACT'.
+         05 WS-USRSEC-FILE             PIC X(08) VALUE 'USRSEC  '.
+         05 WS-CCXREF-FILE             PIC X(08) VALUE 'CCXREF  '.
          05 WS-ERR-FLG                 PIC X(01) VALUE 'N'.
            88 ERR-FLG-ON                         VALUE 'Y'.
            88 ERR-FLG-OFF                        VALUE 'N'.
+         05 WS-AUTH-FLG                PIC X(01) VALUE 'N'.
+           88 AUTH-OK                            VALUE 'Y'.
+           88 AUTH-NOT-OK                        VALUE 'N'.
+         05 WS-XREF-FLG                PIC X(01) VALUE 'N'.
+           88 XREF-FOUND                         VALUE 'Y'.
+           88 XREF-NOT-FOUND                     VALUE 'N'.
+         05 WS-CARD-NUM-X              PIC X(16) VALUE SPACES.
+         05 WS-MASKED-CARD-NUM         PIC X(16) VALUE SPACES.
          05 WS-RESP-CD                 PIC S9(09) COMP VALUE ZEROS.
          05 WS-REAS-CD                 PIC S9(09) COMP VALUE ZEROS.
          05 WS-USR-MODIFIED            PIC X(01) VALUE 'N'.
@@ -67,6 +77,10 @@
        COPY CSMSG01Y.
 
        COPY CVTRA05Y.
+
+       COPY CVACT03Y.
+
+       COPY CSUSR01Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -96,6 +110,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM VALIDATE-USER-AUTHORITY
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COTRN1AO
@@ -174,9 +189,22 @@
            END-IF.
 
            IF NOT ERR-FLG-ON
+               PERFORM CHECK-TRANSACTION-AUTHORITY
+               IF AUTH-NOT-OK
+                   MOVE SPACES  TO TRAN-RECORD
+                   MOVE 'Y'     TO WS-ERR-FLG
+                   MOVE 'Transaction ID NOT found...' TO
+                                   WS-MESSAGE
+                   MOVE -1       TO TRNIDINL OF COTRN1AI
+                   PERFORM SEND-TRNVIEW-SCREEN
+               END-IF
+           END-IF.
+
+           IF NOT ERR-FLG-ON
                MOVE TRAN-AMT TO WS-TRAN-AMT
                MOVE TRAN-ID      TO TRNIDI    OF COTRN1AI
-               MOVE TRAN-CARD-NUM      TO CARDNUMI    OF COTRN1AI
+               PERFORM MASK-CARD-NUMBER
+               MOVE WS-MASKED-CARD-NUM TO CARDNUMI    OF COTRN1AI
                MOVE TRAN-TYPE-CD        TO TTYPCDI   OF COTRN1AI
                MOVE TRAN-CAT-CD        TO TCATCDI   OF COTRN1AI
                MOVE TRAN-SOURCE       TO TRNSRCI  OF COTRN1AI
@@ -189,6 +217,103 @@
                MOVE TRAN-MERCHANT-CITY       TO MCITYI  OF COTRN1AI
                MOVE TRAN-MERCHANT-ZIP       TO MZIPI  OF COTRN1AI
                PERFORM SEND-TRNVIEW-SCREEN
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      VALIDATE-USER-AUTHORITY
+      *----------------------------------------------------------------*
+      * Establish the caller's user type from USRSEC rather than
+      * trusting the commarea. Fails closed by returning to sign on.
+      *----------------------------------------------------------------*
+       VALIDATE-USER-AUTHORITY.
+
+           MOVE SPACES TO CDEMO-USER-TYPE
+
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+               PERFORM RETURN-TO-PREV-SCREEN
+           END-IF
+
+           MOVE CDEMO-USER-ID TO SEC-USR-ID
+
+           EXEC CICS READ
+                DATASET   (WS-USRSEC-FILE)
+                INTO      (SEC-USER-DATA)
+                LENGTH    (LENGTH OF SEC-USER-DATA)
+                RIDFLD    (SEC-USR-ID)
+                KEYLENGTH (LENGTH OF SEC-USR-ID)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD = DFHRESP(NORMAL)
+               MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
+           ELSE
+               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+               PERFORM RETURN-TO-PREV-SCREEN
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-TRANSACTION-AUTHORITY
+      *----------------------------------------------------------------*
+      * A transaction may only be viewed by an administrator or by a
+      * user whose current session is scoped to the card / account the
+      * transaction belongs to.
+      *----------------------------------------------------------------*
+       CHECK-TRANSACTION-AUTHORITY.
+
+           SET AUTH-NOT-OK TO TRUE
+
+           IF CDEMO-USRTYP-ADMIN
+               SET AUTH-OK TO TRUE
+           ELSE
+               MOVE CDEMO-CARD-NUM TO WS-CARD-NUM-X
+               IF CDEMO-CARD-NUM NOT = ZEROS AND
+                  WS-CARD-NUM-X  =   TRAN-CARD-NUM
+                   SET AUTH-OK TO TRUE
+               ELSE
+                   IF CDEMO-ACCT-ID NOT = ZEROS
+                       PERFORM READ-CCXREF-FILE
+                       IF XREF-FOUND AND XREF-ACCT-ID = CDEMO-ACCT-ID
+                           SET AUTH-OK TO TRUE
+                       END-IF
+                   END-IF
+               END-IF
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      READ-CCXREF-FILE
+      *----------------------------------------------------------------*
+       READ-CCXREF-FILE.
+
+           MOVE TRAN-CARD-NUM TO XREF-CARD-NUM
+
+           EXEC CICS READ
+                DATASET   (WS-CCXREF-FILE)
+                INTO      (CARD-XREF-RECORD)
+                LENGTH    (LENGTH OF CARD-XREF-RECORD)
+                RIDFLD    (XREF-CARD-NUM)
+                KEYLENGTH (LENGTH OF XREF-CARD-NUM)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD = DFHRESP(NORMAL)
+               SET XREF-FOUND TO TRUE
+           ELSE
+               SET XREF-NOT-FOUND TO TRUE
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      MASK-CARD-NUMBER
+      *----------------------------------------------------------------*
+       MASK-CARD-NUMBER.
+
+           MOVE ALL '*'       TO WS-MASKED-CARD-NUM
+           MOVE TRAN-CARD-NUM TO WS-CARD-NUM-X
+
+           IF WS-CARD-NUM-X NOT = SPACES AND LOW-VALUES
+               MOVE WS-CARD-NUM-X(13:4) TO WS-MASKED-CARD-NUM(13:4)
            END-IF.
 
       *----------------------------------------------------------------*
