@@ -40,6 +40,7 @@
          05 WS-ACCTDAT-FILE            PIC X(08) VALUE 'ACCTDAT '.
          05 WS-CCXREF-FILE             PIC X(08) VALUE 'CCXREF  '.
          05 WS-CXACAIX-FILE            PIC X(08) VALUE 'CXACAIX '.
+         05 WS-USRSEC-FILE             PIC X(08) VALUE 'USRSEC  '.
 
          05 WS-ERR-FLG                 PIC X(01) VALUE 'N'.
            88 ERR-FLG-ON                         VALUE 'Y'.
@@ -49,6 +50,9 @@
          05 WS-USR-MODIFIED            PIC X(01) VALUE 'N'.
            88 USR-MODIFIED-YES                   VALUE 'Y'.
            88 USR-MODIFIED-NO                    VALUE 'N'.
+         05 WS-AUTH-FLG                PIC X(01) VALUE 'N'.
+           88 ADMIN-AUTHORIZED                   VALUE 'Y'.
+           88 ADMIN-NOT-AUTHORIZED               VALUE 'N'.
 
          05 WS-TRAN-AMT                PIC +99999999.99.
          05 WS-TRAN-DATE               PIC X(08) VALUE '00/00/00'.
@@ -84,6 +88,7 @@
        COPY COTTL01Y.
        COPY CSDAT01Y.
        COPY CSMSG01Y.
+       COPY CSUSR01Y.
 
        COPY CVTRA05Y.
        COPY CVACT01Y.
@@ -106,8 +111,9 @@
        PROCEDURE DIVISION.
        MAIN-PARA.
 
-           SET ERR-FLG-OFF     TO TRUE
-           SET USR-MODIFIED-NO TO TRUE
+           SET ERR-FLG-OFF          TO TRUE
+           SET USR-MODIFIED-NO      TO TRUE
+           SET ADMIN-NOT-AUTHORIZED TO TRUE
 
            MOVE SPACES TO WS-MESSAGE
                           ERRMSGO OF COTRN2AO
@@ -117,6 +123,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM CHECK-ADMIN-AUTHORIZATION
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COTRN2AO
@@ -441,6 +448,10 @@
       *----------------------------------------------------------------*
        ADD-TRANSACTION.
 
+           IF ADMIN-NOT-AUTHORIZED
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF
+
            MOVE HIGH-VALUES TO TRAN-ID
            PERFORM STARTBR-TRANSACT-FILE
            PERFORM READPREV-TRANSACT-FILE
@@ -493,6 +504,68 @@
            END-IF
 
            PERFORM PROCESS-ENTER-KEY.
+
+      *----------------------------------------------------------------*
+      *                  CHECK-ADMIN-AUTHORIZATION
+      *----------------------------------------------------------------*
+      * Transaction Add can post a transaction against ANY card, so it
+      * is restricted to administrators. The user type is taken from
+      * the security file, never from the commarea, so that a forged
+      * commarea cannot grant access.
+      *----------------------------------------------------------------*
+       CHECK-ADMIN-AUTHORIZATION.
+
+           SET ADMIN-NOT-AUTHORIZED TO TRUE
+
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+               MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+               PERFORM RETURN-TO-PREV-SCREEN
+           END-IF
+
+           MOVE CDEMO-USER-ID TO SEC-USR-ID
+           PERFORM READ-USER-SEC-FILE
+
+           IF SEC-USR-TYPE = 'A'
+               SET ADMIN-AUTHORIZED   TO TRUE
+               SET CDEMO-USRTYP-ADMIN TO TRUE
+           ELSE
+               SET CDEMO-USRTYP-USER  TO TRUE
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      READ-USER-SEC-FILE
+      *----------------------------------------------------------------*
+       READ-USER-SEC-FILE.
+
+           EXEC CICS READ
+                DATASET   (WS-USRSEC-FILE)
+                INTO      (SEC-USER-DATA)
+                LENGTH    (LENGTH OF SEC-USER-DATA)
+                RIDFLD    (SEC-USR-ID)
+                KEYLENGTH (LENGTH OF SEC-USR-ID)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           EVALUATE WS-RESP-CD
+               WHEN DFHRESP(NORMAL)
+                   CONTINUE
+               WHEN OTHER
+                   DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD
+                   MOVE SPACES     TO SEC-USER-DATA
+                   MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+                   PERFORM RETURN-TO-PREV-SCREEN
+           END-EVALUATE.
+
+      *----------------------------------------------------------------*
+      *                      SEND-NOT-AUTHORIZED
+      *----------------------------------------------------------------*
+       SEND-NOT-AUTHORIZED.
+
+           MOVE SPACES     TO WS-MESSAGE
+           MOVE 'COMEN01C' TO CDEMO-TO-PROGRAM
+           PERFORM RETURN-TO-PREV-SCREEN.
 
       *----------------------------------------------------------------*
       *                      RETURN-TO-PREV-SCREEN
