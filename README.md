@@ -202,6 +202,11 @@ CardDemo includes several optional modules that extend the base functionality:
 - **Online Functions**: Start the CardDemo application using the CC00 transaction
   - Admin access: Use userid ADMIN001 with password PASSWORD
   - User access: Use userid USER0001 with password PASSWORD
+  - Regular ('U') users are entitled to a single customer, recorded in the
+    customer id field of their USRSEC record (see CSUSR01Y). Bill Payment
+    (CB00) only accepts accounts belonging to that customer; users with no
+    customer id on their record cannot pay any account. Admin ('A') users may
+    pay any account.
 - **Batch Functions**: See the "Running Batch Jobs" section below
 
 ## Running Batch Jobs
@@ -279,7 +284,7 @@ Admin users can perform the following functions:
 | CT01        | COTRN01 | COTRN01C | Transaction View                |                                    |                                                           |
 | CT02        | COTRN02 | COTRN02C | Transaction Add                 |                                    |                                                           |
 | CR00        | CORPT00 | CORPT00C | Transaction Reports             |                                    |                                                           |
-| CB00        | COBIL00 | COBIL00C | Bill Payment                    |                                    |                                                           |
+| CB00        | COBIL00 | COBIL00C | Bill Payment                    |                                    | Restricted to the signed-on user's own accounts (admins: any account) |
 | CPVS        | COPAU00 | COPAUS0C | Pending Authorization Summary   | IMS-DB2-MQ: Pending Authorizations | Read IMS and VSAM                                         |
 | CPVD        | COPAU01 | COPAUS1C | Pending Authorization Details   | IMS-DB2-MQ: Pending Authorizations | Update IMS and Insert DB2                                 |
 | CP00        |         | COPAUA0C | Process Authorization Requests  | IMS-DB2-MQ: Pending Authorizations | MQ trigger, request and response; Insert and Update to IMS|
