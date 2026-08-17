@@ -274,7 +274,7 @@ Admin users can perform the following functions:
 | CAUP        | COACTUP | COACTUPC | Account Update                  |                                    |                                                           |
 | CCLI        | COCRDLI | COCRDLIC | Credit Card List                |                                    |                                                           |
 | CCDL        | COCRDSL | COCRDSLC | Credit Card View                |                                    |                                                           |
-| CCUP        | COCRDUP | COCRDUPC | Credit Card Update              |                                    |                                                           |
+| CCUP        | COCRDUP | COCRDUPC | Credit Card Update (Admin only) |                                    |                                                           |
 | CT00        | COTRN00 | COTRN00C | Transaction List                |                                    |                                                           |
 | CT01        | COTRN01 | COTRN01C | Transaction View                |                                    |                                                           |
 | CT02        | COTRN02 | COTRN02C | Transaction Add                 |                                    |                                                           |
