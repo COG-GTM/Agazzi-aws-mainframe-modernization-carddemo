@@ -255,6 +255,9 @@ entitled to no customer, so those users cannot view account data until an
 operator sets the field. The shipped demo data entitles `USER000n` to customer
 `00000000n`; administrator records carry zeroes.
 
+The Account View screen shows the customer social security number in full
+only to administrators; regular users see `***-**-nnnn`.
+
 ### User Functions
 
 ![User Function Flow](./diagrams/Application-Flow-User.png "User Function Flow")

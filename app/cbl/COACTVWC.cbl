@@ -510,15 +510,26 @@
               IF FOUND-CUST-IN-MASTER                                           
                 MOVE CUST-ID              TO ACSTNUMO OF CACTVWAO               
       *         MOVE CUST-SSN             TO ACSTSSNO OF CACTVWAO       
-                STRING 
-                    CUST-SSN(1:3)
-                    '-'                 
-                    CUST-SSN(4:2)
-                    '-'
-                    CUST-SSN(6:4)
-                    DELIMITED BY SIZE
-                    INTO ACSTSSNO OF CACTVWAO
-                END-STRING                                                      
+      *         Only an administrator sees the full social security
+      *         number. Everyone else sees the last four digits
+                IF AUTH-USER-ADMIN
+                   STRING
+                       CUST-SSN(1:3)
+                       '-'
+                       CUST-SSN(4:2)
+                       '-'
+                       CUST-SSN(6:4)
+                       DELIMITED BY SIZE
+                       INTO ACSTSSNO OF CACTVWAO
+                   END-STRING
+                ELSE
+                   STRING
+                       '***-**-'
+                       CUST-SSN(6:4)
+                       DELIMITED BY SIZE
+                       INTO ACSTSSNO OF CACTVWAO
+                   END-STRING
+                END-IF
                 MOVE CUST-FICO-CREDIT-SCORE                                     
                                           TO ACSTFCOO OF CACTVWAO               
                 MOVE CUST-DOB-YYYY-MM-DD  TO ACSTDOBO OF CACTVWAO               
