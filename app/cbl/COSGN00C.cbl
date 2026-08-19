@@ -53,6 +53,7 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
        COPY CSUSR01Y.
+       COPY CSUSR02Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -220,30 +221,40 @@
 
            EVALUATE WS-RESP-CD
                WHEN 0
-                   IF SEC-USR-PWD = WS-USER-PWD
-                       MOVE WS-TRANID    TO CDEMO-FROM-TRANID
-                       MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM
-                       MOVE WS-USER-ID   TO CDEMO-USER-ID
-                       MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
-                       MOVE ZEROS        TO CDEMO-PGM-CONTEXT
+                   EVALUATE TRUE
+                       WHEN SEC-USR-PWD = SPACES
+                         OR SEC-USR-PWD = LOW-VALUES
+                         OR SEC-USR-PWD = SEC-PWD-PLACEHOLDER
+                         OR SEC-USR-PWD = SEC-PWD-SHIPPED-DEFAULT
+                           MOVE 'Y'      TO WS-ERR-FLG
+                           MOVE 'Account disabled. Contact admin ...'
+                                                       TO WS-MESSAGE
+                           MOVE -1       TO USERIDL OF COSGN0AI
+                           PERFORM SEND-SIGNON-SCREEN
+                       WHEN SEC-USR-PWD = WS-USER-PWD
+                           MOVE WS-TRANID    TO CDEMO-FROM-TRANID
+                           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM
+                           MOVE WS-USER-ID   TO CDEMO-USER-ID
+                           MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
+                           MOVE ZEROS        TO CDEMO-PGM-CONTEXT
 
-                       IF CDEMO-USRTYP-ADMIN
-                            EXEC CICS XCTL
-                              PROGRAM ('COADM01C')
-                              COMMAREA(CARDDEMO-COMMAREA)
-                            END-EXEC
-                       ELSE
-                            EXEC CICS XCTL
-                              PROGRAM ('COMEN01C')
-                              COMMAREA(CARDDEMO-COMMAREA)
-                            END-EXEC
-                       END-IF
-                   ELSE
-                       MOVE 'Wrong Password. Try again ...' TO
+                           IF CDEMO-USRTYP-ADMIN
+                                EXEC CICS XCTL
+                                  PROGRAM ('COADM01C')
+                                  COMMAREA(CARDDEMO-COMMAREA)
+                                END-EXEC
+                           ELSE
+                                EXEC CICS XCTL
+                                  PROGRAM ('COMEN01C')
+                                  COMMAREA(CARDDEMO-COMMAREA)
+                                END-EXEC
+                           END-IF
+                       WHEN OTHER
+                           MOVE 'Wrong Password. Try again ...' TO
                                                           WS-MESSAGE
-                       MOVE -1       TO PASSWDL OF COSGN0AI
-                       PERFORM SEND-SIGNON-SCREEN
-                   END-IF
+                           MOVE -1       TO PASSWDL OF COSGN0AI
+                           PERFORM SEND-SIGNON-SCREEN
+                   END-EVALUATE
                WHEN 13
                    MOVE 'Y'      TO WS-ERR-FLG
                    MOVE 'User not found. Try again ...' TO WS-MESSAGE
