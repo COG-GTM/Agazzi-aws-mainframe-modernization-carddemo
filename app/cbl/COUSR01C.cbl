@@ -42,6 +42,10 @@
            88 ERR-FLG-OFF                        VALUE 'N'.
          05 WS-RESP-CD                 PIC S9(09) COMP VALUE ZEROS.
          05 WS-REAS-CD                 PIC S9(09) COMP VALUE ZEROS.
+         05 WS-PWD-IDX                 PIC 9(02) VALUE ZEROS.
+         05 WS-PWD-REJECTED            PIC X(01) VALUE 'N'.
+           88 PWD-VALUE-REJECTED                 VALUE 'Y'.
+           88 PWD-VALUE-ACCEPTED                 VALUE 'N'.
 
        COPY COCOM01Y.
 
@@ -51,6 +55,8 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
        COPY CSUSR01Y.
+       COPY CSPWD01Y.
+       COPY CSPWD02Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -151,13 +157,89 @@
            END-EVALUATE
 
            IF NOT ERR-FLG-ON
+               PERFORM CHECK-PASSWORD-VALUE
+           END-IF
+
+           IF NOT ERR-FLG-ON
                MOVE USERIDI  OF COUSR1AI TO SEC-USR-ID
                MOVE FNAMEI   OF COUSR1AI TO SEC-USR-FNAME
                MOVE LNAMEI   OF COUSR1AI TO SEC-USR-LNAME
-               MOVE PASSWDI  OF COUSR1AI TO SEC-USR-PWD
                MOVE USRTYPEI OF COUSR1AI TO SEC-USR-TYPE
+               MOVE ZEROS                TO SEC-USR-FAIL-CNT
+               MOVE SPACES               TO SEC-USR-LOCK-TS
+                                            SEC-USR-FILLER
+               PERFORM SET-PASSWORD-HASH
+           END-IF
+
+           IF NOT ERR-FLG-ON
                PERFORM WRITE-USER-SEC-FILE
+           END-IF
+
+           MOVE SPACES TO PASSWDI OF COUSR1AI.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-PASSWORD-VALUE
+      *  Refuses well known passwords and passwords equal to the user
+      *  id before any record is written.
+      *----------------------------------------------------------------*
+       CHECK-PASSWORD-VALUE.
+
+           SET PWD-VALUE-ACCEPTED TO TRUE
+
+           IF FUNCTION UPPER-CASE(PASSWDI OF COUSR1AI) =
+              FUNCTION UPPER-CASE(USERIDI OF COUSR1AI)
+               SET PWD-VALUE-REJECTED TO TRUE
+           END-IF
+
+           PERFORM VARYING WS-PWD-IDX FROM 1 BY 1
+                   UNTIL WS-PWD-IDX > PWD-REJECT-COUNT
+               IF FUNCTION UPPER-CASE(PASSWDI OF COUSR1AI) =
+                  PWD-REJECT-VALUE(WS-PWD-IDX)
+                   SET PWD-VALUE-REJECTED TO TRUE
+               END-IF
+           END-PERFORM
+
+           IF PWD-VALUE-REJECTED
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'Password is not allowed. Choose another...' TO
+                               WS-MESSAGE
+               MOVE SPACES   TO PASSWDI OF COUSR1AI
+               MOVE -1       TO PASSWDL OF COUSR1AI
+               PERFORM SEND-USRADD-SCREEN
            END-IF.
+
+      *----------------------------------------------------------------*
+      *                      SET-PASSWORD-HASH
+      *  Stores a random salt and the hash of the password.  The
+      *  password itself is never placed in the user record.
+      *----------------------------------------------------------------*
+       SET-PASSWORD-HASH.
+
+           INITIALIZE WS-PWD-SERVICE-PARMS
+           SET PWD-FN-NEWSALT TO TRUE
+           CALL 'CSUTLPWC' USING WS-PWD-SERVICE-PARMS
+
+           IF PWD-OK
+               SET PWD-FN-HASH TO TRUE
+               MOVE FUNCTION UPPER-CASE(PASSWDI OF COUSR1AI)
+                 TO PWD-CLEAR-PWD
+               CALL 'CSUTLPWC' USING WS-PWD-SERVICE-PARMS
+           END-IF
+
+           IF PWD-OK
+               MOVE PWD-ALGO TO SEC-USR-PWD-ALGO
+               MOVE PWD-SALT TO SEC-USR-PWD-SALT
+               MOVE PWD-HASH TO SEC-USR-PWD-HASH
+           ELSE
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'Unable to secure the password. Try later...' TO
+                               WS-MESSAGE
+               MOVE -1       TO PASSWDL OF COUSR1AI
+               PERFORM SEND-USRADD-SCREEN
+           END-IF
+
+           MOVE SPACES TO PWD-CLEAR-PWD
+                          PWD-HASH.
 
       *----------------------------------------------------------------*
       *                      RETURN-TO-PREV-SCREEN

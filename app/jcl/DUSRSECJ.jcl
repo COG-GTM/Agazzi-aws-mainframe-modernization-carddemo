@@ -31,25 +31,36 @@
 //*
 //STEP01  EXEC PGM=IEBGENER
 //*
+//* The seeded users have NO password.  Sign on is refused until an
+//* administrator sets one with USRSECPW.jcl.  Passwords are never
+//* held in this file - only a salt and a hash (see CSUSR01Y).
+//* Layout of the in-stream records:
+//*   1-8 user id, 9-28 first name, 29-48 last name, 49 user type.
+//* IEBGENER expands them to the 160 byte USRSEC record and sets the
+//* failed sign on counter (position 138) to zero.
+//*
 //SYSUT1   DD *
-ADMIN001MARGARET            GOLD                PASSWORDA
-ADMIN002RUSSELL             RUSSELL             PASSWORDA
-ADMIN003RAYMOND             WHITMORE            PASSWORDA
-ADMIN004EMMANUEL            CASGRAIN            PASSWORDA
-ADMIN005GRANVILLE           LACHAPELLE          PASSWORDA
-USER0001LAWRENCE            THOMAS              PASSWORDU
-USER0002AJITH               KUMAR               PASSWORDU
-USER0003LAURITZ             ALME                PASSWORDU
-USER0004AVERARDO            MAZZI               PASSWORDU
-USER0005LEE                 TING                PASSWORDU
+ADMIN001MARGARET            GOLD                A
+ADMIN002RUSSELL             RUSSELL             A
+ADMIN003RAYMOND             WHITMORE            A
+ADMIN004EMMANUEL            CASGRAIN            A
+ADMIN005GRANVILLE           LACHAPELLE          A
+USER0001LAWRENCE            THOMAS              U
+USER0002AJITH               KUMAR               U
+USER0003LAURITZ             ALME                U
+USER0004AVERARDO            MAZZI               U
+USER0005LEE                 TING                U
 /*
 //SYSUT2   DD DSN=AWS.M2.CARDDEMO.USRSEC.PS,
 //            DISP=(NEW,CATLG,DELETE),
-//            DCB=(LRECL=80,RECFM=FB,DSORG=PS,BLKSIZE=0),
+//            DCB=(LRECL=160,RECFM=FB,DSORG=PS,BLKSIZE=0),
 //            UNIT=SYSAD,SPACE=(TRK,(10,5),RLSE)
 //*
 //SYSPRINT DD SYSOUT=*
-//SYSIN    DD DUMMY
+//SYSIN    DD *
+  GENERATE MAXFLDS=2
+  RECORD   FIELD=(49,1,,1),FIELD=(2,'00',,138)
+/*
 //*
 //*-------------------------------------------------------------------*
 //* DEFINE VSAM FILE FOR USER SECURITY
@@ -63,7 +74,7 @@ USER0005LEE                 TING                PASSWORDU
  SET       MAXCC = 0
  DEFINE    CLUSTER (NAME(AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS)    -
                     KEYS(8,0)                                 -
-                    RECORDSIZE(80,80)                         -
+                    RECORDSIZE(160,160)                       -
                     REUSE                                     -
                     INDEXED                                   -
                     TRACKS(45,15)                             -
