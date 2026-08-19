@@ -148,7 +148,8 @@ CardDemo includes several optional modules that extend the base functionality:
 
      | Jobname  | Purpose                                           | Optional Module |
      | :------- | :------------------------------------------------ |:--------------- |
-     | DUSRSECJ | Sets up user security VSAM file                   |                 |
+     | DUSRSECJ | Sets up user security VSAM file, accounts disabled|                 |
+     | USRSECPW | Loads operator supplied sign-on passwords         |                 |
      | CLOSEFIL | Closes files opened by CICS                       |                 |
      | ACCTFILE | Loads Account database using sample data          |                 |
      | CARDFILE | Loads Card database with credit card sample data  |                 |
@@ -200,9 +201,17 @@ CardDemo includes several optional modules that extend the base functionality:
 
 ### Accessing the Application
 - **Online Functions**: Start the CardDemo application using the CC00 transaction
-  - Admin access: Use userid ADMIN001 with password PASSWORD
-  - User access: Use userid USER0001 with password PASSWORD
+  - The sample accounts loaded by DUSRSECJ (admin `ADMIN001`-`ADMIN005`, user `USER0001`-`USER0005`) are seeded **disabled**: their password field is blank and the sign-on program refuses blank passwords as well as the defaults published by earlier releases. No usable credential ships with this repository.
+  - Enable the accounts you need with the `USRSECPW` job before the first sign-on. See [Setting sign-on passwords](#setting-sign-on-passwords).
 - **Batch Functions**: See the "Running Batch Jobs" section below
+
+### Setting sign-on passwords
+
+CardDemo authenticates against the `USRSEC` VSAM file, which stores the password of each account in the clear. Treat it as a demonstration credential store only, protect it with your external security manager, and never reuse a password from another system.
+
+1. Create `AWS.M2.CARDDEMO.USRSEC.PWD` (RECFM=FB, LRECL=80) on the target system with one record per account you want to enable, using the `CSUSR01Y` layout: user id in columns 1-8, first name in 9-28, last name in 29-48, password in 49-56, user type (`A` admin, `U` user) in column 57. Choose a unique password per account; `PASSWORD` and `*LOCKED*` are rejected at sign-on.
+2. Close the file in CICS with the `CLOSEFIL` job, run the `USRSECPW` job to load the passwords into `AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS`, then reopen the file with `OPENFIL`. `USRSECPW` deletes the input dataset once the records are loaded.
+3. Rotate the passwords with the CU01/CU02 administration transactions, or by rerunning `USRSECPW`, whenever the environment is shared.
 
 ## Running Batch Jobs
 
@@ -297,7 +306,8 @@ Admin users can perform the following functions:
 
 | Job      | Program  | Function                                             | Optional Module |
 |:---------|:---------|:-----------------------------------------------------|:---------------|
-| DUSRSECJ | IEBGENER | Initial Load of User security file                   |                |
+| DUSRSECJ | IEBGENER | Initial Load of User security file (accounts disabled)|               |
+| USRSECPW | IDCAMS   | Load operator supplied sign-on passwords             |                |
 | DEFGDGB  | IDCAMS   | Setup GDG Bases                                      |                |
 | DEFGDGD  | IDCAMS   | Setup more GDG Bases for Db2                         |                |
 | ACCTFILE | IDCAMS   | Refresh Account Master                               |                |
