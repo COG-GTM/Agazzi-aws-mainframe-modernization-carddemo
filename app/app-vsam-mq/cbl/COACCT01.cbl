@@ -114,6 +114,10 @@
        01 WS-VARIABLES.                                                 01251000
           05 LIT-ACCTFILENAME                      PIC X(8)             01251100
                                                    VALUE 'ACCTDAT '.    01251200
+          05 LIT-USRSECFILENAME                    PIC X(8)
+                                                   VALUE 'USRSEC  '.
+          05 LIT-CARDXREFNAME-ACCT-PATH            PIC X(8)
+                                                   VALUE 'CXACAIX '.
           05 WS-RESP-CD                          PIC S9(09) COMP        01251300
                                                    VALUE ZEROS.         01251400
           05 WS-REAS-CD                          PIC S9(09) COMP        01251500
@@ -167,6 +171,19 @@
            05  WS-ACCT-GRP-LBL                   PIC X(11) VALUE        01262807
                                                  'GROUP ID : '.         01262907
            05  WS-ACCT-GROUP-ID                  PIC X(10) VALUE SPACES.01263010
+      *REQUESTER IDENTITY AND ENTITLEMENT                                       
+       01 WS-AUTH-DATA.                                                         
+           05  WS-REQ-USER-ID                    PIC X(08) VALUE SPACES.        
+           05  WS-AUTH-USER-TYPE                 PIC X(01) VALUE SPACES.        
+               88  AUTH-USER-ADMIN               VALUE 'A'.                     
+               88  AUTH-USER-REGULAR             VALUE 'U'.                     
+           05  WS-AUTH-CUST-ID                   PIC 9(09) VALUE ZEROES.        
+           05  WS-AUTH-STATUS                    PIC X(01) VALUE 'N'.           
+               88  REQUEST-AUTHORIZED            VALUE 'Y'.                     
+      *USER SECURITY RECORD LAYOUT                                              
+       COPY CSUSR01Y.                                                           
+      *CARD XREF RECORD LAYOUT (ACCOUNT PATH)                                   
+       COPY CVACT03Y.                                                           
       *ACCOUNT RECORD LAYOUT                                            01263107
        COPY CVACT01Y.                                                   01263207
                                                                         01263307
@@ -393,6 +410,13 @@
 036100     IF WS-FUNC = 'INQA' AND WS-KEY > ZEROES                      03700000
               MOVE WS-KEY       TO  WS-CARD-RID-ACCT-ID                 03700106
                                                                         03700206
+           PERFORM 4200-AUTHORIZE-REQUESTER                                     
+                                                                                
+           IF NOT REQUEST-AUTHORIZED                                            
+              MOVE 'REQUEST DENIED - NOT AUTHORIZED'                            
+                                  TO REPLY-MESSAGE                              
+              PERFORM 4100-PUT-REPLY                                            
+           ELSE                                                                 
            EXEC CICS READ                                               03700306
                 DATASET   (LIT-ACCTFILENAME)                            03700406
                 RIDFLD    (WS-CARD-RID-ACCT-ID-X)                       03700506
@@ -445,6 +469,7 @@
 017400            PERFORM 8000-TERMINATION                              03705507
       *           PERFORM SEND-LONG-TEXT                                03705603
            END-EVALUATE                                                 03705703
+           END-IF                                                               
            ELSE                                                         03705805
                     STRING 'INVALID REQUEST PARAMETERS '                03705905
                            'ACCT ID : 'WS-KEY                           03706005
@@ -459,7 +484,77 @@
 036100                                                                  03780000
 036800     .                                                            03860000
 036900                                                                  03870000
-037000 4100-PUT-REPLY.                                                  03880010
+037000 4200-AUTHORIZE-REQUESTER.                                                
+      *----------------------------------------------------------------*       
+      * Identify the requester from the MQ message context and decide          
+      * whether it may see the requested account. Fails closed: the            
+      * request is only authorized when an identity is present, that           
+      * identity is a known CardDemo user and the account belongs to           
+      * the customer that user is entitled to (admins are unrestricted).       
+      *----------------------------------------------------------------*       
+           MOVE 'N'          TO WS-AUTH-STATUS                                  
+           MOVE SPACES       TO WS-AUTH-USER-TYPE                               
+           MOVE ZEROES       TO WS-AUTH-CUST-ID                                 
+           MOVE MQMD-USERIDENTIFIER (1:8)                                       
+                             TO WS-REQ-USER-ID                                  
+                                                                                
+           IF WS-REQ-USER-ID NOT = SPACES                                       
+           AND WS-REQ-USER-ID NOT = LOW-VALUES                                  
+              PERFORM 4210-READ-USER-SEC-FILE                                   
+              PERFORM 4220-CHECK-ACCT-ENTITLEMENT                               
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       4210-READ-USER-SEC-FILE.                                                
+                                                                                
+           INITIALIZE SEC-USER-DATA                 
+                                                                                
+           EXEC CICS READ                                                       
+                DATASET   (LIT-USRSECFILENAME)                                  
+                RIDFLD    (WS-REQ-USER-ID)                                      
+                KEYLENGTH (LENGTH OF WS-REQ-USER-ID)                            
+                INTO      (SEC-USER-DATA)                                       
+                LENGTH    (LENGTH OF SEC-USER-DATA)                             
+                RESP      (WS-RESP-CD)                                          
+                RESP2     (WS-REAS-CD)                                          
+           END-EXEC                                                             
+                                                                                
+           IF WS-RESP-CD = DFHRESP(NORMAL)                                      
+              MOVE SEC-USR-TYPE TO WS-AUTH-USER-TYPE                            
+              IF NOT SEC-USR-NO-CUST-ID                                         
+              AND SEC-USR-CUST-ID-X IS NUMERIC                                  
+                 MOVE SEC-USR-CUST-ID TO WS-AUTH-CUST-ID                        
+              END-IF                                                            
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       4220-CHECK-ACCT-ENTITLEMENT.                                            
+                                                                                
+           IF AUTH-USER-ADMIN                                                   
+              SET REQUEST-AUTHORIZED TO TRUE                                    
+           ELSE                                                                 
+              IF AUTH-USER-REGULAR                                              
+              AND WS-AUTH-CUST-ID > ZEROES                                      
+                 INITIALIZE CARD-XREF-RECORD                         
+                 EXEC CICS READ                                                 
+                      DATASET   (LIT-CARDXREFNAME-ACCT-PATH)                    
+                      RIDFLD    (WS-CARD-RID-ACCT-ID-X)                         
+                      KEYLENGTH (LENGTH OF WS-CARD-RID-ACCT-ID-X)               
+                      INTO      (CARD-XREF-RECORD)                              
+                      LENGTH    (LENGTH OF CARD-XREF-RECORD)                    
+                      RESP      (WS-RESP-CD)                                    
+                      RESP2     (WS-REAS-CD)                                    
+                 END-EXEC                                                       
+                 IF WS-RESP-CD = DFHRESP(NORMAL)                                
+                 AND XREF-ACCT-ID = WS-CARD-RID-ACCT-ID                         
+                 AND XREF-CUST-ID = WS-AUTH-CUST-ID                             
+                    SET REQUEST-AUTHORIZED TO TRUE                              
+                 END-IF                                                         
+              END-IF                                                            
+           END-IF                                                               
+           .                                                                    
+                                                                                
+       4100-PUT-REPLY.                                                  03880010
 037100                                                                  03890000
 037200* PUT WILL PUT A MESSAGE ON THE QUEUE AND CONVERT IT TO A STRING  03900000
 037300                                                                  03910000
