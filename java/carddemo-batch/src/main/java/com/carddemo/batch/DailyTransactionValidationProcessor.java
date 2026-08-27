@@ -5,16 +5,15 @@ import com.carddemo.domain.CardXref;
 import com.carddemo.domain.DailyTransaction;
 import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CardXrefRepository;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Validates daily transactions in the same order as CBTRN02C.
+ */
 @Component
 public class DailyTransactionValidationProcessor
         implements ItemProcessor<DailyTransaction, ValidatedDailyTransaction> {
@@ -32,18 +31,12 @@ public class DailyTransactionValidationProcessor
 
     private final CardXrefRepository cardXrefRepository;
     private final AccountRepository accountRepository;
-    private final Map<Long, CycleState> validationState = new HashMap<>();
 
     public DailyTransactionValidationProcessor(
             CardXrefRepository cardXrefRepository,
             AccountRepository accountRepository) {
         this.cardXrefRepository = cardXrefRepository;
         this.accountRepository = accountRepository;
-    }
-
-    @BeforeStep
-    public void beforeStep(StepExecution stepExecution) {
-        validationState.clear();
     }
 
     @Override
@@ -59,13 +52,8 @@ public class DailyTransactionValidationProcessor
         }
 
         Account accountValue = account.get();
-        CycleState state = validationState.computeIfAbsent(
-                accountValue.getAcctId(),
-                ignored -> new CycleState(
-                        accountValue.getCurrentCycleCredit(),
-                        accountValue.getCurrentCycleDebit()));
-        BigDecimal temporaryBalance = state.currentCycleCredit()
-                .subtract(state.currentCycleDebit())
+        BigDecimal temporaryBalance = accountValue.getCurrentCycleCredit()
+                .subtract(accountValue.getCurrentCycleDebit())
                 .add(item.getAmount());
         if (accountValue.getCreditLimit().compareTo(temporaryBalance) < 0) {
             return rejected(item, OVERLIMIT_TRANSACTION, OVERLIMIT_DESCRIPTION);
@@ -76,11 +64,6 @@ public class DailyTransactionValidationProcessor
             return rejected(item, AFTER_ACCOUNT_EXPIRATION, AFTER_ACCOUNT_EXPIRATION_DESCRIPTION);
         }
 
-        if (item.getAmount().signum() >= 0) {
-            state.addCredit(item.getAmount());
-        } else {
-            state.addDebit(item.getAmount());
-        }
         return new ValidatedDailyTransaction(item, xref.get(), accountValue, 0, "");
     }
 
@@ -89,32 +72,5 @@ public class DailyTransactionValidationProcessor
             int reasonCode,
             String reasonDescription) {
         return new ValidatedDailyTransaction(item, null, null, reasonCode, reasonDescription);
-    }
-
-    private static final class CycleState {
-
-        private BigDecimal currentCycleCredit;
-        private BigDecimal currentCycleDebit;
-
-        private CycleState(BigDecimal currentCycleCredit, BigDecimal currentCycleDebit) {
-            this.currentCycleCredit = currentCycleCredit;
-            this.currentCycleDebit = currentCycleDebit;
-        }
-
-        private BigDecimal currentCycleCredit() {
-            return currentCycleCredit;
-        }
-
-        private BigDecimal currentCycleDebit() {
-            return currentCycleDebit;
-        }
-
-        private void addCredit(BigDecimal amount) {
-            currentCycleCredit = currentCycleCredit.add(amount);
-        }
-
-        private void addDebit(BigDecimal amount) {
-            currentCycleDebit = currentCycleDebit.add(amount);
-        }
     }
 }

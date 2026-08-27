@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -111,7 +112,9 @@ class PostTransactionsJobIT {
         assertThat(rejectRepository.findAll())
                 .allSatisfy(reject -> assertThat(reject.getReasonCode())
                         .isIn(100, 101, 102, 103));
-        assertThat(execution.getExitStatus().getExitCode()).isNotEqualTo("COMPLETED");
+        assertThat(execution.getExitStatus().getExitCode())
+                .isEqualTo("COMPLETED_WITH_REJECTS");
+        assertThat(execution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
 
         ExpectedTransaction sample = expected.postedTransactions().get(0);
         Account expectedAccount = expected.accounts().get(sample.accountId());

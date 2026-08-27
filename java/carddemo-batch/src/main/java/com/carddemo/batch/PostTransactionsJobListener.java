@@ -24,7 +24,7 @@ public class PostTransactionsJobListener implements JobExecutionListener {
         LOGGER.info("TRANSACTIONS REJECTED  : {}", rejectCount);
         if (rejectCount > 0 && jobExecution.getStatus() == BatchStatus.COMPLETED) {
             jobExecution.setExitStatus(new ExitStatus(
-                    "FAILED",
+                    "COMPLETED_WITH_REJECTS",
                     "CBTRN02C return code 4: " + rejectCount + " rejected transactions"));
         }
     }
