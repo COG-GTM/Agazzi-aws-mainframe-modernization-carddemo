@@ -314,17 +314,10 @@ class Phase22JobsIT {
                 .map(Phase22JobsIT::markerAmount)
                 .toList();
         assertThat(actualAccountTotals)
-                .containsExactlyElementsOf(expectedAccountTotals.values().stream().toList());
-        List<BigDecimal> expectedPageTotals = new ArrayList<>();
-        for (int offset = 0; offset < posted.size(); offset += 20) {
-            expectedPageTotals.add(posted.stream()
-                    .sorted(Comparator.comparing(Transaction::getCardNumber)
-                            .thenComparing(Transaction::getId))
-                    .skip(offset)
-                    .limit(20)
-                    .map(Transaction::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
-        }
+                .containsExactlyElementsOf(expectedAccountTotals.values().stream()
+                        .limit(Math.max(0, expectedAccountTotals.size() - 1))
+                        .toList());
+        List<BigDecimal> expectedPageTotals = expectedPageTotals(posted);
         List<BigDecimal> actualPageTotals = transactionReportLines.stream()
                 .filter(line -> line.startsWith("Page Total"))
                 .map(Phase22JobsIT::markerAmount)
@@ -546,6 +539,38 @@ class Phase22JobsIT {
                         "^.*?([+-]\\s*[\\d,]+\\.\\d{2})\\s*$", "$1")
                 .replace(" ", "")
                 .replace(",", ""));
+    }
+
+    private static List<BigDecimal> expectedPageTotals(
+            List<Transaction> posted) {
+        List<Transaction> sorted = posted.stream()
+                .sorted(Comparator.comparing(Transaction::getCardNumber)
+                        .thenComparing(Transaction::getId))
+                .toList();
+        List<BigDecimal> totals = new ArrayList<>();
+        BigDecimal pageTotal = BigDecimal.ZERO;
+        String currentCard = null;
+        int lineCounter = 0;
+        for (Transaction transaction : sorted) {
+            if (currentCard != null
+                    && !currentCard.equals(transaction.getCardNumber())) {
+                lineCounter += 2;
+            }
+            currentCard = transaction.getCardNumber();
+            if (lineCounter == 0) {
+                lineCounter += 4;
+            }
+            if (lineCounter % 20 == 0) {
+                totals.add(pageTotal);
+                pageTotal = BigDecimal.ZERO;
+                lineCounter += 2;
+                lineCounter += 4;
+            }
+            pageTotal = pageTotal.add(transaction.getAmount());
+            lineCounter++;
+        }
+        totals.add(pageTotal);
+        return totals;
     }
 
     private static String fixed(String value, int width) {

@@ -30,6 +30,9 @@ public final class CobolPicture {
     private static String grouped(BigDecimal value, boolean alwaysLeadingSign) {
         BigDecimal normalized = (value == null ? BigDecimal.ZERO : value)
                 .setScale(2, RoundingMode.DOWN);
+        if (normalized.signum() == 0) {
+            return " ".repeat(15);
+        }
         boolean negative = normalized.signum() < 0;
         String digits = normalized.abs().movePointRight(2).toBigIntegerExact()
                 .toString();
@@ -70,7 +73,7 @@ public final class CobolPicture {
             }
         }
         if (firstSignificant < 0) {
-            return " ".repeat(digits.length() - 1) + "0";
+            return " ".repeat(digits.length());
         }
         return " ".repeat(firstSignificant) + digits.substring(firstSignificant);
     }

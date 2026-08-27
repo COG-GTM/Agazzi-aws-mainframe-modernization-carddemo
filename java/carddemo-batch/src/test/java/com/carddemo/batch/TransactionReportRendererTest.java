@@ -8,6 +8,7 @@ import com.carddemo.domain.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,11 +87,81 @@ class TransactionReportRendererTest {
                         + "          12.34  "
                         + " ".repeat(19));
         assertThat(lines.get(4)).hasSize(133);
-        assertThat(lines.get(5)).startsWith("Account Total");
+        assertThat(lines.get(5)).startsWith("Page Total");
         assertThat(lines.get(6)).isEqualTo("-".repeat(133));
-        assertThat(lines.get(7)).startsWith("Page Total");
-        assertThat(lines.get(8)).startsWith("Grand Total");
+        assertThat(lines.get(7)).startsWith("Grand Total");
         assertThat(lines).allSatisfy(line -> assertThat(line).hasSize(133));
+    }
+
+    @Test
+    void followsCobolLineCounterAndTotals() {
+        Map<String, CardXref> xrefs = new HashMap<>();
+        CardXref firstXref = new CardXref();
+        firstXref.setCardNumber("0000000000000001");
+        firstXref.setAccountId(42L);
+        xrefs.put(firstXref.getCardNumber(), firstXref);
+        CardXref secondXref = new CardXref();
+        secondXref.setCardNumber("0000000000000002");
+        secondXref.setAccountId(43L);
+        xrefs.put(secondXref.getCardNumber(), secondXref);
+
+        TransactionType type = new TransactionType();
+        type.setType("01");
+        type.setDescription("Purchase");
+        TransactionCategory category = new TransactionCategory();
+        category.setId(new TransactionCategoryId("01", 1));
+        category.setDescription("Retail");
+        List<Transaction> transactions = new ArrayList<>();
+        for (int index = 1; index <= 25; index++) {
+            String cardNumber = index <= 10
+                    ? "0000000000000001"
+                    : "0000000000000002";
+            transactions.add(transaction(
+                    String.format("%016d", index),
+                    cardNumber,
+                    "1.00"));
+        }
+        TransactionReportRenderer renderer = new TransactionReportRenderer(
+                xrefs,
+                Map.of("01", type),
+                Map.of(category.getId(), category),
+                transactions,
+                "2022-01-01",
+                "2022-12-31");
+
+        List<String> lines = renderer.render();
+
+        assertThat(lines).hasSize(40);
+        assertThat(lines.subList(0, 40).stream()
+                .map(TransactionReportRendererTest::lineKind)
+                .toList())
+                .containsExactly(
+                        "report", "blank", "header", "separator",
+                        "detail", "detail", "detail", "detail", "detail",
+                        "detail", "detail", "detail", "detail", "detail",
+                        "account", "separator",
+                        "detail", "detail", "detail", "detail",
+                        "page", "separator",
+                        "report", "blank", "header", "separator",
+                        "detail", "detail", "detail", "detail", "detail",
+                        "detail", "detail", "detail", "detail", "detail",
+                        "detail", "page", "separator", "grand");
+        assertThat(lines.get(4)).isEqualTo(
+                fixed("0000000000000001", 16)
+                        + " "
+                        + fixed("42", 11)
+                        + " "
+                        + "01-Purchase       "
+                        + " 0001-Retail                       "
+                        + " ATM       "
+                        + "    "
+                        + "           1.00  "
+                        + " ".repeat(19));
+        assertThat(lines.get(39)).isEqualTo(
+                fixed("Grand Total", 11)
+                        + ".".repeat(86)
+                        + "+         25.00"
+                        + " ".repeat(21));
     }
 
     @Test
@@ -121,5 +192,44 @@ class TransactionReportRendererTest {
 
     private static String fixed(String value, int width) {
         return value + " ".repeat(width - value.length());
+    }
+
+    private static Transaction transaction(
+            String id,
+            String cardNumber,
+            String amount) {
+        Transaction transaction = new Transaction();
+        transaction.setId(id);
+        transaction.setCardNumber(cardNumber);
+        transaction.setTypeCode("01");
+        transaction.setCategoryCode(1);
+        transaction.setSource("ATM");
+        transaction.setAmount(new BigDecimal(amount));
+        return transaction;
+    }
+
+    private static String lineKind(String line) {
+        if (line.startsWith("DALYREPT")) {
+            return "report";
+        }
+        if (line.isBlank()) {
+            return "blank";
+        }
+        if (line.startsWith("Transaction ID")) {
+            return "header";
+        }
+        if (line.chars().allMatch(character -> character == '-')) {
+            return "separator";
+        }
+        if (line.startsWith("Account Total")) {
+            return "account";
+        }
+        if (line.startsWith("Page Total")) {
+            return "page";
+        }
+        if (line.startsWith("Grand Total")) {
+            return "grand";
+        }
+        return "detail";
     }
 }

@@ -48,40 +48,48 @@ public final class TransactionReportRenderer {
         BigDecimal pageTotal = BigDecimal.ZERO.setScale(2);
         BigDecimal grandTotal = BigDecimal.ZERO.setScale(2);
         String currentCard = null;
-        int detailCount = 0;
+        int lineCounter = 0;
 
         for (Transaction transaction : transactions) {
-            if (lines.isEmpty()) {
-                lines.addAll(headerBlock());
-            }
             if (currentCard != null
                     && !currentCard.equals(transaction.getCardNumber())) {
                 lines.add(accountTotal(accountTotal));
+                lineCounter++;
                 lines.add(separator());
+                lineCounter++;
                 accountTotal = BigDecimal.ZERO.setScale(2);
             }
             currentCard = transaction.getCardNumber();
+
+            if (lines.isEmpty()) {
+                lines.addAll(headerBlock());
+                lineCounter += 4;
+            }
+            if (lineCounter % PAGE_SIZE == 0) {
+                lines.add(pageTotal(pageTotal));
+                grandTotal = grandTotal.add(pageTotal).setScale(2);
+                pageTotal = BigDecimal.ZERO.setScale(2);
+                lineCounter++;
+                lines.add(separator());
+                lineCounter++;
+                lines.addAll(headerBlock());
+                lineCounter += 4;
+            }
+
             lines.add(detail(transaction));
             BigDecimal amount = transaction.getAmount().setScale(2);
             accountTotal = accountTotal.add(amount).setScale(2);
             pageTotal = pageTotal.add(amount).setScale(2);
-            grandTotal = grandTotal.add(amount).setScale(2);
-            detailCount++;
-            if (detailCount == PAGE_SIZE) {
-                lines.add(pageTotal(pageTotal));
-                pageTotal = BigDecimal.ZERO.setScale(2);
-                lines.addAll(headerBlock());
-                detailCount = 0;
-            }
+            lineCounter++;
         }
-        if (!lines.isEmpty()) {
-            lines.add(accountTotal(accountTotal));
-            lines.add(separator());
-            if (detailCount > 0) {
-                lines.add(pageTotal(pageTotal));
-            }
-            lines.add(grandTotal(grandTotal));
-        }
+
+        // Do not reproduce CBTRN03C's stale-record double-add after EOF.
+        lines.add(pageTotal(pageTotal));
+        grandTotal = grandTotal.add(pageTotal).setScale(2);
+        lineCounter++;
+        lines.add(separator());
+        lineCounter++;
+        lines.add(grandTotal(grandTotal));
         return lines;
     }
 

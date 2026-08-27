@@ -133,7 +133,7 @@ represented by a relational card-number query.
 | `POSTTRAN.jcl` | `POSTTRAN` | `CBTRN02C` | Direct relational reader |
 | `INTCALC.jcl` | `INTCALC` | `CBACT04C` | `interest-date` replaces PARM-DATE |
 | `CREASTMT.JCL` | `CREASTMT` | `CBSTM03A` + `CBSTM03B` | IDCAMS/IEFBR14 become writer lifecycle; SORT is relational ordering |
-| `TRANREPT.jcl` | `TRANREPT` | `CBTRN03C` | REPROC/SORT become relational filtering and ordering |
+| `TRANREPT.jcl` | `TRANREPT` | `CBTRN03C` | REPROC/SORT become relational filtering and ordering; the EOF branch's stale-record `ADD TRAN-AMT TO WS-PAGE-TOTAL WS-ACCOUNT-TOTAL` is intentionally omitted, so a real COBOL run's grand total is higher by the last in-range transaction amount |
 | `COMBTRAN.jcl` | `COMBTRAN` | SORT + IDCAMS | Combined transaction master is already relational; explicit no-op step |
 
 GDG generations are not present in Phase 1 inputs and are represented by
