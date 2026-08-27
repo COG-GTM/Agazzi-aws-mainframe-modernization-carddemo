@@ -1,0 +1,1 @@
+package com.carddemo.domain.repository; import com.carddemo.domain.DailyTransaction; import org.springframework.data.jpa.repository.JpaRepository; public interface DailyTransactionRepository extends JpaRepository<DailyTransaction,String>{}
