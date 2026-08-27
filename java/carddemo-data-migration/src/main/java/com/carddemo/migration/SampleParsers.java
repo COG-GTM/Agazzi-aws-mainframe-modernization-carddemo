@@ -1,59 +1,113 @@
 package com.carddemo.migration;
 
-import com.carddemo.domain.*;
+import com.carddemo.domain.Account;
+import com.carddemo.domain.Card;
+import com.carddemo.domain.CardXref;
+import com.carddemo.domain.Customer;
+import com.carddemo.domain.DailyTransaction;
+import com.carddemo.domain.Transaction;
+import com.carddemo.domain.DisclosureGroup;
+import com.carddemo.domain.DisclosureGroupId;
+import com.carddemo.domain.TranCatBalance;
+import com.carddemo.domain.TranCatBalanceId;
+import com.carddemo.domain.TransactionCategory;
+import com.carddemo.domain.TransactionCategoryId;
+import com.carddemo.domain.TransactionType;
 import com.carddemo.domain.util.ZonedDecimalCodec;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public final class SampleParsers {
   private static final FixedWidthLayout ACCOUNT = FixedWidthLayout.of(
-      "acct-id", 0, 11, FixedWidthLayout.Kind.LONG, "active-status", 11, 1, FixedWidthLayout.Kind.TEXT,
-      "current-balance", 12, 12, FixedWidthLayout.Kind.MONEY, "credit-limit", 24, 12, FixedWidthLayout.Kind.MONEY,
-      "cash-credit-limit", 36, 12, FixedWidthLayout.Kind.MONEY, "open-date", 48, 10, FixedWidthLayout.Kind.TEXT,
-      "expiration-date", 58, 10, FixedWidthLayout.Kind.TEXT, "reissue-date", 68, 10, FixedWidthLayout.Kind.TEXT,
-      "current-cycle-credit", 78, 12, FixedWidthLayout.Kind.MONEY, "current-cycle-debit", 90, 12, FixedWidthLayout.Kind.MONEY,
-      "address-zip", 102, 10, FixedWidthLayout.Kind.TEXT, "group-id", 112, 10, FixedWidthLayout.Kind.TEXT);
+      300,
+      FixedWidthLayout.longField("acct-id", 0, 11),
+      FixedWidthLayout.text("active-status", 11, 1),
+      FixedWidthLayout.money("current-balance", 12, 12),
+      FixedWidthLayout.money("credit-limit", 24, 12),
+      FixedWidthLayout.money("cash-credit-limit", 36, 12),
+      FixedWidthLayout.text("open-date", 48, 10),
+      FixedWidthLayout.text("expiration-date", 58, 10),
+      FixedWidthLayout.text("reissue-date", 68, 10),
+      FixedWidthLayout.money("current-cycle-credit", 78, 12),
+      FixedWidthLayout.money("current-cycle-debit", 90, 12),
+      FixedWidthLayout.text("address-zip", 102, 10),
+      FixedWidthLayout.text("group-id", 112, 10));
   private static final FixedWidthLayout CARD = FixedWidthLayout.of(
-      "card-number", 0, 16, FixedWidthLayout.Kind.TEXT, "account-id", 16, 11, FixedWidthLayout.Kind.LONG,
-      "cvv-code", 27, 3, FixedWidthLayout.Kind.INTEGER, "embossed-name", 30, 50, FixedWidthLayout.Kind.TEXT,
-      "expiration-date", 80, 10, FixedWidthLayout.Kind.TEXT, "active-status", 90, 1, FixedWidthLayout.Kind.TEXT);
+      150,
+      FixedWidthLayout.text("card-number", 0, 16),
+      FixedWidthLayout.longField("account-id", 16, 11),
+      FixedWidthLayout.integer("cvv-code", 27, 3),
+      FixedWidthLayout.text("embossed-name", 30, 50),
+      FixedWidthLayout.text("expiration-date", 80, 10),
+      FixedWidthLayout.text("active-status", 90, 1));
   private static final FixedWidthLayout CARD_XREF = FixedWidthLayout.of(
-      "card-number", 0, 16, FixedWidthLayout.Kind.TEXT, "customer-id", 16, 9, FixedWidthLayout.Kind.LONG,
-      "account-id", 25, 11, FixedWidthLayout.Kind.LONG);
+      50,
+      FixedWidthLayout.text("card-number", 0, 16),
+      FixedWidthLayout.longField("customer-id", 16, 9),
+      FixedWidthLayout.longField("account-id", 25, 11));
   private static final FixedWidthLayout CUSTOMER = FixedWidthLayout.of(
-      "customer-id", 0, 9, FixedWidthLayout.Kind.LONG, "first-name", 9, 25, FixedWidthLayout.Kind.TEXT,
-      "middle-name", 34, 25, FixedWidthLayout.Kind.TEXT, "last-name", 59, 25, FixedWidthLayout.Kind.TEXT,
-      "address-line-1", 84, 50, FixedWidthLayout.Kind.TEXT, "address-line-2", 134, 50, FixedWidthLayout.Kind.TEXT,
-      "address-line-3", 184, 50, FixedWidthLayout.Kind.TEXT, "state-code", 234, 2, FixedWidthLayout.Kind.TEXT,
-      "country-code", 236, 3, FixedWidthLayout.Kind.TEXT, "zip", 239, 10, FixedWidthLayout.Kind.TEXT,
-      "phone-1", 249, 15, FixedWidthLayout.Kind.TEXT, "phone-2", 264, 15, FixedWidthLayout.Kind.TEXT,
-      "ssn", 279, 9, FixedWidthLayout.Kind.LONG, "govt-issued-id", 288, 20, FixedWidthLayout.Kind.TEXT,
-      "date-of-birth", 308, 10, FixedWidthLayout.Kind.TEXT, "eft-account-id", 318, 10, FixedWidthLayout.Kind.TEXT,
-      "primary-card-holder", 328, 1, FixedWidthLayout.Kind.TEXT, "fico-credit-score", 329, 3, FixedWidthLayout.Kind.INTEGER);
+      500,
+      FixedWidthLayout.longField("customer-id", 0, 9),
+      FixedWidthLayout.text("first-name", 9, 25),
+      FixedWidthLayout.text("middle-name", 34, 25),
+      FixedWidthLayout.text("last-name", 59, 25),
+      FixedWidthLayout.text("address-line-1", 84, 50),
+      FixedWidthLayout.text("address-line-2", 134, 50),
+      FixedWidthLayout.text("address-line-3", 184, 50),
+      FixedWidthLayout.text("state-code", 234, 2),
+      FixedWidthLayout.text("country-code", 236, 3),
+      FixedWidthLayout.text("zip", 239, 10),
+      FixedWidthLayout.text("phone-1", 249, 15),
+      FixedWidthLayout.text("phone-2", 264, 15),
+      FixedWidthLayout.longField("ssn", 279, 9),
+      FixedWidthLayout.text("govt-issued-id", 288, 20),
+      FixedWidthLayout.text("date-of-birth", 308, 10),
+      FixedWidthLayout.text("eft-account-id", 318, 10),
+      FixedWidthLayout.text("primary-card-holder", 328, 1),
+      FixedWidthLayout.integer("fico-credit-score", 329, 3));
   private static final FixedWidthLayout TRANSACTION = FixedWidthLayout.of(
-      "id", 0, 16, FixedWidthLayout.Kind.TEXT, "type-code", 16, 2, FixedWidthLayout.Kind.TEXT,
-      "category-code", 18, 4, FixedWidthLayout.Kind.INTEGER, "source", 22, 10, FixedWidthLayout.Kind.TEXT,
-      "description", 32, 100, FixedWidthLayout.Kind.TEXT, "amount", 132, 11, FixedWidthLayout.Kind.MONEY,
-      "merchant-id", 143, 9, FixedWidthLayout.Kind.LONG, "merchant-name", 152, 50, FixedWidthLayout.Kind.TEXT,
-      "merchant-city", 202, 50, FixedWidthLayout.Kind.TEXT, "merchant-zip", 252, 10, FixedWidthLayout.Kind.TEXT,
-      "card-number", 262, 16, FixedWidthLayout.Kind.TEXT, "original-timestamp", 278, 26, FixedWidthLayout.Kind.TEXT,
-      "processing-timestamp", 304, 26, FixedWidthLayout.Kind.TEXT);
+      350,
+      FixedWidthLayout.text("id", 0, 16),
+      FixedWidthLayout.text("type-code", 16, 2),
+      FixedWidthLayout.integer("category-code", 18, 4),
+      FixedWidthLayout.text("source", 22, 10),
+      FixedWidthLayout.text("description", 32, 100),
+      FixedWidthLayout.money("amount", 132, 11),
+      FixedWidthLayout.longField("merchant-id", 143, 9),
+      FixedWidthLayout.text("merchant-name", 152, 50),
+      FixedWidthLayout.text("merchant-city", 202, 50),
+      FixedWidthLayout.text("merchant-zip", 252, 10),
+      FixedWidthLayout.text("card-number", 262, 16),
+      FixedWidthLayout.text("original-timestamp", 278, 26),
+      FixedWidthLayout.text("processing-timestamp", 304, 26));
   private static final FixedWidthLayout DISCLOSURE_GROUP = FixedWidthLayout.of(
-      "group-id", 0, 10, FixedWidthLayout.Kind.TEXT, "type-code", 10, 2, FixedWidthLayout.Kind.TEXT,
-      "category-code", 12, 4, FixedWidthLayout.Kind.INTEGER, "interest-rate", 16, 6, FixedWidthLayout.Kind.MONEY);
+      50,
+      FixedWidthLayout.text("group-id", 0, 10),
+      FixedWidthLayout.text("type-code", 10, 2),
+      FixedWidthLayout.integer("category-code", 12, 4),
+      FixedWidthLayout.money("interest-rate", 16, 6));
   private static final FixedWidthLayout TRAN_CAT_BALANCE = FixedWidthLayout.of(
-      "account-id", 0, 11, FixedWidthLayout.Kind.LONG, "type-code", 11, 2, FixedWidthLayout.Kind.TEXT,
-      "category-code", 13, 4, FixedWidthLayout.Kind.INTEGER, "balance", 17, 11, FixedWidthLayout.Kind.MONEY);
+      50,
+      FixedWidthLayout.longField("account-id", 0, 11),
+      FixedWidthLayout.text("type-code", 11, 2),
+      FixedWidthLayout.integer("category-code", 13, 4),
+      FixedWidthLayout.money("balance", 17, 11));
   private static final FixedWidthLayout TRANSACTION_CATEGORY = FixedWidthLayout.of(
-      "type-code", 0, 2, FixedWidthLayout.Kind.TEXT, "category-code", 2, 4, FixedWidthLayout.Kind.INTEGER,
-      "description", 6, 50, FixedWidthLayout.Kind.TEXT);
+      60,
+      FixedWidthLayout.text("type-code", 0, 2),
+      FixedWidthLayout.integer("category-code", 2, 4),
+      FixedWidthLayout.text("description", 6, 50));
   private static final FixedWidthLayout TRANSACTION_TYPE = FixedWidthLayout.of(
-      "type", 0, 2, FixedWidthLayout.Kind.TEXT, "description", 2, 50, FixedWidthLayout.Kind.TEXT);
+      60,
+      FixedWidthLayout.text("type", 0, 2),
+      FixedWidthLayout.text("description", 2, 50));
 
   private SampleParsers() {}
 
@@ -188,6 +242,24 @@ public final class SampleParsers {
       value.setProcessingTimestamp(text(TRANSACTION, line, "processing-timestamp"));
       return value;
     });
+  }
+
+  public static String serializeDailyTransaction(DailyTransaction value) {
+    Map<String, Object> fields = new HashMap<>();
+    fields.put("id", value.getId());
+    fields.put("type-code", value.getTypeCode());
+    fields.put("category-code", value.getCategoryCode());
+    fields.put("source", value.getSource());
+    fields.put("description", value.getDescription());
+    fields.put("amount", value.getAmount());
+    fields.put("merchant-id", value.getMerchantId());
+    fields.put("merchant-name", value.getMerchantName());
+    fields.put("merchant-city", value.getMerchantCity());
+    fields.put("merchant-zip", value.getMerchantZip());
+    fields.put("card-number", value.getCardNumber());
+    fields.put("original-timestamp", value.getOriginalTimestamp());
+    fields.put("processing-timestamp", value.getProcessingTimestamp());
+    return TRANSACTION.format(fields);
   }
 
   public static List<Transaction> transactions(Path dir) throws IOException {
