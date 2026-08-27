@@ -9,6 +9,10 @@ import com.carddemo.domain.DisclosureGroup;
 import com.carddemo.domain.DisclosureGroupId;
 import com.carddemo.domain.TranCatBalance;
 import com.carddemo.domain.Transaction;
+import com.carddemo.domain.TransactionCategory;
+import com.carddemo.domain.TransactionCategoryId;
+import com.carddemo.domain.TransactionType;
+import com.carddemo.domain.util.CobolPicture;
 import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CardRepository;
 import com.carddemo.domain.repository.CardXrefRepository;
@@ -18,6 +22,8 @@ import com.carddemo.domain.repository.DailyTransactionRejectRepository;
 import com.carddemo.domain.repository.DisclosureGroupRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import com.carddemo.domain.repository.TransactionCategoryRepository;
+import com.carddemo.domain.repository.TransactionTypeRepository;
 import com.carddemo.migration.CardDemoLoader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
@@ -41,6 +47,8 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -112,6 +120,12 @@ class Phase22JobsIT {
     private TransactionRepository transactions;
 
     @Autowired
+    private TransactionTypeRepository transactionTypes;
+
+    @Autowired
+    private TransactionCategoryRepository transactionCategories;
+
+    @Autowired
     private DailyTransactionRejectRepository rejects;
 
     @Autowired
@@ -166,21 +180,21 @@ class Phase22JobsIT {
                         .toList());
         assertOrderedReport(
                 cardReport,
-                "CARD-NUMBER",
+                null,
                 cards.findAll().stream()
                         .map(Card::getCardNumber)
                         .sorted()
                         .toList());
         assertOrderedReport(
                 xrefReport,
-                "XREF-CARD-NUM",
+                null,
                 xrefs.findAll().stream()
                         .map(CardXref::getCardNumber)
                         .sorted()
                         .toList());
         assertOrderedReport(
                 customerReport,
-                "CUST-ID",
+                null,
                 customers.findAll().stream()
                         .map(Customer::getCustomerId)
                         .sorted()
@@ -219,6 +233,59 @@ class Phase22JobsIT {
                 "output", transactionReport.toString());
         List<String> transactionReportLines = Files.readAllLines(transactionReport);
         List<String> reportDetails = detailLines(transactionReportLines);
+        assertThat(transactionReportLines.get(0))
+                .isEqualTo("START OF EXECUTION OF PROGRAM CBTRN03C");
+        assertThat(transactionReportLines.get(1)).isEqualTo(
+                fixed("DALYREPT", 38)
+                        + fixed("Daily Transaction Report", 41)
+                        + fixed("Date Range: ", 12)
+                        + fixed("0000-01-01", 10)
+                        + fixed(" to ", 4)
+                        + fixed("9999-12-31", 10)
+                        + " ".repeat(18));
+        assertThat(transactionReportLines.get(2)).isEqualTo(" ".repeat(133));
+        assertThat(transactionReportLines.get(3)).isEqualTo(
+                fixed("Transaction ID", 17)
+                        + fixed("Account ID", 12)
+                        + fixed("Transaction Type", 19)
+                        + fixed("Tran Category", 35)
+                        + fixed("Tran Source", 14)
+                        + " "
+                        + fixed("        Amount", 16)
+                        + " ".repeat(19));
+        assertThat(transactionReportLines.get(4)).isEqualTo("-".repeat(133));
+        Transaction knownReportTransaction = posted.stream()
+                .sorted(Comparator.comparing(Transaction::getCardNumber)
+                        .thenComparing(Transaction::getId))
+                .findFirst()
+                .orElseThrow();
+        CardXref knownReportXref = xrefs.findById(
+                knownReportTransaction.getCardNumber()).orElseThrow();
+        TransactionType knownType = transactionTypes.findById(
+                knownReportTransaction.getTypeCode()).orElseThrow();
+        TransactionCategory knownCategory = transactionCategories.findById(
+                new TransactionCategoryId(
+                        knownReportTransaction.getTypeCode(),
+                        knownReportTransaction.getCategoryCode())).orElseThrow();
+        assertThat(reportDetails.get(0)).isEqualTo(
+                fixed(knownReportTransaction.getId(), 16)
+                        + " "
+                        + fixed(String.valueOf(knownReportXref.getAccountId()), 11)
+                        + " "
+                        + fixed(knownReportTransaction.getTypeCode(), 2)
+                        + "-"
+                        + fixed(knownType.getDescription(), 15)
+                        + " "
+                        + String.format("%04d", knownReportTransaction.getCategoryCode())
+                        + "-"
+                        + fixed(knownCategory.getDescription(), 29)
+                        + " "
+                        + fixed(knownReportTransaction.getSource(), 10)
+                        + "    "
+                        + CobolPicture.signedLeading(knownReportTransaction.getAmount())
+                        + "  "
+                        + " ".repeat(19));
+        assertThat(reportDetails).allSatisfy(line -> assertThat(line).hasSize(133));
         List<String> expectedTransactionIds = posted.stream()
                 .sorted(Comparator.comparing(Transaction::getCardNumber)
                         .thenComparing(Transaction::getId))
@@ -229,8 +296,9 @@ class Phase22JobsIT {
                 .map(line -> line.substring(0, 16))
                 .toList()).containsExactlyElementsOf(expectedTransactionIds);
         assertThat(transactionReportLines)
-                .anyMatch(line -> line.endsWith(ReportSupport.money(expectedGrandTotal))
-                        && line.startsWith("Grand Total"));
+                .anyMatch(line -> line.startsWith("Grand Total")
+                        && line.contains(
+                        CobolPicture.signedLeadingAlways(expectedGrandTotal)));
         Map<String, BigDecimal> expectedAccountTotals = new LinkedHashMap<>();
         for (Transaction transaction : posted.stream()
                 .sorted(Comparator.comparing(Transaction::getCardNumber)
@@ -247,7 +315,7 @@ class Phase22JobsIT {
                 .toList();
         assertThat(actualAccountTotals)
                 .containsExactlyElementsOf(expectedAccountTotals.values().stream().toList());
-        List<BigDecimal> expectedPageTotals = new java.util.ArrayList<>();
+        List<BigDecimal> expectedPageTotals = new ArrayList<>();
         for (int offset = 0; offset < posted.size(); offset += 20) {
             expectedPageTotals.add(posted.stream()
                     .sorted(Comparator.comparing(Transaction::getCardNumber)
@@ -278,13 +346,14 @@ class Phase22JobsIT {
                 .hasSize(boundaryTransactions.size());
         assertThat(Files.readAllLines(boundaryReport))
                 .anyMatch(line -> line.startsWith("Grand Total")
-                        && line.endsWith(ReportSupport.money(boundaryTransactions.stream()
-                        .map(Transaction::getAmount)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add))));
+                        && line.contains(CobolPicture.signedLeadingAlways(
+                        boundaryTransactions.stream()
+                                .map(Transaction::getAmount)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add))));
 
         Map<Long, Account> accountsBeforeInterest = accounts.findAll().stream()
                 .collect(Collectors.toMap(Account::getAcctId, Function.identity()));
-        Map<Long, BigDecimal> expectedInterest = new java.util.HashMap<>();
+        Map<Long, BigDecimal> expectedInterest = new HashMap<>();
         int expectedGeneratedCount = 0;
         boolean foundDefaultFallback = false;
         for (TranCatBalance balance : balances.findAll()) {
@@ -364,19 +433,50 @@ class Phase22JobsIT {
         BigDecimal knownTotal = knownTransactions.stream()
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        int statementStart = textStatement.indexOf(
-                "Statement for Account Number: " + knownAccount.getAcctId());
-        int statementEnd = textStatement.indexOf(
-                "START OF STATEMENT", statementStart + 1);
-        String knownStatement = textStatement.substring(
-                statementStart,
-                statementEnd < 0 ? textStatement.length() : statementEnd);
-        assertThat(knownStatement).contains("Total EXP:");
-        assertThat(knownStatement.lines())
+        String knownAccountLine = "Account ID         :"
+                + knownAccount.getAcctId();
+        List<String> textLines = textStatement.lines().toList();
+        int accountLineIndex = -1;
+        for (int index = 0; index < textLines.size(); index++) {
+            if (textLines.get(index).startsWith(knownAccountLine)) {
+                accountLineIndex = index;
+                break;
+            }
+        }
+        int statementStart = -1;
+        for (int index = accountLineIndex; index >= 0; index--) {
+            if (textLines.get(index).contains("START OF STATEMENT")) {
+                statementStart = index;
+                break;
+            }
+        }
+        int statementEnd = textLines.size();
+        for (int index = statementStart + 1; index < textLines.size(); index++) {
+            if (textLines.get(index).contains("START OF STATEMENT")) {
+                statementEnd = index;
+                break;
+            }
+        }
+        List<String> knownStatement = textLines.subList(
+                statementStart, statementEnd);
+        String expectedAccountLine = knownAccountLine
+                + " ".repeat(20 - String.valueOf(knownAccount.getAcctId()).length())
+                + " ".repeat(40);
+        String expectedBalanceLine = "Current Balance    :"
+                + CobolPicture.unsignedTrailingSign(
+                knownAccount.getCurrentBalance())
+                + " ".repeat(7 + 40);
+        assertThat(knownStatement).contains(
+                "*******************************START OF STATEMENT*******************************",
+                expectedAccountLine,
+                expectedBalanceLine);
+        assertThat(knownStatement)
                 .anyMatch(line -> line.startsWith("Total EXP:")
-                        && line.endsWith(ReportSupport.money(knownTotal)));
+                        && line.equals("Total EXP:" + " ".repeat(56)
+                        + "$" + CobolPicture.signedTrailing(knownTotal)));
         if (!knownTransactions.isEmpty()) {
-            assertThat(knownStatement).contains(knownTransactions.get(0).getId());
+            assertThat(knownStatement).anyMatch(line -> line.startsWith(
+                    knownTransactions.get(0).getId()));
         }
         assertThat(htmlStatement).contains(
                 "<!DOCTYPE html>",
@@ -403,13 +503,35 @@ class Phase22JobsIT {
             List<String> expectedIds)
             throws Exception {
         List<String> lines = Files.readAllLines(path);
-        List<String> records = lines.stream()
-                .filter(line -> line.startsWith(marker))
-                .toList();
+        List<String> records;
+        List<String> actualIds;
+        if (marker == null) {
+            int width = expectedIds == null || expectedIds.isEmpty()
+                    ? 0
+                    : switch (path.getFileName().toString()) {
+                        case "phase22-cards.txt" -> 150;
+                        case "phase22-xrefs.txt" -> 50;
+                        case "phase22-customers.txt" -> 500;
+                        default -> 0;
+                    };
+            records = lines.stream().filter(line -> line.length() == width).toList();
+            actualIds = records.stream()
+                    .map(line -> switch (width) {
+                        case 150 -> line.substring(0, 16).trim();
+                        case 50 -> line.substring(0, 16).trim();
+                        case 500 -> line.substring(0, 9).trim();
+                        default -> "";
+                    })
+                    .toList();
+        } else {
+            records = lines.stream()
+                    .filter(line -> line.startsWith(marker))
+                    .toList();
+            actualIds = records.stream()
+                    .map(line -> line.substring(line.indexOf(':') + 1).trim())
+                    .toList();
+        }
         assertThat(records).hasSize(expectedIds.size());
-        List<String> actualIds = records.stream()
-                .map(line -> line.substring(line.indexOf(':') + 1).trim())
-                .toList();
         assertThat(actualIds).containsExactlyElementsOf(expectedIds);
     }
 
@@ -421,6 +543,16 @@ class Phase22JobsIT {
 
     private static BigDecimal markerAmount(String line) {
         return new BigDecimal(line.replaceFirst(
-                "^.*?(-?\\d+\\.\\d{2})$", "$1"));
+                        "^.*?([+-]\\s*[\\d,]+\\.\\d{2})\\s*$", "$1")
+                .replace(" ", "")
+                .replace(",", ""));
+    }
+
+    private static String fixed(String value, int width) {
+        String normalized = value == null ? "" : value;
+        if (normalized.length() > width) {
+            return normalized.substring(0, width);
+        }
+        return normalized + " ".repeat(width - normalized.length());
     }
 }

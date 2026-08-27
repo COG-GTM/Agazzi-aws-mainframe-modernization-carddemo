@@ -2,6 +2,7 @@ package com.carddemo.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -18,7 +19,7 @@ import java.nio.file.Path;
 public class CreateStatementsJobConfiguration {
 
     @Bean("statementTextWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> statementTextWriter(
             @Value("#{jobParameters['statement-text']}") String output) {
         return ReportSupport.writer(Path.of(
@@ -26,7 +27,7 @@ public class CreateStatementsJobConfiguration {
     }
 
     @Bean("statementHtmlWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> statementHtmlWriter(
             @Value("#{jobParameters['statement-html']}") String output) {
         return ReportSupport.writer(Path.of(

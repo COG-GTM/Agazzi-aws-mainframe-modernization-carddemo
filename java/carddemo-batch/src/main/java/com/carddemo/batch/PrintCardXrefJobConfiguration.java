@@ -4,6 +4,7 @@ import com.carddemo.domain.CardXref;
 import com.carddemo.domain.repository.CardXrefRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -22,7 +23,7 @@ import java.util.List;
 public class PrintCardXrefJobConfiguration {
 
     @Bean("cardXrefReportWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> cardXrefReportWriter(
             @Value("#{jobParameters['output']}") String output) {
         return ReportSupport.writer(Path.of(output == null ? "card-xref-report.txt" : output));
@@ -41,11 +42,8 @@ public class PrintCardXrefJobConfiguration {
                         () -> xrefs.findAll().stream()
                                 .sorted(Comparator.comparing(CardXref::getCardNumber))
                                 .toList(),
-                        xref -> List.of(
-                                "XREF-CARD-NUM          : " + xref.getCardNumber(),
-                                "XREF-CUST-ID           : " + xref.getCustomerId(),
-                                "XREF-ACCT-ID           : " + xref.getAccountId(),
-                                "-------------------------------------------------")), transactionManager)
+                        xref -> List.of(ReportSupport.xrefRecord(xref))),
+                        transactionManager)
                 .build();
     }
 

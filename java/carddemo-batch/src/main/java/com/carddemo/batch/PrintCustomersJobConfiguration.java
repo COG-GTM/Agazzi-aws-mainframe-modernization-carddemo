@@ -4,6 +4,7 @@ import com.carddemo.domain.Customer;
 import com.carddemo.domain.repository.CustomerRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -22,7 +23,7 @@ import java.util.List;
 public class PrintCustomersJobConfiguration {
 
     @Bean("customerReportWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> customerReportWriter(
             @Value("#{jobParameters['output']}") String output) {
         return ReportSupport.writer(Path.of(output == null ? "customer-report.txt" : output));
@@ -41,19 +42,8 @@ public class PrintCustomersJobConfiguration {
                         () -> customers.findAll().stream()
                                 .sorted(Comparator.comparing(Customer::getCustomerId))
                                 .toList(),
-                        customer -> List.of(
-                                "CUST-ID                 : " + customer.getCustomerId(),
-                                "CUST-FIRST-NAME         : " + customer.getFirstName(),
-                                "CUST-MIDDLE-NAME        : " + customer.getMiddleName(),
-                                "CUST-LAST-NAME          : " + customer.getLastName(),
-                                "CUST-ADDR-LINE-1        : " + customer.getAddressLine1(),
-                                "CUST-ADDR-LINE-2        : " + customer.getAddressLine2(),
-                                "CUST-ADDR-LINE-3        : " + customer.getAddressLine3(),
-                                "CUST-ADDR-STATE-CD      : " + customer.getStateCode(),
-                                "CUST-ADDR-COUNTRY-CD    : " + customer.getCountryCode(),
-                                "CUST-ADDR-ZIP           : " + customer.getZip(),
-                                "CUST-FICO-CREDIT-SCORE  : " + customer.getFicoCreditScore(),
-                                "-------------------------------------------------")), transactionManager)
+                        customer -> List.of(ReportSupport.customerRecord(customer))),
+                        transactionManager)
                 .build();
     }
 

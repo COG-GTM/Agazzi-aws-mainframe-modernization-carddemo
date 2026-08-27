@@ -14,6 +14,7 @@ import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TransactionRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,7 +34,7 @@ import java.util.List;
 public class ReadDailyTransactionsJobConfiguration {
 
     @Bean("dailyReadReportWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> dailyReadReportWriter(
             @Value("#{jobParameters['output']}") String output) {
         return ReportSupport.writer(Path.of(output == null ? "daily-transaction-report.txt" : output));
@@ -82,7 +84,7 @@ public class ReadDailyTransactionsJobConfiguration {
             CardRepository cards,
             CustomerRepository customers,
             TransactionRepository transactions) {
-        List<String> lines = new java.util.ArrayList<>();
+        List<String> lines = new ArrayList<>();
         lines.add("DALYTRAN-ID            : " + daily.getId());
         lines.add("DALYTRAN-CARD-NUM      : " + daily.getCardNumber());
         lines.add("DALYTRAN-AMT           : " + ReportSupport.money(daily.getAmount()));

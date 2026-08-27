@@ -4,6 +4,7 @@ import com.carddemo.domain.Card;
 import com.carddemo.domain.repository.CardRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -22,7 +23,7 @@ import java.util.List;
 public class PrintCardsJobConfiguration {
 
     @Bean("cardReportWriter")
-    @org.springframework.batch.core.configuration.annotation.StepScope
+    @StepScope
     public FlatFileItemWriter<String> cardReportWriter(
             @Value("#{jobParameters['output']}") String output) {
         return ReportSupport.writer(Path.of(output == null ? "card-report.txt" : output));
@@ -41,14 +42,8 @@ public class PrintCardsJobConfiguration {
                         () -> cards.findAll().stream()
                                 .sorted(Comparator.comparing(Card::getCardNumber))
                                 .toList(),
-                        card -> List.of(
-                                "CARD-NUMBER             : " + card.getCardNumber(),
-                                "CARD-ACCT-ID            : " + card.getAccountId(),
-                                "CARD-CVV-CD             : " + card.getCvvCode(),
-                                "CARD-EMBOSSED-NAME      : " + card.getEmbossedName(),
-                                "CARD-EXPIRAION-DATE     : " + card.getExpirationDate(),
-                                "CARD-ACTIVE-STATUS      : " + card.getActiveStatus(),
-                                "-------------------------------------------------")), transactionManager)
+                        card -> List.of(ReportSupport.cardRecord(card))),
+                        transactionManager)
                 .build();
     }
 

@@ -10,6 +10,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 final class ReportTasklet<T> implements Tasklet {
 
@@ -36,12 +37,12 @@ final class ReportTasklet<T> implements Tasklet {
         List<String> detailLines = records.get().stream()
                 .flatMap(record -> renderer.apply(record).stream())
                 .toList();
-        List<String> lines = java.util.stream.Stream.concat(
-                        java.util.stream.Stream.of(
+        List<String> lines = Stream.concat(
+                        Stream.of(
                                 "START OF EXECUTION OF PROGRAM " + program),
-                        java.util.stream.Stream.concat(
+                        Stream.concat(
                                 detailLines.stream(),
-                                java.util.stream.Stream.of(
+                                Stream.of(
                                         "END OF EXECUTION OF PROGRAM " + program)))
                 .toList();
         writer.write(new Chunk<>(lines));

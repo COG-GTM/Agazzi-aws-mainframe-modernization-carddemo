@@ -32,6 +32,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ class PostTransactionsJobIT {
         }
 
         int rejectCount = 0;
-        List<ExpectedTransaction> posted = new java.util.ArrayList<>();
+        List<ExpectedTransaction> posted = new ArrayList<>();
         for (DailyTransaction transaction : transactions) {
             CardXref xref = xrefByCard.get(transaction.getCardNumber());
             if (xref == null) {

@@ -3,6 +3,7 @@ package com.carddemo.batch;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -88,7 +89,7 @@ public class CompositeJobConfiguration {
         Tasklet tasklet = (contribution, context) -> {
             org.slf4j.LoggerFactory.getLogger(CompositeJobConfiguration.class)
                     .debug(message);
-            return RepeatStatus.FINISHED;
+                return RepeatStatus.FINISHED;
         };
         return new StepBuilder(name, repository)
                 .tasklet(tasklet, transactionManager)
