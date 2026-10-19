@@ -10,7 +10,9 @@ class ScreenTextTest {
   void spacesOrLowValues() {
     assertThat(ScreenText.isBlank(null)).isTrue();
     assertThat(ScreenText.isBlank("")).isTrue();
-    assertThat(ScreenText.isBlank("  \u0000")).isTrue();
+    assertThat(ScreenText.isBlank("   ")).isTrue();
+    assertThat(ScreenText.isBlank("\u0000\u0000")).isTrue();
+    assertThat(ScreenText.isBlank("  \u0000")).as("mixed is not = SPACES / LOW-VALUES").isFalse();
     assertThat(ScreenText.isBlank(" a")).isFalse();
   }
 

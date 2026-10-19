@@ -230,6 +230,20 @@ class ScreenSecurityMockMvcTest {
   }
 
   @Test
+  void crossSiteFormPostsCannotSignOn() throws Exception {
+    mvc.perform(
+            post("/api/v1/screens/cosgn00")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content("action=ENTER&USERID=USER0001&PASSWD=PASSWORD"))
+        .andExpect(status().isUnsupportedMediaType());
+    mvc.perform(
+            post("/api/v1/screens/cosgn00")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(body("ENTER", "{\"USERID\":\"USER0001\",\"PASSWD\":\"PASSWORD\"}")))
+        .andExpect(status().isUnsupportedMediaType());
+  }
+
+  @Test
   void missingActionIsABadRequest() throws Exception {
     mvc.perform(
             post("/api/v1/screens/cosgn00")

@@ -5,18 +5,15 @@ public final class ScreenText {
 
   private ScreenText() {}
 
-  /** COBOL {@code = SPACES OR LOW-VALUES} on a received map field ({@code null} = not sent). */
+  /**
+   * COBOL {@code = SPACES OR LOW-VALUES} on a received map field ({@code null} = not sent): the
+   * whole field is all spaces or all low-values; a mix of the two is not blank.
+   */
   public static boolean isBlank(String s) {
-    if (s == null) {
+    if (s == null || s.isEmpty()) {
       return true;
     }
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (c != ' ' && c != '\u0000') {
-        return false;
-      }
-    }
-    return true;
+    return s.chars().allMatch(c -> c == ' ') || s.chars().allMatch(c -> c == 0);
   }
 
   /** MOVE into PIC X(n): truncate on the right, pad with spaces. */

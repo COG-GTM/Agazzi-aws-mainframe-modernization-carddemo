@@ -67,6 +67,9 @@ class Cosgn00cServiceTest {
     assertThat(r.response().fieldErrors())
         .containsExactly(new FieldError("USERID", "Please enter User ID ..."));
     assertThat(r.response().data().errmsg()).isEqualTo("Please enter User ID ...");
+    assertThat(enter("  \u0000", "PASSWORD").response().messages().get(0).text())
+        .as("mixed spaces/low-values is a value: USRSEC lookup")
+        .isEqualTo("User not found. Try again ...");
     var p = enter("admin001", "\u0000\u0000");
     assertThat(p.response().messages().get(0).text()).isEqualTo("Please enter Password ...");
     assertThat(p.response().fieldErrors()).extracting(FieldError::field).containsExactly("PASSWD");
