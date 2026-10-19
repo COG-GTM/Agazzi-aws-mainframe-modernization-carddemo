@@ -1,6 +1,7 @@
 package com.carddemo.batch.orchestration.launch;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -34,17 +35,24 @@ public class AsyncJobSubmitter {
           synchronized (this) {
             inFlight++;
           }
+          AtomicBoolean finished = new AtomicBoolean();
+          Runnable doneOnce =
+              () -> {
+                if (finished.compareAndSet(false, true)) {
+                  done();
+                }
+              };
           try {
             executor.execute(
                 () -> {
                   try {
                     task.run();
                   } finally {
-                    done();
+                    doneOnce.run();
                   }
                 });
           } catch (RuntimeException e) {
-            done();
+            doneOnce.run();
             throw e;
           }
         });
