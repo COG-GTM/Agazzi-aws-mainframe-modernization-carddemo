@@ -18,6 +18,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,9 +78,9 @@ public class PostingJobsConfiguration {
         .start(
             step(
                 "STEP15",
-                new PostingTasklets.PosttranStep15(datasets, generations, clock),
+                new PostingTasklets.PosttranStep15(datasets, generations, clock, tx),
                 repo,
-                tx))
+                new ResourcelessTransactionManager()))
         .build();
   }
 

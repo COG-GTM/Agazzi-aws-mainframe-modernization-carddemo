@@ -8,6 +8,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,7 +26,8 @@ public class IntcalcJobConfig {
       IntcalcTasklet tasklet,
       B2StepListener listener) {
     return new StepBuilder("STEP15", repository)
-        .tasklet(tasklet, transactionManager)
+        .tasklet(
+            tasklet.chunkTransactions(transactionManager), new ResourcelessTransactionManager())
         .listener(listener)
         .build();
   }

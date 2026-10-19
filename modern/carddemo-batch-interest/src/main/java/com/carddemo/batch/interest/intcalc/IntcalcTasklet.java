@@ -29,6 +29,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * INTCALC STEP15 = CBACT04C. Reads TCATBALF in key order, applies the disclosure-group rate per
@@ -57,6 +58,8 @@ public class IntcalcTasklet implements Tasklet {
   static final int CHUNK_ACCOUNTS = 500;
 
   @PersistenceContext private EntityManager em;
+  private PlatformTransactionManager chunkTx;
+  private ChunkTransaction chunks;
 
   private final TranCatBalanceRepository balances;
   private final AccountRepository accounts;
@@ -83,8 +86,34 @@ public class IntcalcTasklet implements Tasklet {
     this.sysout = sysout;
   }
 
+  /**
+   * The step then runs without a transaction and every {@link #CHUNK_ACCOUNTS} accounts are
+   * committed (finding 5B F3).
+   */
+  public IntcalcTasklet chunkTransactions(PlatformTransactionManager tm) {
+    this.chunkTx = tm;
+    return this;
+  }
+
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
+    if (chunkTx == null) {
+      return calculate(contribution, chunkContext);
+    }
+    chunks = new ChunkTransaction(chunkTx);
+    try {
+      RepeatStatus status = calculate(contribution, chunkContext);
+      chunks.commit();
+      return status;
+    } catch (RuntimeException e) {
+      chunks.rollback();
+      throw e;
+    } finally {
+      chunks = null;
+    }
+  }
+
+  private RepeatStatus calculate(StepContribution contribution, ChunkContext chunkContext) {
     String parmDate =
         pad(
             chunkContext.getStepContext().getStepExecution().getJobParameters().getString(PARM),
@@ -141,6 +170,9 @@ public class IntcalcTasklet implements Tasklet {
   private void flushChunk() {
     if (em != null) {
       em.flush();
+      if (chunks != null) {
+        chunks.run();
+      }
       em.clear();
     }
   }

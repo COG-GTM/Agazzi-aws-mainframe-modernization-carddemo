@@ -8,6 +8,7 @@ import com.carddemo.batch.posting.dataset.FileDatasets;
 import com.carddemo.batch.posting.dataset.LineSequentialFile;
 import com.carddemo.batch.posting.dataset.PostingDatasets;
 import com.carddemo.batch.posting.idcams.TransactionUtilities;
+import com.carddemo.batch.posting.support.ChunkTransaction;
 import com.carddemo.batch.posting.support.CobolAbendException;
 import com.carddemo.batch.posting.support.ReturnCodes;
 import com.carddemo.batch.posting.support.Sysout;
@@ -29,6 +30,7 @@ import javax.sql.DataSource;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /** Tasklets of the B1 JCL steps (one class per {@code EXEC}). */
 final class PostingTasklets {
@@ -45,18 +47,52 @@ final class PostingTasklets {
     private final PostingDatasetsFactory datasets;
     private final GenerationStore generations;
     private final BusinessClock clock;
+    private final PlatformTransactionManager chunkTx;
 
     PosttranStep15(
         PostingDatasetsFactory datasets, GenerationStore generations, BusinessClock clock) {
+      this(datasets, generations, clock, null);
+    }
+
+    /**
+     * @param chunkTx when not null the step runs without a transaction and the posting commits
+     *     every {@link Cbtrn02cPoster#CHUNK_SIZE} records (finding 5B F3)
+     */
+    PosttranStep15(
+        PostingDatasetsFactory datasets,
+        GenerationStore generations,
+        BusinessClock clock,
+        PlatformTransactionManager chunkTx) {
       super(Cbtrn02cPoster.PROGRAM);
       this.datasets = datasets;
       this.generations = generations;
       this.clock = clock;
+      this.chunkTx = chunkTx;
     }
 
     @Override
     protected int run(PostingJobParameters params, Sysout sysout, StepExecution step) {
+      if (chunkTx == null) {
+        return post(params, sysout, step, null);
+      }
+      ChunkTransaction chunks = new ChunkTransaction(chunkTx);
+      try {
+        int rc = post(params, sysout, step, chunks);
+        chunks.commit();
+        step.getExecutionContext().putInt("commits", chunks.commits());
+        return rc;
+      } catch (RuntimeException e) {
+        chunks.rollback();
+        throw e;
+      }
+    }
+
+    private int post(
+        PostingJobParameters params, Sysout sysout, StepExecution step, ChunkTransaction chunks) {
       PostingDatasets ds = datasets.open(params);
+      if (chunks != null) {
+        ds.commitOnCheckpoint(chunks);
+      }
       Generation rejs = generations.allocate(Generations.DALYREJS);
       List<String> rejects = new ArrayList<>();
       try {

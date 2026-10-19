@@ -43,6 +43,7 @@ public final class JpaDatasets implements PostingDatasets {
   private final KeyedDataset<CustomerRecord> customers;
   private final KeyedDataset<CardRecord> cards;
   private EntityManager entityManager;
+  private Runnable checkpointCommit;
 
   public JpaDatasets(
       DailyTransactionRepository dailyTransactionRepository,
@@ -187,8 +188,17 @@ public final class JpaDatasets implements PostingDatasets {
   public void checkpoint() {
     if (entityManager != null && entityManager.isJoinedToTransaction()) {
       entityManager.flush();
+      if (checkpointCommit != null) {
+        checkpointCommit.run();
+      }
       entityManager.clear();
     }
+  }
+
+  @Override
+  public PostingDatasets commitOnCheckpoint(Runnable commit) {
+    this.checkpointCommit = commit;
+    return this;
   }
 
   @Override
