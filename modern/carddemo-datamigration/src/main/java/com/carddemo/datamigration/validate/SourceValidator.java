@@ -95,7 +95,7 @@ public final class SourceValidator {
       changed = false;
       Map<Dataset, Set<Long>> rejected = new HashMap<>();
       for (Violation v : out) {
-        if (v.severity() == Severity.ERROR) {
+        if (v.severity() == Severity.ERROR && v.rule() != Rule.DECODE) {
           rejected.computeIfAbsent(v.dataset(), k -> new HashSet<>()).add(v.ordinal());
         }
       }

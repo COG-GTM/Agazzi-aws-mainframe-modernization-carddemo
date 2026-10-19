@@ -130,6 +130,14 @@ public class DataMigrationService {
                     Collectors.mapping(Violation::ordinal, Collectors.toSet())));
     tx.executeWithoutResult(
         s -> {
+          if (run.sources.containsKey(Dataset.USRSEC)) {
+            store.lockUsrsec();
+            if (store.hashedPasswords() > 0) {
+              throw new IllegalStateException(
+                  "USRSEC cutover active (app_user holds {bcrypt} passwords): run usrsecRollback"
+                      + " before re-importing USRSEC");
+            }
+          }
           if (o.mode() == MigrationOptions.Mode.REPLACE) {
             List<Dataset> rev = new ArrayList<>(run.sources.keySet());
             java.util.Collections.reverse(rev);

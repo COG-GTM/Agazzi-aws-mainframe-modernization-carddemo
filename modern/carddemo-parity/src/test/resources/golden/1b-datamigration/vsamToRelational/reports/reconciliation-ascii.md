@@ -1,7 +1,7 @@
 # Reconciliation report — vsamToRelational
 
 - source: `ASCII:app/data/ASCII (no extract for [TRANSACT, USRSEC, USRSEC_ESDS, USRSEC_RRDS])`
-- generated: 2026-10-19-12.41.50.399820
+- generated: 2026-10-19-12.45.24.540877
 - result: **MATCH**
 
 ## Counts and checksums

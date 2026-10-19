@@ -162,6 +162,11 @@ public class DataMigrationConfiguration {
                     throw new IllegalStateException(
                         bad + " file(s) differ: see relational-to-vsam.md");
                   }
+                  if (o.verify() && diffs.isEmpty()) {
+                    throw new IllegalStateException(
+                        "--verify: nothing compared (no exported dataset and no original in"
+                            + " --compare)");
+                  }
                 }))
         .build();
   }

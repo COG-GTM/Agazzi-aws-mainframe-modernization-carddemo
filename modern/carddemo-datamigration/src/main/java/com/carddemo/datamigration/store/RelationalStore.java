@@ -115,9 +115,16 @@ public class RelationalStore implements KeyLookup {
   public long hashedPasswords() {
     Long n =
         jdbc.queryForObject(
-            "SELECT COUNT(*) FROM app_user WHERE sec_usr_pwd LIKE '{%'", Long.class);
+            "SELECT COUNT(*) FROM app_user WHERE sec_usr_pwd LIKE '{bcrypt}%'", Long.class);
     return n == null ? 0 : n;
   }
+
+  /** Transaction-scoped lock serializing USRSEC imports with usrsecToBcrypt / usrsecRollback. */
+  public void lockUsrsec() {
+    jdbc.queryForObject("SELECT pg_advisory_xact_lock(" + USRSEC_LOCK + ")::text", String.class);
+  }
+
+  public static final long USRSEC_LOCK = 0x5553525345434CL;
 
   public long count(Dataset ds) {
     Long n = jdbc.queryForObject("SELECT COUNT(*) FROM " + ds.table(), Long.class);

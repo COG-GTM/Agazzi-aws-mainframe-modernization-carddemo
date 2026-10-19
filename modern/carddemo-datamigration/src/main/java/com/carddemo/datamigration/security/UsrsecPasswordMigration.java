@@ -1,6 +1,7 @@
 package com.carddemo.datamigration.security;
 
 import com.carddemo.contracts.port.BusinessClock;
+import com.carddemo.datamigration.store.RelationalStore;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +42,9 @@ public class UsrsecPasswordMigration {
   public Result migrate() {
     return tx.execute(
         s -> {
+          jdbc.queryForObject(
+              "SELECT pg_advisory_xact_lock(" + RelationalStore.USRSEC_LOCK + ")::text",
+              String.class);
           List<Map<String, Object>> rows =
               jdbc.queryForList("SELECT sec_usr_id, sec_usr_pwd FROM app_user ORDER BY sec_usr_id");
           int migrated = 0;
@@ -49,7 +53,7 @@ public class UsrsecPasswordMigration {
           for (Map<String, Object> r : rows) {
             String id = (String) r.get("sec_usr_id");
             String pwd = (String) r.get("sec_usr_pwd");
-            if (pwd.startsWith("{")) {
+            if (pwd.startsWith(PREFIX)) {
               hashed++;
               continue;
             }
@@ -83,6 +87,9 @@ public class UsrsecPasswordMigration {
   public Result rollback() {
     return tx.execute(
         s -> {
+          jdbc.queryForObject(
+              "SELECT pg_advisory_xact_lock(" + RelationalStore.USRSEC_LOCK + ")::text",
+              String.class);
           int restored =
               jdbc.update(
                   "UPDATE app_user u SET sec_usr_pwd = b.legacy_pwd, version = u.version + 1"

@@ -1,7 +1,7 @@
 # Reconciliation report — vsamToRelational
 
 - source: `EXPORT:app/data/EBCDIC (no extract for [TRANTYPE, TRANCATG, DISCGRP, TCATBALF, DALYTRAN, USRSEC, USRSEC_ESDS, USRSEC_RRDS])`
-- generated: 2026-10-19-12.41.52.270481
+- generated: 2026-10-19-12.45.26.319284
 - result: **MATCH**
 
 ## Counts and checksums
