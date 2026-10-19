@@ -67,11 +67,15 @@ public final class LayoutCodec<T> implements RecordCodec<T> {
 
   @Override
   public T decode(byte[] record) {
+    if (!layout.variableLength() && record.length != layout.length()) {
+      throw new IllegalArgumentException(
+          layout.name() + ": expected " + layout.length() + " bytes, got " + record.length);
+    }
     Ctx ctx = new Ctx(record);
     T value = type.cast(root.decode(ctx, 0));
-    if (ctx.end > record.length) {
+    if (ctx.end != record.length) {
       throw new IllegalArgumentException(
-          layout.name() + ": expected " + ctx.end + " bytes, got " + record.length);
+          layout.name() + ": ODO counters describe " + ctx.end + " bytes, got " + record.length);
     }
     return value;
   }

@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Deterministic generator: copybooks of {@link GenerationSpec} → Java {@code record}s with a {@code
@@ -545,6 +546,10 @@ public final class RecordGenerator {
         sb.append('\n').append(extraBody);
         first = false;
       }
+      if (group.group() && !group.conditions().isEmpty() && alphanumericOnly(items)) {
+        sb.append('\n').append(groupConditions(group, items, indent + "  "));
+        first = false;
+      }
       for (LayoutNode c : items) {
         if (!c.group() && !c.table() && !c.conditions().isEmpty()) {
           String member = conditions(c, indent + "  ");
@@ -614,6 +619,39 @@ public final class RecordGenerator {
         return boxed ? "Integer" : "int";
       }
       return boxed ? "Long" : "long";
+    }
+
+    private static boolean alphanumericOnly(List<LayoutNode> items) {
+      return items.stream()
+          .allMatch(
+              c ->
+                  !c.group() && !c.table() && c.usage() == Usage.DISPLAY && !c.picture().numeric());
+    }
+
+    /** 88-levels on an alphanumeric group: tested against the concatenated group value. */
+    private String groupConditions(LayoutNode group, List<LayoutNode> items, String indent) {
+      String value = items.stream().map(componentNames::get).collect(Collectors.joining(" + "));
+      StringBuilder sb = new StringBuilder();
+      for (Condition cond : group.conditions()) {
+        sb.append(indent).append("/** 88 ").append(cond.name()).append(" (group). */\n");
+        sb.append(indent)
+            .append("public boolean is")
+            .append(upperCamel(cond.name()))
+            .append("() {\n")
+            .append(indent)
+            .append("  return ")
+            .append(topName)
+            .append(".LAYOUT.condition(")
+            .append(str(cond.name()))
+            .append(").test(")
+            .append(value)
+            .append(", ")
+            .append(group.length())
+            .append(");\n")
+            .append(indent)
+            .append("}\n\n");
+      }
+      return sb.toString();
     }
 
     private String conditions(LayoutNode c, String indent) {

@@ -133,6 +133,64 @@ class CopybookParserTest {
   }
 
   @Test
+  void longerRedefinitionPushesTheNextItem() {
+    RecordLayout l =
+        CopybookParser.parse(
+                "T",
+                cb("01 R.", "   05 A PIC X(2).", "   05 B REDEFINES A PIC X(4).", "   05 C PIC X."))
+            .get(0);
+    assertThat(node(l, "B").offset()).isZero();
+    assertThat(node(l, "C").offset()).isEqualTo(4);
+    assertThat(l.length()).isEqualTo(5);
+  }
+
+  @Test
+  void decodeRejectsWrongLengthsAndUncountedOdoPayload() {
+    RecordLayout fixed = CopybookParser.parse("T", cb("01 R.", "   05 A PIC X(3).")).get(0);
+    LayoutCodec<Item> codec = LayoutCodec.of(fixed, Item.class, CodecOptions.ASCII);
+    assertThatThrownBy(() -> codec.decode("ABCD".getBytes(StandardCharsets.ISO_8859_1)))
+        .isInstanceOf(IllegalArgumentException.class);
+    RecordLayout odo =
+        CopybookParser.parse(
+                "T",
+                cb(
+                    "01 ODO-REC.",
+                    "   05 CNT PIC 9(2).",
+                    "   05 ITEMS OCCURS 1 TO 5 TIMES DEPENDING ON CNT.",
+                    "      10 CODE PIC X(3)."))
+            .get(0);
+    LayoutCodec<Odo> oc = LayoutCodec.of(odo, Odo.class, CodecOptions.ASCII);
+    assertThatThrownBy(() -> oc.decode("01AAABBB".getBytes(StandardCharsets.ISO_8859_1)))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void highValuesConditionMatchesInBothCharsets() {
+    RecordLayout l =
+        CopybookParser.parse(
+                "T", cb("01 R.", "   05 F PIC X(2).", "      88 F-HIGH VALUE HIGH-VALUES."))
+            .get(0);
+    byte[] ff = {(byte) 0xFF, (byte) 0xFF};
+    for (CodecOptions o : List.of(CodecOptions.ASCII, CodecOptions.EBCDIC)) {
+      Item decoded = LayoutCodec.of(l, Item.class, o).decode(ff);
+      assertThat(l.condition("F-HIGH").test(decoded.code(), 2)).as(o.toString()).isTrue();
+    }
+    assertThat(l.condition("F-HIGH").test("  ", 2)).isFalse();
+  }
+
+  @Test
+  void groupLevelConditionsAreGenerated() {
+    var valid =
+        new com.carddemo.copybook.generated.core.DateEditWorkArea.WsEditDateFlgs("\0", "\0", "\0");
+    assertThat(valid.isWsEditDateIsValid()).isTrue();
+    assertThat(valid.isWsEditDateIsInvalid()).isFalse();
+    var invalid =
+        new com.carddemo.copybook.generated.core.DateEditWorkArea.WsEditDateFlgs("0", "0", "0");
+    assertThat(invalid.isWsEditDateIsInvalid()).isTrue();
+    assertThat(invalid.isWsEditDateIsValid()).isFalse();
+  }
+
+  @Test
   void floatingPointUsageIsRejected() {
     assertThatThrownBy(() -> CopybookParser.parse("T", cb("01 R.", "   05 X COMP-2.")))
         .isInstanceOf(RuntimeException.class);

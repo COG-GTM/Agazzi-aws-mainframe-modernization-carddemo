@@ -107,6 +107,17 @@ public record DateEditWorkArea(
       // 20 WS-EDIT-DAY PIC X(01) @26 len 1
       String wsEditDay) {
 
+    /** 88 WS-EDIT-DATE-IS-VALID (group). */
+    public boolean isWsEditDateIsValid() {
+      return DateEditWorkArea.LAYOUT.condition("WS-EDIT-DATE-IS-VALID").test(wsEditYearFlg + wsEditMonth + wsEditDay, 3);
+    }
+
+    /** 88 WS-EDIT-DATE-IS-INVALID (group). */
+    public boolean isWsEditDateIsInvalid() {
+      return DateEditWorkArea.LAYOUT.condition("WS-EDIT-DATE-IS-INVALID").test(wsEditYearFlg + wsEditMonth + wsEditDay, 3);
+    }
+
+
     /** 88 FLG-YEAR-ISVALID. */
     public boolean isFlgYearIsvalid() {
       return DateEditWorkArea.LAYOUT.condition("FLG-YEAR-ISVALID").test(wsEditYearFlg, 1);

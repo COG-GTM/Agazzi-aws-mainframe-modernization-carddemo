@@ -37,9 +37,19 @@ public record Condition(String name, List<Range> values) {
    * alphanumerics are compared after padding the literal with spaces to {@code length}, numerics by
    * value.
    */
+  private static final java.util.Set<String> HIGH_VALUES =
+      java.util.Set.of("HIGH-VALUE", "HIGH-VALUES");
+
   public boolean test(Object value, int length) {
     for (Range r : values) {
       if (value instanceof String s) {
+        if (r.single() && HIGH_VALUES.contains(r.from())) {
+          // byte X'FF' decodes to U+00FF in ISO-8859-1 and to U+009F in CP037
+          if (s.length() == length && s.chars().allMatch(ch -> ch == 0xFF || ch == 0x9F)) {
+            return true;
+          }
+          continue;
+        }
         String from = alphanumeric(r.from(), length);
         String to = alphanumeric(r.to(), length);
         if (s.compareTo(from) >= 0 && s.compareTo(to) <= 0) {

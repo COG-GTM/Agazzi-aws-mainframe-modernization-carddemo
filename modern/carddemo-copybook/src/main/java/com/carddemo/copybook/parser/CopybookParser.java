@@ -381,9 +381,8 @@ public final class CopybookParser {
       LayoutNode child = resolve(c, start, usage);
       kids.add(child);
       int childEnd = start + child.totalLength();
-      if (c.entry.redefines() == null) {
-        pos = childEnd;
-      }
+      // the next item starts after the longest view of the REDEFINES family
+      pos = c.entry.redefines() == null ? childEnd : Math.max(pos, childEnd);
       end = Math.max(end, Math.max(pos, childEnd));
     }
     return new LayoutNode(
