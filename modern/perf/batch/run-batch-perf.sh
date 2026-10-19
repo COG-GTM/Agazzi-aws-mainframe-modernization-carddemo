@@ -18,11 +18,11 @@
 #              as the app that created the schema; a different set fails Flyway validation)
 #   JAVA_OPTS  JVM flags for the job JVM (e.g. "-Xmx2g -XX:+UseZGC")
 #   JOB_ARGS   extra Spring args for every job (e.g. "--spring.datasource.hikari.maximum-pool-size=20")
-#   (exit 3 when any job is not OK, after writing the report)
 #   TIMEOUT_S  per-job timeout in seconds (default 3600)
 #   WEB_TYPE   spring.main.web-application-type for the job JVM (default servlet on a random port:
 #              the online security chain needs HttpSecurity; the B5 CLI exit stops the JVM)
 #   RESULTS    output dir              (default modern/target/perf-results/batch-<timestamp>)
+# Exit status: 3 when any job is not OK (FAILED/TIMEOUT/NOT_AVAILABLE), after writing the report.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
