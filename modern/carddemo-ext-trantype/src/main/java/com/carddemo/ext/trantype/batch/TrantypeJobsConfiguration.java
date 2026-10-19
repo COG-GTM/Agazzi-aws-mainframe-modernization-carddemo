@@ -104,6 +104,9 @@ public class TrantypeJobsConfiguration {
             ? ExitStatus.COMPLETED
             : rc < 8 ? new ExitStatus(COMPLETED_WITH_WARNINGS) : ExitStatus.FAILED;
     contribution.setExitStatus(status.addExitDescription(String.format("RC=%04d", rc)));
+    if (rc >= 8) {
+      throw new IllegalStateException(String.format("RC=%04d", rc));
+    }
   }
 
   /** RECFM=F dataset (no line ends, like the GnuCOBOL harness input) or one record per line. */
