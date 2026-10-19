@@ -1,0 +1,78 @@
+# Cutover dataset manifest (Fase 5D): VSAM master <-> PostgreSQL table, shared by
+# Reconcile.java (counts + checksums), ParallelRunCompare.java (table compare) and
+# rollback/relational-to-vsam.sh (relationalToVsam export). Source files are relative to
+# --source-root: `ascii` = app/data/ASCII-style text (one record per line), `ebcdic` =
+# IDCAMS REPRO unload (RECFM=F, CP037, no line ends). `<file>#<DD>` = instream DD of a JCL.
+# seed_empty: see TRANSACT. exclude_columns: columns left out of the checksum (registered deviation in PARITY_EXCEPTIONS).
+datasets:
+  ACCTDATA:
+    vsam: AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS
+    table: account
+    copybook: CVACT01Y
+    ascii: acctdata.txt
+    ebcdic: AWS.M2.CARDDEMO.ACCTDATA.PS
+  CARDDATA:
+    vsam: AWS.M2.CARDDEMO.CARDDATA.VSAM.KSDS
+    table: card
+    copybook: CVACT02Y
+    ascii: carddata.txt
+    ebcdic: AWS.M2.CARDDEMO.CARDDATA.PS
+  CARDXREF:
+    vsam: AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS
+    table: card_xref
+    copybook: CVACT03Y
+    ascii: cardxref.txt
+    ebcdic: AWS.M2.CARDDEMO.CARDXREF.PS
+  CUSTDATA:
+    vsam: AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS
+    table: customer
+    copybook: CVCUS01Y
+    ascii: custdata.txt
+    ebcdic: AWS.M2.CARDDEMO.CUSTDATA.PS
+  TCATBALF:
+    vsam: AWS.M2.CARDDEMO.TCATBALF.VSAM.KSDS
+    table: tran_cat_balance
+    copybook: CVTRA01Y
+    ascii: tcatbal.txt
+    ebcdic: AWS.M2.CARDDEMO.TCATBALF.PS
+  DISCGRP:
+    vsam: AWS.M2.CARDDEMO.DISCGRP.VSAM.KSDS
+    table: disclosure_group
+    copybook: CVTRA02Y
+    ascii: discgrp.txt
+    ebcdic: AWS.M2.CARDDEMO.DISCGRP.PS
+  TRANTYPE:
+    vsam: AWS.M2.CARDDEMO.TRANTYPE.VSAM.KSDS
+    table: transaction_type
+    copybook: CVTRA03Y
+    ascii: trantype.txt
+    ebcdic: AWS.M2.CARDDEMO.TRANTYPE.PS
+  TRANCATG:
+    vsam: AWS.M2.CARDDEMO.TRANCATG.VSAM.KSDS
+    table: transaction_category
+    copybook: CVTRA04Y
+    ascii: trancatg.txt
+    ebcdic: AWS.M2.CARDDEMO.TRANCATG.PS
+  TRANSACT:
+    vsam: AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS
+    table: transaction
+    copybook: CVTRA05Y
+    ascii: transact.txt
+    ebcdic: AWS.M2.CARDDEMO.TRANSACT.PS
+    # The sample seed has no TRANSACT file (filled by POSTTRAN): only with `reconcile --seed`
+    # a missing source file is compared as an empty dataset. Production always needs the unload.
+    seed_empty: true
+  DALYTRAN:
+    vsam: AWS.M2.CARDDEMO.DALYTRAN.PS
+    table: daily_transaction
+    copybook: CVTRA06Y
+    ascii: dailytran.txt
+    ebcdic: AWS.M2.CARDDEMO.DALYTRAN.PS
+  USRSEC:
+    vsam: AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS
+    table: app_user
+    copybook: CSUSR01Y
+    ascii: "../../jcl/DUSRSECJ.jcl#SYSUT1"
+    ebcdic: AWS.M2.CARDDEMO.USRSEC.PS
+    # 1B migrates SEC-USR-PWD to BCrypt (PE-001): passwords can't be compared byte for byte.
+    exclude_columns: [sec_usr_pwd]
