@@ -398,7 +398,7 @@ RUNTIME_INPUT = {
 # contracts-v1.1: extra optional properties of a screen response (not BMS fields).
 RESPONSE_EXTRA = {
     "CORPT00": ["        reportExecutionId: { type: integer, format: int64, nullable: true, "
-                "description: TRANREPT execution submitted by CR00 (ReportJobLauncherPort) }"],
+                "description: 'TRANREPT execution submitted by CR00 (ReportJobLauncherPort). Optional: until O4 fills it, the id is only in the X-CardDemo-Report-Execution-Id header and Location' }"],
 }
 
 
@@ -553,8 +553,9 @@ def gen_openapi(scr):
         for kind, fields in (("Input", [f for f in s["fields"] if f["input"]]), ("Output", s["fields"])):
             L += [f"    {cls}{kind}:", "      type: object", "      properties:" if fields else "      properties: {}"]
             for f in fields:
+                rt = ", x-runtime-input: true" if kind == "Input" and not f["v1_input"] else ""
                 L.append(f"        {f['name']}: {{ type: string, maxLength: {f['length']}, "
-                         f"description: 'row {f['row']} col {f['col']}' }}")
+                         f"description: 'row {f['row']} col {f['col']}'{rt} }}")
         L += [f"    {cls}Request:", "      type: object", "      required: [action]", "      properties:",
               "        action: { $ref: '#/components/schemas/Action' }",
               f"        fields: {{ $ref: '#/components/schemas/{cls}Input' }}",
