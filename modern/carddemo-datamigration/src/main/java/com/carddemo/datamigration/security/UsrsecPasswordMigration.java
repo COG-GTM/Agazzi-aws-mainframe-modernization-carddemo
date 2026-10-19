@@ -35,6 +35,14 @@ public class UsrsecPasswordMigration {
   /** Outcome of a run. */
   public record Result(int migrated, int alreadyHashed, int restored) {}
 
+  /**
+   * Already encoded by a {@code {id}} password encoder: a legacy SEC-USR-PWD is PIC X(8), so any
+   * longer brace-prefixed value is a hash and is never re-hashed.
+   */
+  public static boolean isEncoded(String pwd) {
+    return pwd.startsWith("{") && pwd.stripTrailing().length() > 8;
+  }
+
   public static String legacyText(String pwd) {
     return pwd.stripTrailing().toUpperCase(Locale.ROOT);
   }
@@ -53,7 +61,7 @@ public class UsrsecPasswordMigration {
           for (Map<String, Object> r : rows) {
             String id = (String) r.get("sec_usr_id");
             String pwd = (String) r.get("sec_usr_pwd");
-            if (pwd.startsWith(PREFIX)) {
+            if (isEncoded(pwd)) {
               hashed++;
               continue;
             }

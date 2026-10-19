@@ -99,7 +99,7 @@ public class DataMigrationService {
     run.missing = missing;
     if (run.sources.containsKey(Dataset.USRSEC) && store.hashedPasswords() > 0) {
       throw new IllegalStateException(
-          "USRSEC cutover active (app_user holds {bcrypt} passwords): run usrsecRollback before"
+          "USRSEC cutover active (app_user holds encoded passwords): run usrsecRollback before"
               + " re-importing USRSEC");
     }
     return run.sources;
@@ -134,7 +134,7 @@ public class DataMigrationService {
             store.lockUsrsec();
             if (store.hashedPasswords() > 0) {
               throw new IllegalStateException(
-                  "USRSEC cutover active (app_user holds {bcrypt} passwords): run usrsecRollback"
+                  "USRSEC cutover active (app_user holds encoded passwords): run usrsecRollback"
                       + " before re-importing USRSEC");
             }
           }

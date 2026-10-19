@@ -48,4 +48,18 @@ class ModelTest {
     assertThat(RecordMapper.scaleOf("S9(10)V9(2)")).isEqualTo(2);
     assertThat(RecordMapper.scaleOf("9(4)")).isZero();
   }
+
+  @Test
+  void onlyLongBracePrefixedPasswordsAreEncoded() {
+    var m = com.carddemo.datamigration.security.UsrsecPasswordMigration.class;
+    assertThat(com.carddemo.datamigration.security.UsrsecPasswordMigration.isEncoded("{ABC123 "))
+        .as(m.getSimpleName())
+        .isFalse();
+    assertThat(com.carddemo.datamigration.security.UsrsecPasswordMigration.isEncoded("PASSWORD"))
+        .isFalse();
+    assertThat(
+            com.carddemo.datamigration.security.UsrsecPasswordMigration.isEncoded(
+                "{pbkdf2}5d923b44a6d129f3ddf3e3c8d29412723dcbde72445e8ef6bf3b508fbf17fa4ed4d6b99ca763d8dc"))
+        .isTrue();
+  }
 }
