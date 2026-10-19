@@ -9,6 +9,13 @@ Per non bloccare le PR in corso dei 17 workstream senza nascondere il problema:
 - `modern/security/trivyignore` e `modern/security/dependency-check-suppressions.xml` elencano **solo**
   queste CVE, una per una, con scadenza **2026-11-30** (`exp:` / `until=`). Dopo la scadenza il gate torna rosso.
 - Qualsiasi CVE nuova (o le stesse su un'altra dipendenza) fa fallire la CI.
+- Dependency-Check (match CPE NVD) riporta molte più CVE di Trivy sulle stesse release, e assegna il CPE
+  di una release a tutti i suoi artefatti in modo non deterministico. La sezione 2b del file di soppressione
+  le raggruppa quindi per `groupId` + versione esatta (es. `org.springframework/*@6.1.14`), con l'elenco
+  esplicito delle CVE: un'altra versione o una CVE nuova fa fallire il gate.
+- Il DB NVD arriva dal mirror dei feed JSON pubblicato dal progetto Dependency-Check
+  (`dependency-check.github.io/DependencyCheck_Builder/nvd_cache/`): senza `NVD_API_KEY` l'API NVD
+  è troppo lenta (job cancellato al 12% dopo 15 min).
 - I falsi positivi veri sono tenuti separati, nella sezione "False positives" del file di soppressione, ognuno con motivazione.
 
 ## Componenti coinvolti e versione minima corretta

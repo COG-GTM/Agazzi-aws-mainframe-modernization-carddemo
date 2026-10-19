@@ -25,7 +25,7 @@ jobs:
   dependency-check:
     name: OWASP Dependency-Check (fail CVSS >= 7)
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 120
     defaults:
       run:
         working-directory: modern
@@ -36,8 +36,7 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
-      # The NVD mirror is large (~410k records). Without NVD_API_KEY the first download is slow, so the
-      # partial database is saved even if the update times out and the next run resumes from it.
+      # The database is saved even if a later step fails, so the next run only fetches the delta.
       - name: Restore NVD database
         uses: actions/cache/restore@v4
         with:
@@ -46,14 +45,14 @@ jobs:
           restore-keys: nvd-
       - name: Install reactor (no tests)
         run: ./mvnw -B -q install -DskipTests -Djacoco.skip=true -Dcheckstyle.skip -Dspotless.check.skip=true
+      # Unauthenticated NVD API access is throttled to failure (~50k/410k records in 15 min), so the
+      # NVD JSON feeds come from the mirror published by the Dependency-Check project.
       - name: Update NVD database
-        timeout-minutes: 280
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        timeout-minutes: 60
         run: >
           ./mvnw -B -N org.owasp:dependency-check-maven:12.1.0:update-only
           -DdataDirectory=$HOME/.dependency-check-data
-          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
+          -DnvdDatafeedUrl=https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/
       - name: Save NVD database
         if: always()
         uses: actions/cache/save@v4
@@ -61,12 +60,10 @@ jobs:
           path: ~/.dependency-check-data
           key: nvd-${{ github.run_id }}
       - name: Dependency-Check (parent reactor)
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
           ./mvnw -B org.owasp:dependency-check-maven:12.1.0:aggregate
           -DfailBuildOnCVSS=7
-          -DsuppressionFiles=security/dependency-check-suppressions.xml
+          -DsuppressionFiles=${{ github.workspace }}/modern/security/dependency-check-suppressions.xml
           -DautoUpdate=false
           -DdataDirectory=$HOME/.dependency-check-data
           -DossindexAnalyzerEnabled=false -DretireJsAnalyzerEnabled=false
@@ -77,7 +74,7 @@ jobs:
         run: >
           ./mvnw -B -f security/pom.xml org.owasp:dependency-check-maven:12.1.0:check
           -DfailBuildOnCVSS=7 -DautoUpdate=false
-          -DsuppressionFiles=dependency-check-suppressions.xml
+          -DsuppressionFiles=${{ github.workspace }}/modern/security/dependency-check-suppressions.xml
           -DdataDirectory=$HOME/.dependency-check-data
           -DossindexAnalyzerEnabled=false -DretireJsAnalyzerEnabled=false
           -DnodeAnalyzerEnabled=false -DnodeAuditAnalyzerEnabled=false
