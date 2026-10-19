@@ -34,7 +34,7 @@ public class PlatformTimeAutoConfiguration {
     return new ProductionBusinessClock(zone.isBlank() ? ZoneId.systemDefault() : ZoneId.of(zone));
   }
 
-  @Bean
+  @Bean(destroyMethod = "close")
   @ConditionalOnMissingBean
   WaitService waitService() {
     return new VirtualThreadWaitService();

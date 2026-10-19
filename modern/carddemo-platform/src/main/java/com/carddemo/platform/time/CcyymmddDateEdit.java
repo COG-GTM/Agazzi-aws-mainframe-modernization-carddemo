@@ -181,7 +181,7 @@ public final class CcyymmddDateEdit {
   }
 
   private static boolean blank(String part) {
-    return part.chars().allMatch(c -> c == ' ' || c == 0);
+    return part.chars().allMatch(c -> c == ' ') || part.chars().allMatch(c -> c == 0);
   }
 
   /** Value of an unsigned DISPLAY field, or -1 when {@code IS NUMERIC} would be false. */

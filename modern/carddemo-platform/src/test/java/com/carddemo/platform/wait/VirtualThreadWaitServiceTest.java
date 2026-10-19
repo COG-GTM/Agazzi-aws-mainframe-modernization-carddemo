@@ -62,4 +62,13 @@ class VirtualThreadWaitServiceTest {
     waiter.interrupt();
     assertThat(waiter.join(Duration.ofSeconds(5))).isTrue();
   }
+
+  @Test
+  void closeInterruptsPendingAsyncWaits() {
+    VirtualThreadWaitService owned = new VirtualThreadWaitService();
+    var future = owned.awaitCentisecondsAsync(VirtualThreadWaitService.MAX_CENTISECONDS);
+    owned.close();
+    assertThatThrownBy(() -> future.get(5, TimeUnit.SECONDS))
+        .hasCauseInstanceOf(InterruptedException.class);
+  }
 }

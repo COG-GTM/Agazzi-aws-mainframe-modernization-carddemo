@@ -35,6 +35,8 @@ class CcyymmddDateEditTest {
         "20220230|VALID|NOT_OK|NOT_OK|Open Date:Cannot have 30 days in this month.",
         "20230229|NOT_OK|NOT_OK|NOT_OK|Open Date:Not a leap year.Cannot have 29 days in this month.",
         "19000229|NOT_OK|NOT_OK|NOT_OK|Open Date:Not a leap year.Cannot have 29 days in this month.",
+        // mixed spaces and low-values are not blank: non-numeric
+        "' \u0000  0718'|NOT_OK|VALID|VALID|Open Date must be 4 digit number.",
         // first message wins
         "18991399|NOT_OK|NOT_OK|NOT_OK|Open Date : Century is not valid."
       })

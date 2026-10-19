@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -13,19 +14,32 @@ import java.util.concurrent.Executors;
  * on a virtual thread; {@link #awaitAsync} schedules the wait on a virtual thread and returns
  * immediately so a batch step can stay non-blocking.
  */
-public final class VirtualThreadWaitService implements WaitService {
+public final class VirtualThreadWaitService implements WaitService, AutoCloseable {
 
   /** {@code MVSWAIT-TIME} is {@code PIC 9(8) COMP}: at most 99 999 999 centiseconds. */
   public static final long MAX_CENTISECONDS = 99_999_999L;
 
   private final Executor executor;
+  private final ExecutorService owned;
 
   public VirtualThreadWaitService() {
-    this(Executors.newVirtualThreadPerTaskExecutor());
+    ExecutorService virtualThreads = Executors.newVirtualThreadPerTaskExecutor();
+    this.executor = virtualThreads;
+    this.owned = virtualThreads;
   }
 
+  /** Uses a caller-managed executor, which {@link #close()} leaves running. */
   VirtualThreadWaitService(Executor executor) {
     this.executor = Objects.requireNonNull(executor, "executor");
+    this.owned = null;
+  }
+
+  /** Interrupts pending asynchronous waits (called by Spring on context shutdown). */
+  @Override
+  public void close() {
+    if (owned != null) {
+      owned.shutdownNow();
+    }
   }
 
   @Override
