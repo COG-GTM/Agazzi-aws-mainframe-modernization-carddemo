@@ -1,0 +1,18 @@
+# INTCALC with a balance for a missing account: 1100 abend (CEE3ABD 999, RC 16) — owner b2-interest.
+job: INTCALC-NOACCT
+jcl: app/jcl/INTCALC.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TCATBALF: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y, input: "input/tcatbal.txt"}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], aix: [[25, 11]], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "seed:acctdata.txt"}
+  DISCGRP: {org: ksds, lrecl: 50, key: [0, 16], layout: CVTRA02Y, input: "seed:discgrp.txt"}
+  SYSTRAN: {org: ps, lrecl: 350, layout: CVTRA05Y, init_empty: true}
+steps:
+  - name: STEP15
+    program: CBACT04C
+    parm: "2022071800"
+    max_rc: 16
+    dd: {TCATBALF: TCATBALF, XREFFILE: CARDXREF, XREFFIL1: CARDXREF, ACCTFILE: ACCTDATA,
+         DISCGRP: DISCGRP, TRANSACT: SYSTRAN}
+outputs: [ACCTDATA, SYSTRAN]
