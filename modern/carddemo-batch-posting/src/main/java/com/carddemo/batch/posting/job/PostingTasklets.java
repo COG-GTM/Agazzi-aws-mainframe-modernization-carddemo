@@ -283,15 +283,45 @@ final class PostingTasklets {
   static final class CombtranStep10 extends JclStepTasklet {
     private final PostingDatasetsFactory datasets;
     private final GenerationStore generations;
+    private final PlatformTransactionManager chunkTx;
 
     CombtranStep10(PostingDatasetsFactory datasets, GenerationStore generations) {
+      this(datasets, generations, null);
+    }
+
+    /**
+     * @param chunkTx when not null the step runs without a transaction and the REPRO commits every
+     *     {@link Cbtrn02cPoster#CHUNK_SIZE} records (finding 5B F3: TRANSACT ×1000 = 600k records)
+     */
+    CombtranStep10(
+        PostingDatasetsFactory datasets,
+        GenerationStore generations,
+        PlatformTransactionManager chunkTx) {
       super("IDCAMS");
       this.datasets = datasets;
       this.generations = generations;
+      this.chunkTx = chunkTx;
     }
 
     @Override
     protected int run(PostingJobParameters params, Sysout sysout, StepExecution step) {
+      if (chunkTx == null) {
+        return repro(params, sysout, step, null);
+      }
+      ChunkTransaction chunks = new ChunkTransaction(chunkTx);
+      try {
+        int rc = repro(params, sysout, step, chunks);
+        chunks.commit();
+        step.getExecutionContext().putInt("commits", chunks.commits());
+        return rc;
+      } catch (RuntimeException e) {
+        chunks.rollback();
+        throw e;
+      }
+    }
+
+    private int repro(
+        PostingJobParameters params, Sysout sysout, StepExecution step, ChunkTransaction chunks) {
       ExecutionContext job = step.getJobExecution().getExecutionContext();
       List<String> combined =
           job.containsKey(COMBINED_GENERATION)
@@ -302,9 +332,15 @@ final class PostingTasklets {
               : Generations.readCurrent(
                   generations, Generations.TRANSACT_COMBINED, null, LRECL_TRAN);
       PostingDatasets ds = datasets.open(params);
+      if (chunks != null) {
+        ds.commitOnCheckpoint(chunks);
+      }
       ds.transactions().open();
       int n = 0;
       for (String line : combined) {
+        if (n > 0 && n % Cbtrn02cPoster.CHUNK_SIZE == 0) {
+          ds.checkpoint();
+        }
         TransactionRecord r = CoreCodecs.TRANSACTION.decodeLine(line);
         try {
           ds.transactions().write(r);

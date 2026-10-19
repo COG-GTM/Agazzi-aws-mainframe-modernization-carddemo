@@ -124,7 +124,12 @@ public class PostingJobsConfiguration {
     return new JobBuilder(COMBTRAN, repo)
         .listener(new MaxConditionCodeListener())
         .start(step("STEP05R", new PostingTasklets.CombtranStep05r(generations), repo, tx))
-        .next(step("STEP10", new PostingTasklets.CombtranStep10(datasets, generations), repo, tx))
+        .next(
+            step(
+                "STEP10",
+                new PostingTasklets.CombtranStep10(datasets, generations, tx),
+                repo,
+                new ResourcelessTransactionManager()))
         .build();
   }
 
