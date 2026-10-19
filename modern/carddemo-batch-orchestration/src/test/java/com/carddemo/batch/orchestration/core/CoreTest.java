@@ -50,6 +50,11 @@ class CoreTest {
     for (ExitStatus s : steps) {
       StepExecution se = e.createStepExecution("S" + i++);
       se.setExitStatus(s);
+      se.setStatus(
+          s.getExitCode().startsWith("RC0") && !s.getExitCode().equals("RC04")
+                  || s.getExitCode().startsWith("ABEND")
+              ? BatchStatus.FAILED
+              : BatchStatus.COMPLETED);
     }
     return e;
   }
@@ -76,6 +81,11 @@ class CoreTest {
         .as("a generic FAILED job keeps its step's RC")
         .isEqualTo(8);
     assertThat(JclReturnCodes.of(execution(BatchStatus.FAILED, ExitStatus.FAILED))).isEqualTo(12);
+    assertThat(
+            JclReturnCodes.of(
+                execution(BatchStatus.FAILED, ExitStatus.FAILED, new ExitStatus("RC04"))))
+        .as("a completed RC04 step does not explain the failure")
+        .isEqualTo(12);
   }
 
   @Test

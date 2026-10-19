@@ -58,7 +58,16 @@ public final class JclReturnCodes {
     if (execution.getStatus() == BatchStatus.COMPLETED && job == 0) {
       return max;
     }
-    boolean generic = job == 0 || "FAILED".equals(execution.getExitStatus().getExitCode());
-    return generic ? (max > 0 ? max : RC_FAILED) : Math.max(max, job);
+    if (!"FAILED".equals(execution.getExitStatus().getExitCode()) && job != 0) {
+      return Math.max(max, job);
+    }
+    // Generic FAILED: the RC of the step that failed explains it; otherwise at least RC 12.
+    int failing =
+        execution.getStepExecutions().stream()
+            .filter(s -> s.getStatus().isUnsuccessful())
+            .mapToInt(s -> of(s.getExitStatus()))
+            .max()
+            .orElse(0);
+    return Math.max(max, failing > 0 ? failing : RC_FAILED);
   }
 }

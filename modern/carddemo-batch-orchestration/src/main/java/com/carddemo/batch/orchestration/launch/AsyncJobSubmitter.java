@@ -29,26 +29,35 @@ public class AsyncJobSubmitter {
     this.launcher = new TaskExecutorJobLauncher();
     launcher.setJobRepository(repository);
     launcher.setTaskExecutor(
-        task ->
+        task -> {
+          // Counted from acceptance (queued or running) so a CLI drain never misses it.
+          synchronized (this) {
+            inFlight++;
+          }
+          try {
             executor.execute(
                 () -> {
-                  synchronized (this) {
-                    inFlight++;
-                  }
                   try {
                     task.run();
                   } finally {
-                    synchronized (this) {
-                      inFlight--;
-                      notifyAll();
-                    }
+                    done();
                   }
-                }));
+                });
+          } catch (RuntimeException e) {
+            done();
+            throw e;
+          }
+        });
     try {
       launcher.afterPropertiesSet();
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private synchronized void done() {
+    inFlight--;
+    notifyAll();
   }
 
   /** CLI mode: like JES, the submitted jobs keep running after the submitter ends. */

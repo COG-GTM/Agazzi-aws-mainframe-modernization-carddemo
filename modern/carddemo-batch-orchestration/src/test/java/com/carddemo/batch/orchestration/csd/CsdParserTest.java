@@ -69,6 +69,8 @@ class CsdParserTest {
         .hasMessageContaining("GROUP");
     assertThatThrownBy(() -> CsdParser.commands(List.of("  DELETE WIDGET(X) GROUP(G)"), "H"))
         .hasMessageContaining("malformed DELETE");
+    assertThatThrownBy(() -> CsdParser.commands(List.of("  DELETE GROUP(A) GROUP(B)"), "H"))
+        .hasMessageContaining("duplicate keyword GROUP");
   }
 
   @Test

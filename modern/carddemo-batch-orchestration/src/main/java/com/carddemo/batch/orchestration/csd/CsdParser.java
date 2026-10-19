@@ -99,7 +99,9 @@ public final class CsdParser {
     Matcher m = KEYWORD.matcher(body);
     int end = 0;
     while (m.find()) {
-      kw.put(m.group(1), m.group(2).strip());
+      if (kw.put(m.group(1), m.group(2).strip()) != null) {
+        throw new CsdSyntaxException(0, "duplicate keyword " + m.group(1) + " in " + verb);
+      }
       end = m.end();
     }
     if (!body.substring(end).isBlank() || kw.isEmpty()) {
