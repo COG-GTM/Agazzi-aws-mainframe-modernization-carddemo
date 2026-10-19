@@ -52,7 +52,7 @@ public final class CobolFmt {
    * truncated), two decimals truncated.
    */
   public static String editSigned(BigDecimal v, int integerDigits) {
-    BigDecimal x = v == null ? BigDecimal.ZERO : v.setScale(2, RoundingMode.DOWN);
+    BigDecimal x = (v == null ? BigDecimal.ZERO : v).setScale(2, RoundingMode.DOWN);
     String sign = x.signum() < 0 ? "-" : "+";
     String plain = x.abs().toPlainString();
     int dot = plain.indexOf('.');
