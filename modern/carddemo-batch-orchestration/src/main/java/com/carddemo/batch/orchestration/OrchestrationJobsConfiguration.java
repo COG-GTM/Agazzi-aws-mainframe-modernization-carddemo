@@ -147,8 +147,8 @@ public class OrchestrationJobsConfiguration {
   }
 
   @Bean("CBADMCDJ")
-  Job cbadmcdj(JclSteps steps, JdbcTemplate jdbc, BusinessClock clock) {
-    return single(steps, "CBADMCDJ", "STEP1", new CsdCatalogTasklet(jdbc, clock));
+  Job cbadmcdj(JclSteps steps, JdbcTemplate jdbc, BusinessClock clock, DatasetLocator datasets) {
+    return single(steps, "CBADMCDJ", "STEP1", new CsdCatalogTasklet(jdbc, clock, datasets));
   }
 
   @Bean(ControlMDefinitions.DAILY)

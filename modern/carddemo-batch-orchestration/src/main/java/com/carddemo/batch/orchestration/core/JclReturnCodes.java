@@ -58,6 +58,7 @@ public final class JclReturnCodes {
     if (execution.getStatus() == BatchStatus.COMPLETED && job == 0) {
       return max;
     }
-    return Math.max(max, job == 0 ? RC_FAILED : job);
+    boolean generic = job == 0 || "FAILED".equals(execution.getExitStatus().getExitCode());
+    return generic ? (max > 0 ? max : RC_FAILED) : Math.max(max, job);
   }
 }

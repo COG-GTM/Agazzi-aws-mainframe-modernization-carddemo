@@ -1,5 +1,6 @@
 package com.carddemo.batch.orchestration.launch;
 
+import java.time.Duration;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -21,17 +22,46 @@ public class AsyncJobSubmitter {
 
   private final RegisteredJobs jobs;
   private final TaskExecutorJobLauncher launcher;
+  private int inFlight;
 
   public AsyncJobSubmitter(RegisteredJobs jobs, JobRepository repository, TaskExecutor executor) {
     this.jobs = jobs;
     this.launcher = new TaskExecutorJobLauncher();
     launcher.setJobRepository(repository);
-    launcher.setTaskExecutor(executor);
+    launcher.setTaskExecutor(
+        task ->
+            executor.execute(
+                () -> {
+                  synchronized (this) {
+                    inFlight++;
+                  }
+                  try {
+                    task.run();
+                  } finally {
+                    synchronized (this) {
+                      inFlight--;
+                      notifyAll();
+                    }
+                  }
+                }));
     try {
       launcher.afterPropertiesSet();
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  /** CLI mode: like JES, the submitted jobs keep running after the submitter ends. */
+  public synchronized boolean awaitSubmitted(Duration timeout) throws InterruptedException {
+    long deadline = System.nanoTime() + timeout.toNanos();
+    while (inFlight > 0) {
+      long left = deadline - System.nanoTime();
+      if (left <= 0) {
+        return false;
+      }
+      wait(Math.max(1, left / 1_000_000));
+    }
+    return true;
   }
 
   public JobExecution submit(String jobName, JobParameters params)

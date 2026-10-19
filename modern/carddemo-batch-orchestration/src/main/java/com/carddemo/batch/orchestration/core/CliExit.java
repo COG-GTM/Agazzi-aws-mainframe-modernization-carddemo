@@ -9,13 +9,17 @@ import org.springframework.context.ApplicationListener;
 public class CliExit implements ApplicationListener<ApplicationReadyEvent> {
 
   private final IntConsumer terminator;
+  private final Runnable drain;
 
-  public CliExit(IntConsumer terminator) {
+  /** {@code drain} waits for internally submitted (INTRDR) jobs before the JVM stops. */
+  public CliExit(IntConsumer terminator, Runnable drain) {
     this.terminator = terminator;
+    this.drain = drain;
   }
 
   @Override
   public void onApplicationEvent(ApplicationReadyEvent event) {
+    drain.run();
     terminator.accept(SpringApplication.exit(event.getApplicationContext()));
   }
 }

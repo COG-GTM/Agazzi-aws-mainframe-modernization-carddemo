@@ -58,6 +58,10 @@ class TransferTest {
     assertThat(where).isEqualTo("s3://bucket/ftpfolder/welcome.txt");
     assertThatThrownBy(() -> new S3FileTransfer(s3, " "))
         .isInstanceOf(IllegalArgumentException.class);
+    AutoCloseable owned = mock(AutoCloseable.class);
+    new S3FileTransfer(s3, "bucket", owned).close();
+    verify(s3).close();
+    verify(owned).close();
   }
 
   private static SecretsManagerClient secret(String value) {
@@ -74,6 +78,7 @@ class TransferTest {
             secret("{\"accessKeyId\":\"AK\",\"secretAccessKey\":\"SK\"}"), "id");
     assertThat(p.resolveCredentials().accessKeyId()).isEqualTo("AK");
     assertThat(p.resolveCredentials().secretAccessKey()).isEqualTo("SK");
+    p.close();
     assertThatThrownBy(
             () -> new SecretsManagerCredentialsProvider(secret("{}"), "id").resolveCredentials())
         .hasMessageContaining("lacks");

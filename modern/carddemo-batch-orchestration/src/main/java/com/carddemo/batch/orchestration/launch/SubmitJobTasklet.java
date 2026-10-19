@@ -2,6 +2,7 @@ package com.carddemo.batch.orchestration.launch;
 
 import com.carddemo.batch.orchestration.core.JclStepFailure;
 import com.carddemo.batch.orchestration.core.StepWork;
+import java.util.Set;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.launch.NoSuchJobException;
@@ -23,7 +24,8 @@ public class SubmitJobTasklet implements StepWork {
     String slot = step.getJobExecution().getJobInstance().getJobName() + "/" + step.getStepName();
     try {
       JobExecution submitted =
-          submitter.submit(jobName, ChildJobParameters.of(step.getJobParameters(), slot));
+          submitter.submit(
+              jobName, ChildJobParameters.of(step.getJobParameters(), slot, Set.of("in", "out")));
       step.getExecutionContext().putLong("submitted.executionId", submitted.getId());
     } catch (NoSuchJobException e) {
       throw JclStepFailure.rc(12, "INTRDR: member " + jobName + " not found");

@@ -5,5 +5,6 @@ CREATE TABLE cics_csd_definition (
     csd_group      VARCHAR(8)    NOT NULL,
     attributes     VARCHAR(2000) NOT NULL,
     defined_at     TIMESTAMP     NOT NULL,
+    version        BIGINT        NOT NULL DEFAULT 0,
     PRIMARY KEY (resource_type, resource_name, csd_group)
 );

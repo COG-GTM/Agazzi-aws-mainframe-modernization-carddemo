@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
  * The FTPJCL SYSIN carried user and password in clear; here they live in AWS Secrets Manager (JSON
  * {@code {"accessKeyId":..,"secretAccessKey":..}}) and are read at use time, never logged.
  */
-public class SecretsManagerCredentialsProvider implements AwsCredentialsProvider {
+public class SecretsManagerCredentialsProvider implements AwsCredentialsProvider, AutoCloseable {
 
   private static final ObjectMapper JSON = new ObjectMapper();
 
@@ -42,5 +42,10 @@ public class SecretsManagerCredentialsProvider implements AwsCredentialsProvider
     } catch (java.io.IOException e) {
       throw new IllegalStateException("secret " + secretId + " is not JSON", e);
     }
+  }
+
+  @Override
+  public void close() {
+    secrets.close();
   }
 }

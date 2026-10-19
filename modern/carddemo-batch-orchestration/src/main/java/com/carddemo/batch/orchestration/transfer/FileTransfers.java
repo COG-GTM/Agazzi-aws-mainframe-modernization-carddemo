@@ -18,15 +18,21 @@ public final class FileTransfers {
   public static FileTransferPort create(OrchestrationProperties.Transfer cfg) {
     return switch (cfg.getType()) {
       case "local" -> new LocalDirectoryFileTransfer(cfg.getLocalDir());
-      case "s3" -> new S3FileTransfer(s3(cfg), cfg.getBucket());
+      case "s3" -> {
+        AwsCredentialsProvider credentials = credentials(cfg);
+        yield new S3FileTransfer(
+            s3(cfg, credentials),
+            cfg.getBucket(),
+            credentials instanceof AutoCloseable c ? c : null);
+      }
       default ->
           throw new IllegalArgumentException(
               "carddemo.orchestration.transfer.type must be local|s3, was " + cfg.getType());
     };
   }
 
-  static S3Client s3(OrchestrationProperties.Transfer cfg) {
-    S3ClientBuilder b = S3Client.builder().credentialsProvider(credentials(cfg));
+  static S3Client s3(OrchestrationProperties.Transfer cfg, AwsCredentialsProvider credentials) {
+    S3ClientBuilder b = S3Client.builder().credentialsProvider(credentials);
     if (cfg.getRegion() != null) {
       b.region(Region.of(cfg.getRegion()));
     }

@@ -84,6 +84,22 @@ class OrchestrationJobsTest extends BatchTestBase {
   }
 
   @Test
+  void intrdrj1DatasetOverridesStayWithIntrdrj1() throws Exception {
+    Files.writeString(dataset("SOURCE.A"), "A\n");
+    JobExecution j1 =
+        run(
+            "INTRDRJ1",
+            params().addString("in", "SOURCE.A").addString("out", "SOURCE.B").toJobParameters());
+    JobExecution j2 =
+        awaitEnd(step(j1, "STEP01").getExecutionContext().getLong("submitted.executionId"));
+    assertThat(j2.getJobParameters().getString("in")).isNull();
+    assertThat(step(j2, "IDCAMS").getExitStatus().getExitCode())
+        .as("INTRDRJ2 keeps its own DSNs: the default BKUP does not exist")
+        .isEqualTo("RC12");
+    assertThat(Files.readString(dataset("SOURCE.B"))).isEqualTo("A\n");
+  }
+
+  @Test
   void intrdrj1EmptyInputCopiesZeroRecords() throws Exception {
     Files.writeString(dataset("AWS.M2.CARDEMO.FTP.TEST"), "");
     JobExecution j1 = run("INTRDRJ1");
@@ -139,10 +155,8 @@ class OrchestrationJobsTest extends BatchTestBase {
   void cbadmcdjLoadsTheCsdGroupIdempotently() throws Exception {
     JobExecution e = run("CBADMCDJ");
     assertThat(e.getStatus()).isEqualTo(BatchStatus.COMPLETED);
-    int defined = step(e, "STEP1").getExecutionContext().getInt("defined");
-    assertThat(step(e, "STEP1").getExecutionContext().getInt("duplicates")).isPositive();
-    assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM cics_csd_definition", Integer.class))
-        .isEqualTo(defined);
+    int rows = jdbc.queryForObject("SELECT COUNT(*) FROM cics_csd_definition", Integer.class);
+    assertThat(rows).isLessThan(step(e, "STEP1").getExecutionContext().getInt("defined"));
     assertThat(
             jdbc.queryForObject(
                 "SELECT attributes FROM cics_csd_definition WHERE resource_type='TRANSACTION' AND resource_name='CCDM'",
@@ -153,9 +167,22 @@ class OrchestrationJobsTest extends BatchTestBase {
                 "SELECT attributes FROM cics_csd_definition WHERE resource_type='LIBRARY'",
                 String.class))
         .contains("DSNAME01(AWS.M2.CARDDEMO.LOADLIB)");
-    run("CBADMCDJ");
+    JobExecution again = run("CBADMCDJ");
+    assertThat(step(again, "STEP1").getExecutionContext().getInt("redefined")).isPositive();
     assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM cics_csd_definition", Integer.class))
-        .isEqualTo(defined);
+        .isEqualTo(rows);
+    assertThat(jdbc.queryForObject("SELECT MIN(version) FROM cics_csd_definition", Long.class))
+        .isPositive();
+
+    Files.writeString(dataset("DEL.CSD"), "  DELETE PROGRAM(COSGN00C) GROUP(CARDDEMO)\n");
+    run("CBADMCDJ", params().addString("sysin", "DEL.CSD").toJobParameters());
+    assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM cics_csd_definition", Integer.class))
+        .isEqualTo(rows - 1);
+    Files.writeString(dataset("DELG.CSD"), "* drop the group\n  DELETE GROUP(CARDDEMO)\n");
+    JobExecution drop = run("CBADMCDJ", params().addString("sysin", "DELG.CSD").toJobParameters());
+    assertThat(step(drop, "STEP1").getExecutionContext().getInt("deleted")).isEqualTo(rows - 1);
+    assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM cics_csd_definition", Integer.class))
+        .isZero();
   }
 
   @Test
@@ -163,11 +190,13 @@ class OrchestrationJobsTest extends BatchTestBase {
     Path bad = dataset("BAD.CSD");
     Files.writeString(
         bad, "  DEFINE PROGRAM(TOOLONGNAME) GROUP(CARDDEMO)\n", StandardCharsets.UTF_8);
-    JobExecution e = run("CBADMCDJ", params().addString("sysin", bad.toString()).toJobParameters());
+    JobExecution e = run("CBADMCDJ", params().addString("sysin", "BAD.CSD").toJobParameters());
     assertThat(step(e, "STEP1").getExitStatus().getExitCode()).isEqualTo("RC12");
-    JobExecution missing =
-        run("CBADMCDJ", params().addString("sysin", dataset("NOPE").toString()).toJobParameters());
+    JobExecution missing = run("CBADMCDJ", params().addString("sysin", "NOPE").toJobParameters());
     assertThat(step(missing, "STEP1").getExitStatus().getExitCode()).isEqualTo("RC12");
+    JobExecution path =
+        run("CBADMCDJ", params().addString("sysin", "/etc/passwd").toJobParameters());
+    assertThat(step(path, "STEP1").getExitStatus().getExitCode()).isEqualTo("ABEND-S813");
   }
 
   @Test

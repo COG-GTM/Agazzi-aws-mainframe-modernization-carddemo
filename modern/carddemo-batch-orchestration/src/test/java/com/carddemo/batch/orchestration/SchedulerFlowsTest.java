@@ -125,6 +125,18 @@ class SchedulerFlowsTest extends BatchTestBase {
   }
 
   @Test
+  void nonIdentifyingParametersReachTheChildJobs() throws Exception {
+    JobExecution e =
+        run("fullBatchCycle", params().addString("files", "ACCTDAT", false).toJobParameters());
+    assertThat(e.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    long close = step(e, "CLOSEFIL").getExecutionContext().getLong("child.executionId");
+    var child = explorer.getJobExecution(close);
+    assertThat(child.getJobParameters().getParameter("files").isIdentifying()).isFalse();
+    assertThat(step(child, "CLCIFIL").getExecutionContext().getString("files"))
+        .isEqualTo("ACCTDAT");
+  }
+
+  @Test
   void unknownJobIsAJclErrorWithRc16() throws Exception {
     var job = factory.build(SchedulerFolder.chain("TESTNOJOB", "T", Set.of(), List.of("NOSUCHJB")));
     JobExecution e = launcher.run(job, params().toJobParameters());

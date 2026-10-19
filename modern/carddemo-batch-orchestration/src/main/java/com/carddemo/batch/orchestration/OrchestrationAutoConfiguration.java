@@ -8,6 +8,7 @@ import com.carddemo.batch.orchestration.maintenance.JdbcMaintenanceMode;
 import com.carddemo.contracts.port.BusinessClock;
 import com.carddemo.contracts.port.MaintenanceModePort;
 import com.carddemo.contracts.port.ReportJobLauncherPort;
+import java.time.Duration;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -50,7 +51,15 @@ public class OrchestrationAutoConfiguration {
 
   @Bean
   @ConditionalOnProperty(prefix = "carddemo.orchestration.cli", name = "exit", havingValue = "true")
-  CliExit cliExit() {
-    return new CliExit(System::exit);
+  CliExit cliExit(AsyncJobSubmitter submitter) {
+    return new CliExit(
+        System::exit,
+        () -> {
+          try {
+            submitter.awaitSubmitted(Duration.ofHours(24));
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+        });
   }
 }

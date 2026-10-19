@@ -70,6 +70,12 @@ class CoreTest {
         .isEqualTo(16);
     assertThat(JclReturnCodes.of(execution(BatchStatus.FAILED, ExitStatus.COMPLETED)))
         .isEqualTo(12);
+    assertThat(
+            JclReturnCodes.of(
+                execution(BatchStatus.FAILED, ExitStatus.FAILED, new ExitStatus("RC08"))))
+        .as("a generic FAILED job keeps its step's RC")
+        .isEqualTo(8);
+    assertThat(JclReturnCodes.of(execution(BatchStatus.FAILED, ExitStatus.FAILED))).isEqualTo(12);
   }
 
   @Test
@@ -80,7 +86,7 @@ class CoreTest {
         new JobExecutionEvent(
             execution(BatchStatus.FAILED, ExitStatus.FAILED, new ExitStatus("RC08"))));
     g.record(execution(BatchStatus.COMPLETED, ExitStatus.COMPLETED));
-    assertThat(g.getExitCode()).isEqualTo(12);
+    assertThat(g.getExitCode()).isEqualTo(8);
   }
 
   @Test
@@ -114,10 +120,12 @@ class CoreTest {
     ExitCodeGenerator gen = () -> 12;
     when(ctx.getBeansOfType(ExitCodeGenerator.class)).thenReturn(Map.of("g", gen));
     AtomicInteger code = new AtomicInteger(-1);
-    new CliExit(code::set)
+    AtomicInteger drained = new AtomicInteger();
+    new CliExit(code::set, drained::incrementAndGet)
         .onApplicationEvent(
             new ApplicationReadyEvent(new SpringApplication(), new String[0], ctx, null));
     assertThat(code.get()).isEqualTo(12);
+    assertThat(drained.get()).isEqualTo(1);
   }
 
   @Test

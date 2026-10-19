@@ -49,7 +49,8 @@ public class JdbcMaintenanceMode implements MaintenanceModePort {
     Timestamp now = Timestamp.valueOf(clock.now());
     int updated =
         jdbc.update(
-            "UPDATE cics_file_status SET status = ?, changed_at = ? WHERE file_name = ?",
+            "UPDATE cics_file_status SET status = ?, changed_at = ?, version = version + 1"
+                + " WHERE file_name = ?",
             status,
             now,
             file);
@@ -62,7 +63,8 @@ public class JdbcMaintenanceMode implements MaintenanceModePort {
             now);
       } catch (DuplicateKeyException race) {
         jdbc.update(
-            "UPDATE cics_file_status SET status = ?, changed_at = ? WHERE file_name = ?",
+            "UPDATE cics_file_status SET status = ?, changed_at = ?, version = version + 1"
+                + " WHERE file_name = ?",
             status,
             now,
             file);

@@ -23,7 +23,25 @@ public final class CsdParser {
 
   private CsdParser() {}
 
+  /** DFHCSDUP commands that change the CSD, in SYSIN order. */
+  public sealed interface CsdCommand permits Define, Delete {}
+
+  public record Define(CsdDefinition definition) implements CsdCommand {}
+
+  /**
+   * {@code DELETE GROUP(g)} ({@code type}/{@code name} null) or {@code DELETE <type>(<name>)
+   * GROUP(g)}.
+   */
+  public record Delete(String type, String name, String group) implements CsdCommand {}
+
   public static List<CsdDefinition> parse(List<String> lines, String hlq) {
+    return commands(lines, hlq).stream()
+        .filter(c -> c instanceof Define)
+        .map(c -> ((Define) c).definition())
+        .toList();
+  }
+
+  public static List<CsdCommand> commands(List<String> lines, String hlq) {
     List<String> statements = new ArrayList<>();
     StringBuilder current = null;
     int lineNo = 0;
@@ -49,16 +67,34 @@ public final class CsdParser {
     if (current != null) {
       statements.add(current.toString());
     }
-    List<CsdDefinition> defs = new ArrayList<>();
+    List<CsdCommand> commands = new ArrayList<>();
     for (String s : statements) {
       if (s.startsWith("DEFINE")) {
-        defs.add(define(s.substring("DEFINE".length())));
+        commands.add(new Define(define(s.substring("DEFINE".length()))));
+      } else if (s.startsWith("DELETE")) {
+        commands.add(delete(s.substring("DELETE".length())));
       }
     }
-    return defs;
+    return commands;
   }
 
-  private static CsdDefinition define(String body) {
+  private static Delete delete(String body) {
+    Map<String, String> kw = keywords(body, "DELETE");
+    String group = kw.remove("GROUP");
+    if (group == null || !NAME.matcher(group).matches()) {
+      throw new CsdSyntaxException(0, "DELETE without valid GROUP: " + body.strip());
+    }
+    if (kw.isEmpty()) {
+      return new Delete(null, null, group);
+    }
+    Map.Entry<String, String> res = kw.entrySet().iterator().next();
+    if (kw.size() > 1 || !TYPES.contains(res.getKey()) || !NAME.matcher(res.getValue()).matches()) {
+      throw new CsdSyntaxException(0, "malformed DELETE: " + body.strip());
+    }
+    return new Delete(res.getKey(), res.getValue(), group);
+  }
+
+  private static Map<String, String> keywords(String body, String verb) {
     Map<String, String> kw = new LinkedHashMap<>();
     Matcher m = KEYWORD.matcher(body);
     int end = 0;
@@ -67,8 +103,13 @@ public final class CsdParser {
       end = m.end();
     }
     if (!body.substring(end).isBlank() || kw.isEmpty()) {
-      throw new CsdSyntaxException(0, "malformed DEFINE: " + body.strip());
+      throw new CsdSyntaxException(0, "malformed " + verb + ": " + body.strip());
     }
+    return kw;
+  }
+
+  private static CsdDefinition define(String body) {
+    Map<String, String> kw = keywords(body, "DEFINE");
     Map.Entry<String, String> first = kw.entrySet().iterator().next();
     String type = first.getKey();
     String name = first.getValue();

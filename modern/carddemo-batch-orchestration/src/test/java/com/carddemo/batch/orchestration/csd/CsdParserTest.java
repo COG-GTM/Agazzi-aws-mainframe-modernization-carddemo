@@ -65,5 +65,26 @@ class CsdParserTest {
     assertThatThrownBy(() -> CsdParser.parse(List.of("  DEFINE"), "H"))
         .hasMessageContaining("malformed");
     assertThat(CsdParser.parse(List.of("* only comments", "", "  LIST GROUP(G)"), "H")).isEmpty();
+    assertThatThrownBy(() -> CsdParser.commands(List.of("  DELETE PROGRAM(X)"), "H"))
+        .hasMessageContaining("GROUP");
+    assertThatThrownBy(() -> CsdParser.commands(List.of("  DELETE WIDGET(X) GROUP(G)"), "H"))
+        .hasMessageContaining("malformed DELETE");
+  }
+
+  @Test
+  void deleteCommandsKeepSysinOrder() {
+    var cmds =
+        CsdParser.commands(
+            List.of(
+                "  DELETE GROUP(G)",
+                "  DEFINE PROGRAM(P1) GROUP(G)",
+                "  DELETE PROGRAM(P1)",
+                "         GROUP(G)"),
+            "H");
+    assertThat(cmds)
+        .containsExactly(
+            new CsdParser.Delete(null, null, "G"),
+            new CsdParser.Define(new CsdDefinition("PROGRAM", "P1", "G", java.util.Map.of())),
+            new CsdParser.Delete("PROGRAM", "P1", "G"));
   }
 }
