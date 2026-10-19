@@ -40,6 +40,10 @@
          05 WS-TRANSACT-FILE           PIC X(08) VALUE 'TRANSACT'.
          05 WS-ACCTDAT-FILE            PIC X(08) VALUE 'ACCTDAT '.
          05 WS-CXACAIX-FILE            PIC X(08) VALUE 'CXACAIX '.
+         05 WS-USRSEC-FILE             PIC X(08) VALUE 'USRSEC  '.
+         05 WS-AUTH-USR-TYPE           PIC X(01) VALUE SPACES.
+           88 AUTH-USR-ADMIN                     VALUE 'A'.
+         05 WS-AUTH-CUST-ID            PIC 9(09) VALUE ZEROS.
          05 WS-ERR-FLG                 PIC X(01) VALUE 'N'.
            88 ERR-FLG-ON                         VALUE 'Y'.
            88 ERR-FLG-OFF                        VALUE 'N'.
@@ -77,6 +81,8 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
 
+       COPY CSUSR01Y.
+
        COPY CVACT01Y.
        COPY CVACT03Y.
        COPY CVTRA05Y.
@@ -109,6 +115,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM READ-USER-SEC-FILE
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COBIL0AO
@@ -169,7 +176,10 @@
            IF NOT ERR-FLG-ON
                MOVE ACTIDINI  OF COBIL0AI TO ACCT-ID
                                              XREF-ACCT-ID
+               PERFORM VALIDATE-ACCT-OWNERSHIP
+           END-IF
 
+           IF NOT ERR-FLG-ON
                EVALUATE CONFIRMI OF COBIL0AI
                    WHEN 'Y'
                    WHEN 'y'
@@ -241,6 +251,61 @@
 
                PERFORM SEND-BILLPAY-SCREEN
 
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      VALIDATE-ACCT-OWNERSHIP
+      *----------------------------------------------------------------*
+      * A regular user may only pay the balance of an account that
+      * belongs to the customer their signon is entitled to. Admins are
+      * allowed to pay on behalf of any customer.
+      *----------------------------------------------------------------*
+       VALIDATE-ACCT-OWNERSHIP.
+
+           IF AUTH-USR-ADMIN
+               CONTINUE
+           ELSE
+               PERFORM READ-CXACAIX-FILE
+               IF NOT ERR-FLG-ON
+                   IF WS-AUTH-CUST-ID = ZEROS OR
+                      XREF-CUST-ID NOT = WS-AUTH-CUST-ID
+                       MOVE 'Y'     TO WS-ERR-FLG
+                       MOVE 'You are not authorized for this account...'
+                                    TO WS-MESSAGE
+                       MOVE -1      TO ACTIDINL OF COBIL0AI
+                       PERFORM SEND-BILLPAY-SCREEN
+                   END-IF
+               END-IF
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      READ-USER-SEC-FILE
+      *----------------------------------------------------------------*
+      * Entitlements are taken from the security file rather than from
+      * the commarea, which navigating programs overwrite.
+      *----------------------------------------------------------------*
+       READ-USER-SEC-FILE.
+
+           MOVE SPACES TO WS-AUTH-USR-TYPE
+           MOVE ZEROS  TO WS-AUTH-CUST-ID
+
+           EXEC CICS READ
+                DATASET   (WS-USRSEC-FILE)
+                INTO      (SEC-USER-DATA)
+                LENGTH    (LENGTH OF SEC-USER-DATA)
+                RIDFLD    (CDEMO-USER-ID)
+                KEYLENGTH (LENGTH OF SEC-USR-ID)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD = DFHRESP(NORMAL)
+               MOVE SEC-USR-TYPE TO WS-AUTH-USR-TYPE
+               IF SEC-USR-CUST-ID IS NUMERIC
+                   MOVE SEC-USR-CUST-ID TO WS-AUTH-CUST-ID
+               END-IF
+           ELSE
+               DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD
            END-IF.
 
       *----------------------------------------------------------------*
