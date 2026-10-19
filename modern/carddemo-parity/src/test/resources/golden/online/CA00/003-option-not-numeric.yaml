@@ -1,0 +1,15 @@
+# COADM01C PROCESS-ENTER-KEY: WS-OPTION IS NOT NUMERIC -> invalid option.
+id: CA00-003
+title: opzione non numerica
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "X"}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "Please enter a valid option number..."
+      fieldErrors: []
+      dbDelta: none

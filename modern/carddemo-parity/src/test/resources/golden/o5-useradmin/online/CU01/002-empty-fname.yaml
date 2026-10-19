@@ -1,0 +1,12 @@
+# PROCESS-ENTER-KEY validation order: FNAME checked before the later empty fields.
+id: CU01-002
+title: FNAME vuoto
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: ENTER
+    fields: {FNAME: " ", LNAME: "", USERID: "", PASSWD: "", USRTYPE: ""}
+    expect:
+      message: "First Name can NOT be empty..."
+      fieldErrors: [FNAME]
+      dbDelta: none

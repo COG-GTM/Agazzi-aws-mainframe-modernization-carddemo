@@ -1,0 +1,19 @@
+# COACTUPC 1265 part 1 invalid
+id: CAUP-028
+title: 'errore: SSN: First 3 chars: should not be 000, 666, or between 900 and 999'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACTSSN1: '666'
+  expect:
+    message: 'SSN: First 3 chars: should not be 000, 666, or between 900 and 999'
+    fieldErrors:
+    - ACTSSN1
+    dbDelta: none

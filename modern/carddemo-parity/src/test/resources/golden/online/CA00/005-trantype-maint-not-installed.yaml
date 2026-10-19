@@ -1,0 +1,15 @@
+# COADM01C: option 6 = COTRTUPC, PGMIDERR (extension X2 off) -> 'This option is not installed ...'.
+id: CA00-005
+title: opzione 6 con estensione trantype disattiva
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "6"}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "This option is not installed ..."
+      fieldErrors: []
+      dbDelta: none

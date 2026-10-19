@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 2 (Account Update) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-010
+title: opzione 02 -> COACTUP
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "02"}
+    expect:
+      screen: COMEN01
+      nextScreen: COACTUP
+      fieldErrors: []
+      dbDelta: none

@@ -1,0 +1,17 @@
+# SEL000n = U/u: XCTL COUSR02C with CDEMO-CU00-USR-SELECTED.
+id: CU00-006
+title: selezione U -> COUSR02C
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: ENTER
+    fields: {SEL0002: "u"}
+    expect:
+      nextScreen: COUSR02
+  - method: GET
+    screen: COUSR02
+    expect:
+      screen: COUSR02
+      message: "Press PF5 key to save your updates ..."
+      data: {USRIDIN: ADMIN002, FNAME: ADMIN, LNAME: "002", USRTYPE: A, PASSWD: ""}

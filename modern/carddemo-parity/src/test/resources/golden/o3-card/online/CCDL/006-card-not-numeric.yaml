@@ -1,0 +1,14 @@
+# COCRDSLC 2220-EDIT-CARD: not numeric
+id: CCDL-006
+title: carta non numerica
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 09238771932473XX
+  expect:
+    message: CARD ID FILTER,IF SUPPLIED MUST BE A 16 DIGIT NUMBER
+    fieldErrors:
+    - CARDSID

@@ -1,0 +1,23 @@
+# PF07 AND CA-FIRST-PAGE -> 'No previous pages to display'.
+id: CTLI-003
+title: PF7 sulla prima pagina
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF7
+    fields: {TRTYPE: "", TRDESC: ""}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No previous pages to display"
+      fieldErrors: []
+      dbDelta: none

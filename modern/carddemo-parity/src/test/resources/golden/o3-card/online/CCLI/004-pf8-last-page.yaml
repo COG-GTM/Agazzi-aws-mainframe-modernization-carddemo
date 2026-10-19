@@ -1,0 +1,34 @@
+# COCRDLIC PF8 to the last page (50 cards = 8 pages), then PF8 again
+id: CCLI-004
+title: PF8 fino all'ultima pagina
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect:
+    message: NO MORE RECORDS TO SHOW
+    data:
+      PAGENO: '8'
+      CRDNUM2: null

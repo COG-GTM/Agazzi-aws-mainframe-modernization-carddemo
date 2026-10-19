@@ -1,0 +1,12 @@
+# PROCESS-ENTER-KEY validation order: USERID checked before the later empty fields.
+id: CU01-004
+title: USERID vuoto
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: ENTER
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: " ", PASSWD: "", USRTYPE: ""}
+    expect:
+      message: "User ID can NOT be empty..."
+      fieldErrors: [USERID]
+      dbDelta: none

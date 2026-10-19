@@ -1,0 +1,31 @@
+# 9100 SQLCODE +100; PF12 -> ricomincia.
+id: CTTU-007
+title: Tipo inesistente e F12
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "09", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "No record found for this key in database"
+      fieldErrors: [TRTYPCD]
+      dbDelta: none
+  - action: PF12
+    fields: {TRTYPCD: "09", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none

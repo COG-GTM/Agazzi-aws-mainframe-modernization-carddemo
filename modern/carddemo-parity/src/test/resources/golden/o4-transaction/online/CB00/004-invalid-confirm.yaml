@@ -1,0 +1,22 @@
+# COBIL00 conferma non valida
+id: CB00-004
+title: conferma non valida
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: '00000000001'
+    CONFIRM: X
+  expect:
+    message: Invalid value. Valid values are (Y/N)...
+    fieldErrors:
+    - CONFIRM

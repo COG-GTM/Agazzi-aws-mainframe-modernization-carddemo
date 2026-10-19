@@ -1,0 +1,12 @@
+# COCRDUPC 9100-GETCARD-BYACCTCARD NOTFND
+id: CCUP-007
+title: carta non trovata
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: '9999999999999999'
+  expect:
+    message: Did not find cards for this search condition

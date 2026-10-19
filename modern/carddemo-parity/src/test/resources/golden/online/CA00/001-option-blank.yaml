@@ -1,0 +1,15 @@
+# COADM01C PROCESS-ENTER-KEY: OPTION = SPACES -> WS-OPTION = ZEROS -> invalid option.
+id: CA00-001
+title: ENTER senza opzione
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: ""}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "Please enter a valid option number..."
+      fieldErrors: []
+      dbDelta: none

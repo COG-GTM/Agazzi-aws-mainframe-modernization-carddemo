@@ -1,0 +1,22 @@
+# COACTUPC 1225 alpha
+id: CAUP-034
+title: 'errore: First Name can have alphabets only.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSFNAM: J0hn
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: First Name can have alphabets only.
+    fieldErrors:
+    - ACSFNAM
+    dbDelta: none

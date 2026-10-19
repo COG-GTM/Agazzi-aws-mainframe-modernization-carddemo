@@ -1,0 +1,12 @@
+# b1-posting golden: TRANBKP STEP05R (PROC=REPROC, IDCAMS REPRO TRANSACT.VSAM.KSDS ->
+# TRANSACT.BKUP(+1)) on the transactions posted by b1-posting/POSTTRAN. STEP05/STEP10 (DELETE/DEFINE
+# CLUSTER) leave an empty cluster and are verified by the Java tests.
+job: TRANBKP
+jcl: app/jcl/TRANBKP.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y, input: "golden:../b1-posting/POSTTRAN/expected/TRANSACT.dat"}
+  TRANBKUP: {org: ps, lrecl: 350, layout: CVTRA05Y}
+steps:
+  - {name: STEP05R, kind: repro, infile: TRANSACT, outfile: TRANBKUP}
+outputs: [TRANBKUP]

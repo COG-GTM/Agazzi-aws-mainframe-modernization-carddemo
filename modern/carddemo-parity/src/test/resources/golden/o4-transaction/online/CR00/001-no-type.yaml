@@ -1,0 +1,21 @@
+# CORPT00 nessun tipo selezionato
+id: CR00-001
+title: nessun tipo selezionato
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect:
+    message: null
+- action: ENTER
+  fields: {}
+  expect:
+    message: Select a report type to print report...
+    fieldErrors:
+    - MONTHLY

@@ -1,0 +1,18 @@
+# b1-posting golden: CBTRN02C (POSTTRAN STEP15) with an empty DALYTRAN — RC=0, empty DALYREJS,
+# master files unchanged.
+job: POSTTRAN-EMPTY
+jcl: app/jcl/POSTTRAN.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  DALYTRAN: {org: ps, lrecl: 350, layout: CVTRA06Y, init_empty: true}
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  DALYREJS: {org: ps, lrecl: 430, layout: DALYREJS, init_empty: true}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "seed:acctdata.txt"}
+  TCATBALF: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y, input: "seed:tcatbal.txt"}
+steps:
+  - name: STEP15
+    program: CBTRN02C
+    dd: {DALYTRAN: DALYTRAN, TRANFILE: TRANSACT, XREFFILE: CARDXREF, DALYREJS: DALYREJS,
+         ACCTFILE: ACCTDATA, TCATBALF: TCATBALF}
+outputs: [TRANSACT, DALYREJS, ACCTDATA, TCATBALF]

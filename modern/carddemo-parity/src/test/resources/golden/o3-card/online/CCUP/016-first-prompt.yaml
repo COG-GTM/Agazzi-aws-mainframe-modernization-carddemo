@@ -1,0 +1,13 @@
+# COCRDUPC 1200-EDIT-MAP-INPUTS: ENTER on the prompt without keys keeps asking for them
+id: CCUP-016
+title: prompt iniziale
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields: {}
+  expect:
+    message: Please enter Account and Card Number
+    fieldErrors:
+    - ACCTSID
+    - CARDSID

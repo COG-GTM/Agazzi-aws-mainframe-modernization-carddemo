@@ -1,0 +1,15 @@
+# 9200-GETCARDXREF-BYACCT NOTFND.
+id: CAUP-004
+title: conto non in xref
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: 00000000099
+  expect:
+    message: Account:00000000099 not found in Cross ref file.  Resp:000000013  Reas:0000
+    fieldErrors:
+    - ACCTSID

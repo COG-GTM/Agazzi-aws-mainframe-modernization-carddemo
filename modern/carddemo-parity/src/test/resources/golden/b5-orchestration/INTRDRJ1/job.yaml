@@ -1,0 +1,11 @@
+# Golden master for app/jcl/INTRDRJ1.JCL step IDCAMS (REPRO) — owner b5-orchestration.
+# STEP01 (IEBGENER -> INTRDR) only submits INTRDRJ2: verified by the orchestration tests.
+job: INTRDRJ1
+jcl: app/jcl/INTRDRJ1.JCL
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  FTPTEST: {org: ps, lrecl: 80, input: "input/FTPTEST.txt"}
+  FTPBKUP: {org: ps, lrecl: 80, init_empty: true}
+steps:
+  - {name: IDCAMS, kind: repro, infile: FTPTEST, outfile: FTPBKUP}
+outputs: [FTPBKUP]

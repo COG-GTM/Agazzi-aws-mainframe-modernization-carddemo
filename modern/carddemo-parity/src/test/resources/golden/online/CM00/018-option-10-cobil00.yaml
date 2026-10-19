@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 10 (Bill Payment) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-018
+title: opzione 10 -> COBIL00
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "10"}
+    expect:
+      screen: COMEN01
+      nextScreen: COBIL00
+      fieldErrors: []
+      dbDelta: none

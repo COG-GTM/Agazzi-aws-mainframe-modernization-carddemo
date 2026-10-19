@@ -1,0 +1,29 @@
+# EVALUATE EIBAID in COUSR03C.
+id: CU03-003
+title: PF4, PF12, PF3 e tasto non valido
+tranid: CU03
+screen: COUSR03
+steps:
+  - method: GET
+    screen: COUSR00
+  - action: ENTER
+    screen: COUSR00
+    fields: {SEL0007: "d"}
+    expect:
+      nextScreen: COUSR03
+  - action: PF3
+    expect:
+      nextScreen: COUSR00
+      dbDelta: none
+  - action: PF4
+    fields: {USRIDIN: "USER0001"}
+    expect:
+      message: null
+      data: {USRIDIN: ""}
+  - action: PF10
+    fields: {USRIDIN: "USER0001"}
+    expect:
+      message: "Invalid key pressed. Please see below..."
+  - action: PF12
+    expect:
+      nextScreen: COADM01

@@ -1,0 +1,13 @@
+# COMEN01C DFHPF3 -> MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM, RETURN-TO-SIGNON-SCREEN (XCTL).
+id: CM00-006
+title: PF3 torna al sign-on (logout)
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: PF3
+    fields: {}
+    expect:
+      nextScreen: COSGN00
+      fieldErrors: []
+      dbDelta: none

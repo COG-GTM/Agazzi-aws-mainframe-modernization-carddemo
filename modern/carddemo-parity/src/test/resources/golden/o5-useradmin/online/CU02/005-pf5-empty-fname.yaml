@@ -1,0 +1,12 @@
+# UPDATE-USER-INFO validation order.
+id: CU02-005
+title: PF5 con FNAME vuoto
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "", LNAME: "", PASSWD: "", USRTYPE: ""}
+    expect:
+      message: "First Name can NOT be empty..."
+      fieldErrors: [FNAME]
+      dbDelta: none

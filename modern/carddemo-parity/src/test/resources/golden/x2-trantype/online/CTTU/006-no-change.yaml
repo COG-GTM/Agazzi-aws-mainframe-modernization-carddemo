@@ -1,0 +1,31 @@
+# 1205-COMPARE-OLD-NEW.
+id: CTTU-006
+title: Nessuna modifica
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: "PURCHASE"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "No change detected with respect to values fetched."
+      fieldErrors: []
+      dbDelta: none

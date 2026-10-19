@@ -1,0 +1,18 @@
+# COBIL00 tasto non valido
+id: CB00-011
+title: tasto non valido
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: PF7
+  fields: {}
+  expect:
+    message: Invalid key pressed. Please see below...

@@ -1,0 +1,47 @@
+# PF5 su not found -> create; 9600 +100 -> 9700-INSERT-RECORD.
+id: CTTU-008
+title: Inserimento nuovo tipo
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "09", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Press F05 to add. F12 to cancel"
+      fieldErrors: [TRTYPCD]
+      dbDelta: none
+  - action: PF5
+    fields: {TRTYPCD: "09", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter new transaction type details."
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "09", TRTYDSC: "Interest"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes validated.Press F5 to save"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF5
+    fields: {TRTYPCD: "09", TRTYDSC: "Interest"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes committed to database"
+      fieldErrors: []
+      dbDelta: [INSERT transaction_type 09]

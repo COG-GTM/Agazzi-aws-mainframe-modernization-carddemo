@@ -1,0 +1,14 @@
+# COADM01C WHEN OTHER -> CCDA-MSG-INVALID-KEY, SEND-MENU-SCREEN.
+id: CA00-007
+title: tasto non valido
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: PF8
+    fields: {}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "Invalid key pressed. Please see below..."
+      dbDelta: none

@@ -1,0 +1,14 @@
+# COCRDLIC 9500-FILTER-RECORDS: card filter
+id: CCLI-009
+title: filtro per carta
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields:
+    CARDSID: 0923877193247330
+  expect:
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    data:
+      CRDNUM1: 0923877193247330
+      CRDNUM2: null

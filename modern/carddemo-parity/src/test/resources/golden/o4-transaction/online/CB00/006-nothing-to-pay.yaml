@@ -1,0 +1,26 @@
+# COBIL00 saldo zero
+id: CB00-006
+title: saldo zero
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+given:
+  seed: default
+  sql:
+  - UPDATE account SET acct_curr_bal = 0 WHERE acct_id = 1
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: '00000000001'
+    CONFIRM: Y
+  expect:
+    message: You have nothing to pay...
+    fieldErrors:
+    - ACTIDIN

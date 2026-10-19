@@ -1,0 +1,10 @@
+# WAITSTEP variant: SYSIN '' (edge case) — owner b5-orchestration.
+job: WAITSTEP
+jcl: app/jcl/WAITSTEP.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets: {}
+steps:
+  - name: WAIT
+    program: COBSWAIT
+    sysin: "\n"
+outputs: []

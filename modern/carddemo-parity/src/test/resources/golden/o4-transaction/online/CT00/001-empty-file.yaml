@@ -1,0 +1,21 @@
+# COTRN00 TRANSACT vuoto: STARTBR NOTFND - STARTBR-TRANSACT-FILE NOTFND
+id: CT00-001
+title: 'TRANSACT vuoto: STARTBR NOTFND'
+tranid: CT00
+screen: COTRN00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COTRN00C
+  tranid: CT00
+steps:
+- get: true
+  expect:
+    message: You are at the top of the page...
+    fields:
+      PAGENUM: '00000000'
+      TRNNAME: CT00
+      PGMNAME: COTRN00C
+      CURDATE: 07/18/22
+    nextScreen: null

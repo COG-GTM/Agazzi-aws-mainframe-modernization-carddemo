@@ -1,0 +1,15 @@
+# COMEN01C PROCESS-ENTER-KEY: WS-OPTION = ZEROS -> invalid option.
+id: CM00-004
+title: opzione 00
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "00"}
+    expect:
+      screen: COMEN01
+      nextScreen: null
+      message: "Please enter a valid option number..."
+      fieldErrors: []
+      dbDelta: none

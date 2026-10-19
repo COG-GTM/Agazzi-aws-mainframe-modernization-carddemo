@@ -1,0 +1,17 @@
+# 1200-EDIT-MAP-INPUTS: FLG-ACCTFILTER-BLANK -> NO-SEARCH-CRITERIA-RECEIVED.
+id: CAUP-002
+title: conto vuoto
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: ''
+  expect:
+    message: No input received
+    fieldErrors:
+    - ACCTSID
+    data:
+      ACCTSID: '*'
