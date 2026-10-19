@@ -107,6 +107,19 @@ class SupportTest {
             .toJobParameters();
     assertThatThrownBy(() -> DatasetSource.from(db, null))
         .isInstanceOf(IllegalStateException.class);
+    JobParameters storageDb =
+        new JobParametersBuilder()
+            .addString(DatasetCatalog.DATASET_DIR, dir.toString())
+            .addString(DatasetSource.STORAGE, "db")
+            .toJobParameters();
+    assertThatThrownBy(() -> DatasetSource.from(storageDb, null))
+        .isInstanceOf(IllegalStateException.class);
+    JobParameters filesOverride =
+        new JobParametersBuilder(storageDb)
+            .addString(DatasetSource.SOURCE, "files")
+            .toJobParameters();
+    assertThat(DatasetSource.from(filesOverride, null).catalog().path("TRANSACT"))
+        .isEqualTo(dir.resolve("TRANSACT.dat"));
   }
 
   @Test

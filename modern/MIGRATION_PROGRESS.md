@@ -34,16 +34,36 @@ Aggiornata dal leader a ogni merge (piano §4.5). Ordine di merge suggerito: 1C 
   - `Corpt00Response.reportExecutionId`;
   - `sshd-sftp` in `dependencyManagement`.
 
+## Fase 5A — integrazione finale (`migration/5a-integration` → `migration/phase-5`, [#57](https://github.com/COG-GTM/Agazzi-aws-mainframe-modernization-carddemo/pull/57))
+
+Dettagli, comandi e numeri in `docs/PHASE5_REPORT.md`.
+
+| Voce | Stato | Note |
+|---|---|---|
+| Merge `phase-1-4` su `phase-5` (5B #55, 5C #53, 5D #52) | ✅ | conflitti su `pom.xml`, progress, PE, ownership, workflow |
+| `modern/security` nel reactor + O1 (Spring Security + Spring Session JDBC, CSRF) | ✅ | `Fase0SecurityAutoConfiguration` rimossa; profili `local`/`it`/`aws` |
+| Chiave sessione unica `ConversationContext.SESSION_ATTRIBUTE` (F6) + stato Serializable (F1) | ✅ | O1–O5, `CoactvwcService.State` |
+| F2 CCLI per account (indice `card_acct_id`, equivalente CARDAIX) | ✅ codice | p95 a 200 VU: vedi report §5 |
+| F3 chunk POSTTRAN, INTCALC, COMBTRAN STEP10 | ✅ | commit ogni 1.000 record / 500 account |
+| F4 `carddemo-app` non-web per i job batch | ✅ | `run-job.sh POSTTRAN` → COMPLETED |
+| `fullBatchCycle` con TRANBKP prima di COMBTRAN | ✅ | come `scripts/run_full_batch.sh` |
+| O4 `reportExecutionId` nel body, O6 `x-runtime-input` editabili | ✅ | |
+| Porte v1.1: `AdminMenuContributor` (X2), ack `MessageChannelPort` (X3) | ✅ | CA00 statico e `GenerationStore.define` in B4: non adottati (report §1) |
+| Env SQS/S3 allineati a `deploy/` (`local.container_env`) | ✅ | |
+| Finding 5D EBCDIC ≠ ASCII (ACCTDATA, DISCGRP) | ✅ verificato | sorgente canonica da decidere (1B) |
+| Parità L1–L5, cutover smoke/selftest/round-trip, `terraform validate` | ✅ | report §2, §6 |
+| CREASTMT ×1000 | ⚠️ | abend voluto: CBSTM03A carica tutto TRNXFILE in `WS-CARD-TBL OCCURS 51` × `WS-TRAN-TBL OCCURS 10`; ×1000 ha 50.000 carte distinte. Limite del programma legacy, non della migrazione (report §5) |
+
 ## Follow-up aperti (non bloccanti, decisione leader / owner)
 
-- **Sessione online.** O1 salva il contesto come JSON sotto `carddemo.conversationContext`, mentre O2–O5 lo leggono come oggetto sotto `ConversationContext.class.getName()`. Gli owner devono migrare entrambi su `ConversationContext.SESSION_ATTRIBUTE` (v1.1).
-- **Adozione v1.1 nei moduli.**
+- ~~**Sessione online.**~~ risolto in 5A (#57). O1 salvava il contesto come JSON sotto `carddemo.conversationContext`, mentre O2–O5 lo leggono come oggetto sotto `ConversationContext.class.getName()`. Gli owner devono migrare entrambi su `ConversationContext.SESSION_ATTRIBUTE` (v1.1).
+- **Adozione v1.1 nei moduli.** In 5A (#57) fatti O3/X2 `Input`, O4 `reportExecutionId`, X3 ack; restano CA00 da `AdminMenuContributor` (O1, statico per lo scenario `CA00-004`) e B4 `GenerationStore.define`.
   - O3 e X2 devono passare dagli adattatori locali ai nuovi campi `Input`.
   - O4 deve valorizzare `reportExecutionId` nel body.
   - O1 deve costruire CA00 dai bean `AdminMenuContributor`.
   - B4 deve usare `GenerationStore.define`.
   - X3 deve usare l'ack esplicito.
-- **O6 frontend.** I campi `x-runtime-input` (`CRDSEL*`, `TRTSEL*`, `ACCTSID`) non sono ancora editabili nella SPA, che usa gli attributi BMS statici.
+- ~~**O6 frontend.**~~ risolto in 5A (#57). I campi `x-runtime-input` (`CRDSEL*`, `TRTSEL*`, `ACCTSID`) non sono ancora editabili nella SPA, che usa gli attributi BMS statici.
 - **Non applicati.** Questi cambi non sono additivi o richiedono una decisione:
   - `RECSTAMP` (O5);
   - HTTP-session in `OnlineScenarioRunner` (O2);
