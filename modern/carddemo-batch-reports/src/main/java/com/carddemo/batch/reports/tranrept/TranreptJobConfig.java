@@ -3,7 +3,6 @@ package com.carddemo.batch.reports.tranrept;
 import static com.carddemo.batch.reports.config.ReportsJobSupport.step;
 
 import com.carddemo.batch.reports.config.ReportsJobSupport;
-import com.carddemo.batch.reports.support.JobAbendException;
 import com.carddemo.batch.reports.support.RecordSort;
 import com.carddemo.batch.reports.tranrept.Cbtrn03cService.DateParm;
 import java.util.List;
@@ -30,6 +29,10 @@ public class TranreptJobConfig {
   public static final String STEP_REPROC = "STEP05R-REPROC";
   public static final String STEP_SORT = "STEP05R-SORT";
   public static final String STEP_REPORT = "STEP10R";
+
+  /** In-stream SYMNAMES of TRANREPT.jcl, used by the SORT when no date range is supplied. */
+  static final DateParm SYMNAMES_DEFAULT = new DateParm("2022-01-01", "2022-07-06");
+
   public static final String START_DATE = "startDate";
   public static final String END_DATE = "endDate";
 
@@ -57,9 +60,9 @@ public class TranreptJobConfig {
                 jdbc,
                 ctx -> {
                   var ds = ctx.datasets();
-                  DateParm range = dateParm(ctx.params(), ds.sequential("DATEPARM", 80));
+                  DateParm range = dateParm(ctx.params(), ds.optional("DATEPARM", 80));
                   if (range == null) {
-                    throw new JobAbendException("SORT", "no date range (DATEPARM empty)");
+                    range = SYMNAMES_DEFAULT;
                   }
                   ds.write(
                       "TRANDALY",
@@ -81,7 +84,7 @@ public class TranreptJobConfig {
                 jdbc,
                 ctx -> {
                   var ds = ctx.datasets();
-                  DateParm range = dateParm(ctx.params(), ds.sequential("DATEPARM", 80));
+                  DateParm range = dateParm(ctx.params(), ds.optional("DATEPARM", 80));
                   var lookups =
                       new Cbtrn03cService.Lookups(
                           ds.ksds("CARDXREF", 50, 0, 16),

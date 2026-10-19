@@ -60,11 +60,23 @@ class TranreptJobTest {
   }
 
   @Test
-  void missingDateRangeAbendsSort() throws Exception {
+  void emptyDateParmSortsWithSymnamesAndReportsNothing() throws Exception {
     Files.writeString(dir.resolve("DATEPARM.dat"), "");
     JobExecution e = launcher.run(job, B3Fixtures.params(dir, "run", "nodates"));
+    assertThat(e.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    assertThat(B3Fixtures.returnCodes(e))
+        .containsEntry("STEP05R-SORT", 0)
+        .containsEntry("STEP10R", 0);
+    assertThat(B3Fixtures.bytes(dir.resolve("TRANREPT.dat"))).isEmpty();
+  }
+
+  @Test
+  void missingTransactDatasetAbends() throws Exception {
+    Files.delete(dir.resolve("TRANSACT.dat"));
+    JobExecution e = launcher.run(job, B3Fixtures.params(dir, "run", "nofile"));
     assertThat(e.getExitStatus().getExitCode()).isEqualTo("ABEND");
-    assertThat(B3Fixtures.returnCodes(e)).containsEntry("STEP05R-SORT", 16);
+    assertThat(e.getExitStatus().getExitDescription()).contains("DATASET NOT FOUND");
+    assertThat(B3Fixtures.returnCodes(e)).containsEntry("STEP05R-REPROC", 16);
   }
 
   @Test

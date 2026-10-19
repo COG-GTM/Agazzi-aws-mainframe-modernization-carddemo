@@ -40,6 +40,7 @@ public class Txt2pdf1JobConfig {
                       TextToPdf.render(ds.sequential("STMTPS", Cbstm03aService.STMT_LRECL));
                   Path out = ds.catalog().path("STMTPDF");
                   try {
+                    Files.createDirectories(out.toAbsolutePath().getParent());
                     Files.write(out, pdf);
                   } catch (IOException e) {
                     throw new UncheckedIOException(e);
