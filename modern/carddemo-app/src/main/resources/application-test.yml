@@ -1,0 +1,7 @@
+# Automated tests: seed + fixed business clock identical to the GnuCOBOL golden harness.
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
+carddemo:
+  clock:
+    fixed: "2022-07-18T12:00:00"

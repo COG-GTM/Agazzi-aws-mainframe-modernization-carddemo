@@ -1,0 +1,10 @@
+# docker-compose / developer laptop: PostgreSQL 16 + LocalStack SQS, immutable Fase 0 seed.
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
+carddemo:
+  messaging:
+    type: sqs
+    sqs:
+      endpoint: ${CARDDEMO_SQS_ENDPOINT:http://localhost:4566}
+      region: us-east-1

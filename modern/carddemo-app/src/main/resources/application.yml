@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: carddemo
+  datasource:
+    url: ${CARDDEMO_DB_URL:jdbc:postgresql://localhost:5432/carddemo}
+    username: ${CARDDEMO_DB_USER:carddemo}
+    password: ${CARDDEMO_DB_PASSWORD:carddemo}
+  flyway:
+    locations: classpath:db/migration
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+carddemo:
+  messaging:
+    type: in-memory
