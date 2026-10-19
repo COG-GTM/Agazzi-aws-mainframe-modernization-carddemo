@@ -45,6 +45,21 @@
          05 WS-USR-MODIFIED            PIC X(01) VALUE 'N'.
            88 USR-MODIFIED-YES                   VALUE 'Y'.
            88 USR-MODIFIED-NO                    VALUE 'N'.
+         05 WS-USRTYPE-INPUT           PIC X(01) VALUE SPACES.
+         05 WS-ADMIN-FLG               PIC X(01) VALUE 'N'.
+           88 CALLER-IS-ADMIN                    VALUE 'Y'.
+           88 CALLER-NOT-ADMIN                   VALUE 'N'.
+
+      * Security record of the signed on user, read back from USRSEC to
+      * re-derive the caller privilege instead of trusting the COMMAREA
+       01 WS-AUTH-USER-DATA.
+         05 WS-AUTH-USR-ID             PIC X(08).
+         05 WS-AUTH-USR-FNAME          PIC X(20).
+         05 WS-AUTH-USR-LNAME          PIC X(20).
+         05 WS-AUTH-USR-PWD            PIC X(08).
+         05 WS-AUTH-USR-TYPE           PIC X(01).
+           88 WS-AUTH-USR-ADMIN                  VALUE 'A'.
+         05 WS-AUTH-USR-FILLER         PIC X(23).
 
        COPY COCOM01Y.
           05 CDEMO-CU02-INFO.
@@ -92,6 +107,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM CHECK-ADMIN-AUTHORIZATION
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COUSR2AO
@@ -142,6 +158,10 @@
       *----------------------------------------------------------------*
        PROCESS-ENTER-KEY.
 
+           IF CALLER-NOT-ADMIN
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF
+
            EVALUATE TRUE
                WHEN USRIDINI OF COUSR2AI = SPACES OR LOW-VALUES
                    MOVE 'Y'     TO WS-ERR-FLG
@@ -166,7 +186,7 @@
            IF NOT ERR-FLG-ON
                MOVE SEC-USR-FNAME      TO FNAMEI    OF COUSR2AI
                MOVE SEC-USR-LNAME      TO LNAMEI    OF COUSR2AI
-               MOVE SEC-USR-PWD        TO PASSWDI   OF COUSR2AI
+               MOVE SPACES             TO PASSWDI   OF COUSR2AI
                MOVE SEC-USR-TYPE       TO USRTYPEI  OF COUSR2AI
                PERFORM SEND-USRUPD-SCREEN
            END-IF.
@@ -175,6 +195,13 @@
       *                      UPDATE-USER-INFO
       *----------------------------------------------------------------*
        UPDATE-USER-INFO.
+
+           IF CALLER-NOT-ADMIN
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF
+
+           MOVE FUNCTION UPPER-CASE(USRTYPEI OF COUSR2AI)
+                                            TO WS-USRTYPE-INPUT
 
            EVALUATE TRUE
                WHEN USRIDINI OF COUSR2AI = SPACES OR LOW-VALUES
@@ -195,15 +222,16 @@
                                    WS-MESSAGE
                    MOVE -1       TO LNAMEL OF COUSR2AI
                    PERFORM SEND-USRUPD-SCREEN
-               WHEN PASSWDI OF COUSR2AI = SPACES OR LOW-VALUES
-                   MOVE 'Y'     TO WS-ERR-FLG
-                   MOVE 'Password can NOT be empty...' TO
-                                   WS-MESSAGE
-                   MOVE -1       TO PASSWDL OF COUSR2AI
-                   PERFORM SEND-USRUPD-SCREEN
                WHEN USRTYPEI OF COUSR2AI = SPACES OR LOW-VALUES
                    MOVE 'Y'     TO WS-ERR-FLG
                    MOVE 'User Type can NOT be empty...' TO
+                                   WS-MESSAGE
+                   MOVE -1       TO USRTYPEL OF COUSR2AI
+                   PERFORM SEND-USRUPD-SCREEN
+               WHEN WS-USRTYPE-INPUT NOT = 'A' AND
+                    WS-USRTYPE-INPUT NOT = 'U'
+                   MOVE 'Y'     TO WS-ERR-FLG
+                   MOVE 'User Type must be A (Admin) or U (User)...' TO
                                    WS-MESSAGE
                    MOVE -1       TO USRTYPEL OF COUSR2AI
                    PERFORM SEND-USRUPD-SCREEN
@@ -224,16 +252,21 @@
                    MOVE LNAMEI   OF COUSR2AI TO SEC-USR-LNAME
                    SET USR-MODIFIED-YES TO TRUE
                END-IF
-               IF PASSWDI  OF COUSR2AI NOT = SEC-USR-PWD
+      *        A blank password field leaves the stored password as is
+               IF PASSWDI  OF COUSR2AI NOT = SPACES AND LOW-VALUES
+                  AND PASSWDI OF COUSR2AI NOT = SEC-USR-PWD
                    MOVE PASSWDI  OF COUSR2AI TO SEC-USR-PWD
                    SET USR-MODIFIED-YES TO TRUE
                END-IF
-               IF USRTYPEI  OF COUSR2AI NOT = SEC-USR-TYPE
-                   MOVE USRTYPEI OF COUSR2AI TO SEC-USR-TYPE
+               IF WS-USRTYPE-INPUT NOT = SEC-USR-TYPE
+                   MOVE WS-USRTYPE-INPUT     TO SEC-USR-TYPE
                    SET USR-MODIFIED-YES TO TRUE
                END-IF
 
                IF USR-MODIFIED-YES
+                   IF CALLER-NOT-ADMIN
+                       PERFORM SEND-NOT-AUTHORIZED
+                   END-IF
                    PERFORM UPDATE-USER-SEC-FILE
                ELSE
                    MOVE 'Please modify to update ...' TO
@@ -243,6 +276,56 @@
                END-IF
 
            END-IF.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-ADMIN-AUTHORIZATION
+      *----------------------------------------------------------------*
+      * Updating a user is an administrator only function. The caller
+      * privilege is read back from USRSEC using the signed on user id
+      * so that a forged/propagated COMMAREA cannot grant admin rights.
+      * Non administrators never reach the USRSEC read/rewrite.
+       CHECK-ADMIN-AUTHORIZATION.
+
+           SET CALLER-NOT-ADMIN TO TRUE
+
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF
+
+           EXEC CICS READ
+                DATASET   (WS-USRSEC-FILE)
+                INTO      (WS-AUTH-USER-DATA)
+                LENGTH    (LENGTH OF WS-AUTH-USER-DATA)
+                RIDFLD    (CDEMO-USER-ID)
+                KEYLENGTH (LENGTH OF CDEMO-USER-ID)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD = DFHRESP(NORMAL) AND WS-AUTH-USR-ADMIN
+               SET CALLER-IS-ADMIN TO TRUE
+           ELSE
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      SEND-NOT-AUTHORIZED
+      *----------------------------------------------------------------*
+      * Ends the task, the caller is not allowed to run this function
+       SEND-NOT-AUTHORIZED.
+
+           MOVE 'You are not authorized to update users ...'
+                                       TO WS-MESSAGE
+
+           EXEC CICS SEND TEXT
+                     FROM(WS-MESSAGE)
+                     LENGTH(LENGTH OF WS-MESSAGE)
+                     ERASE
+                     FREEKB
+           END-EXEC
+
+           EXEC CICS RETURN
+           END-EXEC.
 
       *----------------------------------------------------------------*
       *                      RETURN-TO-PREV-SCREEN
