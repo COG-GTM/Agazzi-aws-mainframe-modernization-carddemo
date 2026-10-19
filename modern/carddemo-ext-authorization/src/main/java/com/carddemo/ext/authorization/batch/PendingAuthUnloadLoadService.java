@@ -117,7 +117,7 @@ public class PendingAuthUnloadLoadService {
     int i = 0;
     while (i + 2 <= dat.length) {
       int len = ((dat[i] & 0xFF) << 8) | (dat[i + 1] & 0xFF);
-      if (len < 2) {
+      if (len < 2 || i + len > dat.length) {
         break;
       }
       if (len >= HD_DATA + PendingAuthSegments.SUMMARY_LENGTH) {

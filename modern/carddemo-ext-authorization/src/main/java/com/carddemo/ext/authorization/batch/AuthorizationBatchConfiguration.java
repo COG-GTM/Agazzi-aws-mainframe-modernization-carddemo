@@ -4,6 +4,7 @@ import com.carddemo.ext.authorization.codec.PendingAuthSegments;
 import com.carddemo.ext.authorization.config.ConditionalOnAuthorizationExtension;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -54,8 +55,12 @@ public class AuthorizationBatchConfiguration {
                 (contribution, ctx) -> {
                   var p = contribution.getStepExecution().getJobParameters();
                   PendingAuthUnloadLoadService.Unload u = s.unload(PendingAuthSegments.ASCII);
-                  Files.write(Path.of(p.getString("roots")), u.roots());
-                  Files.write(Path.of(p.getString("children")), u.children());
+                  Path roots = Path.of(p.getString("roots"));
+                  Path children = Path.of(p.getString("children"));
+                  Path rootsTmp = Files.write(sibling(roots), u.roots());
+                  Path childrenTmp = Files.write(sibling(children), u.children());
+                  Files.move(childrenTmp, children, StandardCopyOption.REPLACE_EXISTING);
+                  Files.move(rootsTmp, roots, StandardCopyOption.REPLACE_EXISTING);
                   return RepeatStatus.FINISHED;
                 },
                 tx)
@@ -99,5 +104,10 @@ public class AuthorizationBatchConfiguration {
                 tx)
             .build();
     return new JobBuilder("DBPAUTP0", repo).start(step).build();
+  }
+
+  /** Both segment files are written completely before either replaces the previous unload. */
+  private static Path sibling(Path target) {
+    return target.resolveSibling(target.getFileName() + ".tmp");
   }
 }

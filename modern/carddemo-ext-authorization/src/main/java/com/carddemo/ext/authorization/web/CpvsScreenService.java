@@ -172,7 +172,7 @@ public class CpvsScreenService {
       c.msg = MSG_TOP;
       if (c.st.acctId != null) {
         accountDetails(c);
-        rows(c, List.of());
+        keepRowsOnScreen(c);
       }
     }
   }
@@ -226,6 +226,13 @@ public class CpvsScreenService {
     rows(c, page);
   }
 
+  /** SEND-ERASE-NO without repaint: the 3270 keeps the previous rows and their attributes. */
+  private void keepRowsOnScreen(Ctx c) {
+    String[] keys = c.st.authKeys.clone();
+    rows(c, List.of());
+    System.arraycopy(keys, 0, c.st.authKeys, 0, keys.length);
+  }
+
   private void rows(Ctx c, List<PendingAuthDetail> page) {
     for (int i = 0; i < 5; i++) {
       String n = String.valueOf(i + 1);
@@ -240,6 +247,7 @@ public class CpvsScreenService {
         c.out.put("PSTAT0" + n, d.getMatchStatus());
         c.out.put("PAMT00" + n, ScreenFormat.amount(d.getApprovedAmt(), 8));
       } else {
+        c.st.authKeys[i] = null;
         for (String p : List.of("TRNID0", "PDATE0", "PTIME0", "PTYPE0", "PAPRV0", "PSTAT0")) {
           c.out.put(p + n, "");
         }

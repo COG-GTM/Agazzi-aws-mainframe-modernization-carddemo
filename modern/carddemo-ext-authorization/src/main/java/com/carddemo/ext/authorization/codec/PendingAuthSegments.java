@@ -22,9 +22,19 @@ public final class PendingAuthSegments {
   private static final HexFormat HEX = HexFormat.of();
 
   private final Charset charset;
+  private final byte[] toLatin = new byte[256];
+  private final byte[] fromLatin = new byte[256];
 
   public PendingAuthSegments(Charset charset) {
     this.charset = charset;
+    for (int v = 0; v < 256; v++) {
+      char ch = new String(new byte[] {(byte) v}, charset).charAt(0);
+      if (ch > 0xFF) {
+        throw new IllegalArgumentException(charset + " is not a single-byte Latin-1 code page");
+      }
+      toLatin[v] = (byte) ch;
+      fromLatin[ch] = (byte) v;
+    }
   }
 
   public Charset charset() {
@@ -164,12 +174,18 @@ public final class PendingAuthSegments {
       text(b, off, len, "");
       return;
     }
-    String latin = new String(HEX.parseHex(hex), ASCII);
-    System.arraycopy(latin.getBytes(charset), 0, b, off, len);
+    byte[] latin = HEX.parseHex(hex);
+    for (int i = 0; i < len; i++) {
+      b[off + i] = fromLatin[latin[i] & 0xFF];
+    }
   }
 
   private String rawHex(byte[] b, int off, int len) {
-    return HEX.formatHex(new String(b, off, len, charset).getBytes(ASCII));
+    byte[] latin = new byte[len];
+    for (int i = 0; i < len; i++) {
+      latin[i] = toLatin[b[off + i] & 0xFF];
+    }
+    return HEX.formatHex(latin);
   }
 
   private static void binary(byte[] b, int off, short v) {
