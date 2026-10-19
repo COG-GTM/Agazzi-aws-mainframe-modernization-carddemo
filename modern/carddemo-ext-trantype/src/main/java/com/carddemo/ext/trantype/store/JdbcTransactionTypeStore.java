@@ -12,9 +12,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Keyset queries via JDBC, writes through the shared {@link TransactionTypeRepository}. */
+/**
+ * Keyset queries via JDBC, writes through the shared {@link TransactionTypeRepository}. Each write
+ * is its own unit of work, so an expected SQLCODE (+100, -803, -532) never dooms the caller's
+ * transaction (the MNTTRDB2 step keeps going, like COBTUPDT).
+ */
 @Repository
 @TrantypeEnabled
 public class JdbcTransactionTypeStore implements TransactionTypeStore {
@@ -80,7 +85,7 @@ public class JdbcTransactionTypeStore implements TransactionTypeStore {
   }
 
   @Override
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = TrantypeSqlException.class)
   public void insert(String type, String description) {
     if (types.existsById(type)) {
       throw new TrantypeSqlException(
@@ -95,7 +100,7 @@ public class JdbcTransactionTypeStore implements TransactionTypeStore {
   }
 
   @Override
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = TrantypeSqlException.class)
   public void updateDescription(String type, String description) {
     TransactionType t =
         types
@@ -109,7 +114,7 @@ public class JdbcTransactionTypeStore implements TransactionTypeStore {
   }
 
   @Override
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = TrantypeSqlException.class)
   public void delete(String type) {
     if (!types.existsById(type)) {
       throw new TrantypeSqlException(
