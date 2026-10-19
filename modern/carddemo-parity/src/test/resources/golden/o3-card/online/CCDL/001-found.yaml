@@ -1,0 +1,20 @@
+# COCRDSLC 9000-READ-DATA: card found
+id: CCDL-001
+title: carta trovata
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect:
+    screen: COCRDSL
+    message: Displaying requested details
+    fieldErrors: []
+    dbDelta: none
+    data:
+      CRDNAME: Enrico Rosenbaum
+      CRDSTCD: Y
+      EXPMON: 08
+      EXPYEAR: '2024'

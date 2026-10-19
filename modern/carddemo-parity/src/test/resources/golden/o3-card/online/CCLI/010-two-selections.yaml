@@ -1,0 +1,18 @@
+# COCRDLIC 2250-EDIT-ARRAY: more than one row selected
+id: CCLI-010
+title: due selezioni
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: ENTER
+  fields:
+    CRDSEL1: S
+    CRDSEL2: U
+  expect:
+    message: PLEASE SELECT ONLY ONE RECORD TO VIEW OR UPDATE
+    fieldErrors:
+    - CRDSEL1
+    - CRDSEL2

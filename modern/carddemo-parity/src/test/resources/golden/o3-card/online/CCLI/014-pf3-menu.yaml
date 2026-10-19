@@ -1,0 +1,11 @@
+# COCRDLIC PF3: XCTL COMEN01C
+id: CCLI-014
+title: PF3 -> menu
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01
+    dbDelta: none

@@ -1,0 +1,21 @@
+# COCRDUPC 1250-EDIT-EXPIRY-MON
+id: CCUP-012
+title: mese non valido
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: ENRICO
+    CRDSTCD: Y
+    EXPMON: '13'
+    EXPYEAR: '2024'
+  expect:
+    message: Card expiry month must be between 1 and 12
+    fieldErrors:
+    - EXPMON
