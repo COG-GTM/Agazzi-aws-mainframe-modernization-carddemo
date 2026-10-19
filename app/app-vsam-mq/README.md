@@ -92,6 +92,34 @@ The CDRA transaction demonstrates how to retrieve account information via MQ:
 3. A listener program retrieves the account details from VSAM and sends them to the response queue
 4. The CDRA transaction retrieves and displays the account information
 
+### Account Inquiry Authorization
+
+Account details are only returned to a requester that is entitled to the
+account. COACCT01 does not trust anything in the message body for identity:
+
+1. The requester is taken from the MQ message context (`MQMD.UserIdentifier`)
+   of the request message. A blank identity is rejected.
+2. The identity is looked up in the `USRSEC` file. Unknown users are rejected.
+3. Administrators (`SEC-USR-TYPE = 'A'`) may inquire on any account.
+4. Regular users (`SEC-USR-TYPE = 'U'`) may only inquire on accounts belonging
+   to the customer they are entitled to (`SEC-USR-CUST-ID`), verified by
+   reading the card cross-reference by account id (`CXACAIX`).
+
+Any other outcome fails closed and the reply is
+`REQUEST DENIED - NOT AUTHORIZED`, with no account data.
+
+Because the identity comes from the message context, the request queue must be
+protected accordingly:
+
+- Grant `+put` on the request queue only to the applications allowed to submit
+  inquiries, and do not grant context authority (`+setall` / `+setid`) to them,
+  so the queue manager sets `MQMD.UserIdentifier` from the putting user.
+- Restrict `+get`/`+browse` on the reply queue (`CARD.DEMO.REPLY.ACCT`) to the
+  requesting applications.
+
+COACCT01 requires the `USRSEC` and `CXACAIX` files to be available to the CICS
+region (both are part of the base CardDemo CSD group).
+
 ## Technical Details
 
 ### Message Formats
