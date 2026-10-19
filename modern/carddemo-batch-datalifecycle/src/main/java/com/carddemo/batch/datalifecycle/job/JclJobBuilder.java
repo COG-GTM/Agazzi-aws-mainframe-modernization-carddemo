@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
@@ -37,6 +38,7 @@ public final class JclJobBuilder {
   private final PlatformTransactionManager tx;
   private final String name;
   private SimpleJobBuilder job;
+  private final java.util.List<JobExecutionListener> listeners = new java.util.ArrayList<>();
 
   public JclJobBuilder(JobRepository repository, PlatformTransactionManager tx, String name) {
     this.repository = repository;
@@ -62,7 +64,13 @@ public final class JclJobBuilder {
     return this;
   }
 
+  public JclJobBuilder listener(JobExecutionListener listener) {
+    listeners.add(listener);
+    return this;
+  }
+
   public Job build() {
+    listeners.forEach(job::listener);
     return job.build();
   }
 

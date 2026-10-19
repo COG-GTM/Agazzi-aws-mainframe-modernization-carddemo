@@ -102,6 +102,7 @@ public class DatalifecycleJobsConfiguration {
         .step("STEP50", Utilities.IDCAMS, u.defineIndex("PATH", aix + ".PATH", "card_acct_id"))
         .step("STEP60", Utilities.IDCAMS, u.bldIndex(KsdsTable.CARDDATA, aix))
         .step("OPCIFIL", Utilities.SDSF, u.cics(false, "CARDDAT", "CARDAIX"))
+        .listener(u.reopenOnFailure("CARDDAT", "CARDAIX"))
         .build();
   }
 
@@ -132,6 +133,7 @@ public class DatalifecycleJobsConfiguration {
             Utilities.IDCAMS,
             u.repro("CUSTDATA", HLQ + "CUSTDATA.PS", KsdsTable.CUSTDATA, 500))
         .step("OPCIFIL", Utilities.SDSF, u.cics(false, "CUSTDAT"))
+        .listener(u.reopenOnFailure("CUSTDAT"))
         .build();
   }
 
@@ -150,6 +152,7 @@ public class DatalifecycleJobsConfiguration {
         .step("STEP25", Utilities.IDCAMS, u.defineIndex("PATH", aix + ".PATH", "tran_proc_ts"))
         .step("STEP30", Utilities.IDCAMS, u.bldIndex(KsdsTable.TRANSACT, aix))
         .step("OPCIFIL", Utilities.SDSF, u.cics(false, "TRANSACT", "CXACAIX"))
+        .listener(u.reopenOnFailure("TRANSACT", "CXACAIX"))
         .build();
   }
 

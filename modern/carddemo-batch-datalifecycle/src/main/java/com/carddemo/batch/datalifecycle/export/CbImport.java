@@ -74,8 +74,13 @@ public final class CbImport {
             outputs.cards() == null ? dummy : outputs.cards(),
             outputs.errors());
     RecordSink[] sinks = new RecordSink[6];
-    for (int i = 0; i < 6; i++) {
-      sinks[i] = open(suppliers[i], OUTPUT_NAMES[i], sysout);
+    try {
+      for (int i = 0; i < 6; i++) {
+        sinks[i] = open(suppliers[i], OUTPUT_NAMES[i], sysout);
+      }
+    } catch (RuntimeException e) {
+      closeQuietly(in, sinks);
+      throw e;
     }
     sysout.display("CBIMPORT: Import Date: " + now.format(DateTimeFormatter.ISO_LOCAL_DATE));
     sysout.display("CBIMPORT: Import Time: " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
@@ -197,5 +202,22 @@ public final class CbImport {
 
     @Override
     public void close() {}
+  }
+
+  private static void closeQuietly(RecordSource in, RecordSink[] sinks) {
+    try {
+      in.close();
+    } catch (FileStatusException ignored) {
+      // the open failure is reported
+    }
+    for (RecordSink s : sinks) {
+      if (s != null) {
+        try {
+          s.close();
+        } catch (FileStatusException ignored) {
+          // the open failure is reported
+        }
+      }
+    }
   }
 }

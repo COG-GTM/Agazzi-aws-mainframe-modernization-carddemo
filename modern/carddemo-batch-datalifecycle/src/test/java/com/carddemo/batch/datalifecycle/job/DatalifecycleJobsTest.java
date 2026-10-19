@@ -348,4 +348,33 @@ class DatalifecycleJobsTest {
         .contains("ABENDING PROGRAM")
         .endsWith("---- RC=16\n");
   }
+
+  @Test
+  void failedRefreshReopensTheCicsFiles() throws Exception {
+    JobExecution e = launch("CARDFILE", "dd.CARDDATA", dir.resolve("absent.txt").toString());
+    assertThat(e.getStatus()).isEqualTo(BatchStatus.FAILED);
+    assertThat(exits(e)).containsEntry("CLCIFIL", "COMPLETED").doesNotContainKey("OPCIFIL");
+    assertThat(maintenance.inMaintenance()).isFalse();
+  }
+
+  @Test
+  void outOfSequenceReproEndsWithRc12() throws Exception {
+    List<String> lines =
+        Files.readAllLines(Goldens.seed("acctdata.txt"), StandardCharsets.ISO_8859_1);
+    Path rev = dir.resolve("rev.txt");
+    Files.write(rev, List.of(lines.get(1), lines.get(0)), StandardCharsets.ISO_8859_1);
+    JobExecution e = launch("ACCTFILE", "dd.ACCTDATA", rev.toString());
+    assertThat(exits(e)).containsEntry("STEP15", "RC=12");
+    assertThat(sysout(e)).contains("RECORD OUT OF SEQUENCE");
+    assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM account", Long.class)).isZero();
+  }
+
+  @Test
+  void cbimportWritesCardsToTheDefaultDataset() throws Exception {
+    JobExecution e =
+        launch("CBIMPORT", "dd.EXPFILE", Goldens.b4("CBEXPORT", "EXPDATA.dat").toString());
+    assertThat(e.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    assertThat(Files.size(dir.resolve("datasets/AWS.M2.CARDDEMO.CARDDATA.IMPORT")))
+        .isEqualTo(50 * 150);
+  }
 }

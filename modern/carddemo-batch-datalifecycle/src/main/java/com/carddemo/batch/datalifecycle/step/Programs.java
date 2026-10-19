@@ -91,14 +91,13 @@ public final class Programs {
     };
   }
 
-  /** CBIMPORT STEP01; CARDOUT is optional because the legacy JCL does not allocate it. */
+  /**
+   * CBIMPORT STEP01; the legacy JCL does not allocate CARDOUT, so it defaults to CARDDATA.IMPORT.
+   */
   public LegacyStep cbimport() {
     return env -> {
       Path in = env.dataset("EXPFILE", EXPORT_DSN);
-      Supplier<RecordSink> cards =
-          env.dd("CARDOUT")
-              .<Supplier<RecordSink>>map(p -> () -> RecordFiles.create(p))
-              .orElse(null);
+      Supplier<RecordSink> cards = out(env, "CARDOUT", "AWS.M2.CARDDEMO.CARDDATA.IMPORT");
       new CbImport(clock)
           .run(
               () -> RecordFiles.open(in, 500, 27, 4),

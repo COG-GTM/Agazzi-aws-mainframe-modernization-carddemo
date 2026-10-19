@@ -19,11 +19,15 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntToLongFunction;
 import java.util.function.UnaryOperator;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.dao.DataIntegrityViolationException;
 
 /** IDCAMS, IEFBR14, IEBGENER and SDSF/CEMT steps of the data lifecycle JCL. */
@@ -104,6 +108,13 @@ public final class Utilities {
       String inDd, String inDsn, KsdsTable table, int lrecl, UnaryOperator<Record> transform) {
     return env -> {
       List<byte[]> records = read(env, inDd, inDsn, lrecl);
+      int keyLen = keyLength(table);
+      for (int i = 1; i < records.size(); i++) {
+        if (Arrays.compareUnsigned(records.get(i - 1), 0, keyLen, records.get(i), 0, keyLen) >= 0) {
+          throw new ConditionCodeException(
+              12, "IDC3314I **RECORD OUT OF SEQUENCE OR DUPLICATE KEY ON " + table.dsn());
+        }
+      }
       try {
         tables.load(table, records, transform);
       } catch (DataIntegrityViolationException e) {
@@ -111,6 +122,17 @@ public final class Utilities {
             12, "IDC3314I **RECORD OUT OF SEQUENCE OR DUPLICATE KEY ON " + table.dsn(), e);
       }
       return reproEnd(env, records.size());
+    };
+  }
+
+  static int keyLength(KsdsTable table) {
+    return switch (table) {
+      case ACCTDATA -> 11;
+      case CARDDATA, CARDXREF, TRANSACT -> 16;
+      case CUSTDATA -> 9;
+      case TRANTYPE -> 2;
+      case TRANCATG -> 6;
+      case USRSEC -> 8;
     };
   }
 
@@ -172,6 +194,18 @@ public final class Utilities {
   }
 
   /** {@code CEMT SET FIL(..) CLO|OPE} issued through SDSF: online maintenance window. */
+  /** Reopens the CICS files closed by CLCIFIL when the job does not reach OPCIFIL. */
+  public JobExecutionListener reopenOnFailure(String... files) {
+    return new JobExecutionListener() {
+      @Override
+      public void afterJob(JobExecution execution) {
+        if (execution.getStatus() != BatchStatus.COMPLETED) {
+          maintenance.open(new LinkedHashSet<>(List.of(files)));
+        }
+      }
+    };
+  }
+
   public LegacyStep cics(boolean close, String... files) {
     return env -> {
       Set<String> set = new LinkedHashSet<>(List.of(files));
