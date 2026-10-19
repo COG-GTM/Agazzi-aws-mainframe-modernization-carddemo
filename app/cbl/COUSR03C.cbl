@@ -45,6 +45,15 @@
          05 WS-USR-MODIFIED            PIC X(01) VALUE 'N'.
            88 USR-MODIFIED-YES                   VALUE 'Y'.
            88 USR-MODIFIED-NO                    VALUE 'N'.
+         05 WS-AUTH-FLG                PIC X(01) VALUE 'N'.
+           88 ADMIN-AUTHORIZED                   VALUE 'Y'.
+           88 ADMIN-NOT-AUTHORIZED               VALUE 'N'.
+         05 WS-USER-SEC-EOF            PIC X(01) VALUE 'N'.
+           88 USER-SEC-EOF                       VALUE 'Y'.
+           88 USER-SEC-NOT-EOF                   VALUE 'N'.
+         05 WS-ADMIN-COUNT             PIC S9(04) COMP VALUE ZEROS.
+         05 WS-TARGET-USR-ID           PIC X(08) VALUE SPACES.
+         05 WS-TARGET-USR-TYPE         PIC X(01) VALUE SPACES.
            
        COPY COCOM01Y.
           05 CDEMO-CU03-INFO.
@@ -81,8 +90,9 @@
        PROCEDURE DIVISION.
        MAIN-PARA.
 
-           SET ERR-FLG-OFF     TO TRUE
-           SET USR-MODIFIED-NO TO TRUE
+           SET ERR-FLG-OFF          TO TRUE
+           SET USR-MODIFIED-NO      TO TRUE
+           SET ADMIN-NOT-AUTHORIZED TO TRUE
 
            MOVE SPACES TO WS-MESSAGE
                           ERRMSGO OF COUSR3AO
@@ -92,6 +102,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM VERIFY-ADMIN-AUTHORITY
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COUSR3AO
@@ -173,22 +184,163 @@
       *----------------------------------------------------------------*
        DELETE-USER-INFO.
 
-           EVALUATE TRUE
-               WHEN USRIDINI OF COUSR3AI = SPACES OR LOW-VALUES
-                   MOVE 'Y'     TO WS-ERR-FLG
-                   MOVE 'User ID can NOT be empty...' TO
-                                   WS-MESSAGE
-                   MOVE -1       TO USRIDINL OF COUSR3AI
-                   PERFORM SEND-USRDEL-SCREEN
-               WHEN OTHER
-                   MOVE -1       TO USRIDINL OF COUSR3AI
-                   CONTINUE
-           END-EVALUATE
+           IF NOT ADMIN-AUTHORIZED
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'You are not authorized to delete users...' TO
+                               WS-MESSAGE
+               MOVE -1       TO USRIDINL OF COUSR3AI
+               PERFORM SEND-USRDEL-SCREEN
+           ELSE
+               EVALUATE TRUE
+                   WHEN USRIDINI OF COUSR3AI = SPACES OR LOW-VALUES
+                       MOVE 'Y'     TO WS-ERR-FLG
+                       MOVE 'User ID can NOT be empty...' TO
+                                       WS-MESSAGE
+                       MOVE -1       TO USRIDINL OF COUSR3AI
+                       PERFORM SEND-USRDEL-SCREEN
+                   WHEN OTHER
+                       MOVE -1       TO USRIDINL OF COUSR3AI
+                       CONTINUE
+               END-EVALUATE
+           END-IF
+
+           IF NOT ERR-FLG-ON
+               PERFORM CHECK-LAST-ADMIN-USER
+           END-IF
 
            IF NOT ERR-FLG-ON
                MOVE USRIDINI  OF COUSR3AI TO SEC-USR-ID
                PERFORM READ-USER-SEC-FILE
                PERFORM DELETE-USER-SEC-FILE
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      VERIFY-ADMIN-AUTHORITY
+      * Re-reads the signed on user from USRSEC rather than trusting
+      * the user type carried in the COMMAREA. Callers that are not
+      * administrators never reach the USRSEC read/delete logic.
+      *----------------------------------------------------------------*
+       VERIFY-ADMIN-AUTHORITY.
+
+           SET ADMIN-NOT-AUTHORIZED TO TRUE
+           MOVE SPACES              TO CDEMO-USER-TYPE
+
+           IF CDEMO-USER-ID NOT = SPACES AND LOW-VALUES
+               MOVE CDEMO-USER-ID TO SEC-USR-ID
+
+               EXEC CICS READ
+                    DATASET   (WS-USRSEC-FILE)
+                    INTO      (SEC-USER-DATA)
+                    LENGTH    (LENGTH OF SEC-USER-DATA)
+                    RIDFLD    (SEC-USR-ID)
+                    KEYLENGTH (LENGTH OF SEC-USR-ID)
+                    RESP      (WS-RESP-CD)
+                    RESP2     (WS-REAS-CD)
+               END-EXEC
+
+               IF WS-RESP-CD = DFHRESP(NORMAL)
+                   MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
+                   IF CDEMO-USRTYP-ADMIN
+                       SET ADMIN-AUTHORIZED TO TRUE
+                   END-IF
+               END-IF
+
+               MOVE LOW-VALUES TO SEC-USER-DATA
+           END-IF
+
+           IF NOT ADMIN-AUTHORIZED
+               IF CDEMO-USRTYP-USER
+                   MOVE 'COMEN01C' TO CDEMO-TO-PROGRAM
+               ELSE
+                   MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+               END-IF
+               PERFORM RETURN-TO-PREV-SCREEN
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-LAST-ADMIN-USER
+      * Refuses the delete when the selected user is the only
+      * remaining administrator, which would leave the application
+      * without any user management access.
+      *----------------------------------------------------------------*
+       CHECK-LAST-ADMIN-USER.
+
+           MOVE USRIDINI OF COUSR3AI TO WS-TARGET-USR-ID
+           MOVE SPACES               TO WS-TARGET-USR-TYPE
+           MOVE ZEROS                TO WS-ADMIN-COUNT
+           SET USER-SEC-NOT-EOF      TO TRUE
+
+           MOVE LOW-VALUES TO SEC-USR-ID
+
+           EXEC CICS STARTBR
+                DATASET   (WS-USRSEC-FILE)
+                RIDFLD    (SEC-USR-ID)
+                KEYLENGTH (LENGTH OF SEC-USR-ID)
+                GTEQ
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD NOT = DFHRESP(NORMAL)
+               DISPLAY 'RESP:' WS-RESP-CD 'REAS:' WS-REAS-CD
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'Unable to verify admin users...' TO
+                               WS-MESSAGE
+           ELSE
+               PERFORM UNTIL USER-SEC-EOF OR
+                       (WS-ADMIN-COUNT > 1 AND
+                        WS-TARGET-USR-TYPE NOT = SPACES)
+                   EXEC CICS READNEXT
+                        DATASET   (WS-USRSEC-FILE)
+                        INTO      (SEC-USER-DATA)
+                        LENGTH    (LENGTH OF SEC-USER-DATA)
+                        RIDFLD    (SEC-USR-ID)
+                        KEYLENGTH (LENGTH OF SEC-USR-ID)
+                        RESP      (WS-RESP-CD)
+                        RESP2     (WS-REAS-CD)
+                   END-EXEC
+
+                   EVALUATE WS-RESP-CD
+                       WHEN DFHRESP(NORMAL)
+                           IF SEC-USR-TYPE = 'A'
+                               ADD 1 TO WS-ADMIN-COUNT
+                           END-IF
+                           IF SEC-USR-ID = WS-TARGET-USR-ID
+                               MOVE SEC-USR-TYPE TO WS-TARGET-USR-TYPE
+                           END-IF
+                       WHEN DFHRESP(ENDFILE)
+                           SET USER-SEC-EOF TO TRUE
+                       WHEN OTHER
+                           DISPLAY 'RESP:' WS-RESP-CD
+                                   'REAS:' WS-REAS-CD
+                           SET USER-SEC-EOF TO TRUE
+                           MOVE 'Y'     TO WS-ERR-FLG
+                           MOVE 'Unable to verify admin users...' TO
+                                           WS-MESSAGE
+                   END-EVALUATE
+               END-PERFORM
+
+               EXEC CICS ENDBR
+                    DATASET   (WS-USRSEC-FILE)
+                    RESP      (WS-RESP-CD)
+                    RESP2     (WS-REAS-CD)
+               END-EXEC
+           END-IF
+
+           MOVE LOW-VALUES       TO SEC-USER-DATA
+           MOVE WS-TARGET-USR-ID TO SEC-USR-ID
+
+           IF NOT ERR-FLG-ON
+               IF WS-TARGET-USR-TYPE = 'A' AND WS-ADMIN-COUNT < 2
+                   MOVE 'Y'     TO WS-ERR-FLG
+                   MOVE 'Cannot delete the last admin user...' TO
+                                   WS-MESSAGE
+               END-IF
+           END-IF
+
+           IF ERR-FLG-ON
+               MOVE -1       TO USRIDINL OF COUSR3AI
+               PERFORM SEND-USRDEL-SCREEN
            END-IF.
 
       *----------------------------------------------------------------*
