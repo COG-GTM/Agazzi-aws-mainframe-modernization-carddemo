@@ -59,7 +59,7 @@ export function colorOf(f: BmsField): BmsColor {
 /** Value as the terminal shows it: truncated to LENGTH, JUSTIFY=RIGHT pads on the left. */
 export function displayValue(f: BmsField, value: string | undefined): string {
   const v = (value ?? f.initial ?? '').slice(0, f.length);
-  return f.justify?.includes('RIGHT') ? v.trimEnd().padStart(Math.min(f.length, v.length)) : v;
+  return f.justify?.includes('RIGHT') ? v.trimEnd().padStart(f.length) : v;
 }
 
 /**

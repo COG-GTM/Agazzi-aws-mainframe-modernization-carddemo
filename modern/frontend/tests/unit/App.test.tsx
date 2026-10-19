@@ -116,6 +116,48 @@ describe('App (pseudo-conversational flow)', () => {
 });
 
 describe('buildFields', () => {
+  it('keeps typed values on a same-screen response that omits data', async () => {
+    const api = fakeApi(async () => st('COSGN00', { messages: [{ severity: 'ERROR', text: 'Please enter Password ...' }] }));
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
+    fireEvent.change(container.querySelector('input[name="USERID"]')!, { target: { value: 'USER0001' } });
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!);
+    });
+    await waitFor(() => expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).toBe('Please enter Password ...'));
+    expect((container.querySelector('input[name="USERID"]') as HTMLInputElement).value).toBe('USER0001');
+  });
+
+  it('switches to the XCTL target when its first send fails and retries the GET on the next AID', async () => {
+    let fail = true;
+    const api = fakeApi(
+      async () => st('COSGN00', { nextScreen: 'COMEN01' }),
+      async (id) => (id === 'COMEN01' && fail ? { ok: false, status: 503, reason: 'error' } : st(id)),
+    );
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!);
+    });
+    await waitFor(() => expect(mapOf(container)).toBe('COMEN1A'));
+    expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).toContain('503');
+    fail = false;
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!);
+    });
+    expect(api.post).toHaveBeenCalledTimes(1);
+    expect(api.get).toHaveBeenLastCalledWith('COMEN01');
+    await waitFor(() => expect(container.querySelector('[data-field="ERRMSG"]')!.textContent?.trim()).toBe(''));
+  });
+
+  it('treats an initial 401 on COSGN00 as a sign-on prompt, not an outage', async () => {
+    const api = fakeApi(async () => st('COSGN00'), async () => ({ ok: false, status: 401, reason: 'unauthorized' }));
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(api.get).toHaveBeenCalled());
+    expect(mapOf(container)).toBe('COSGN0A');
+    expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).not.toContain('Unable');
+  });
+
   it('sends only unprotected fields, trimmed and capped to LENGTH', () => {
     expect(buildFields('COSGN00', { USERID: 'ADMIN001XYZ', PASSWD: 'PASS   ', TITLE01: 'x' })).toEqual({
       USERID: 'ADMIN001',
