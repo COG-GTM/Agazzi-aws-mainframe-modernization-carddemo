@@ -1,0 +1,17 @@
+# PROCESS-ENTER-KEY and READ-USER-SEC-FILE NOTFND.
+id: CU02-002
+title: User ID vuoto / non trovato
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: ENTER
+    fields: {USRIDIN: ""}
+    expect:
+      message: "User ID can NOT be empty..."
+      fieldErrors: [USRIDIN]
+  - action: ENTER
+    fields: {USRIDIN: "NOBODY"}
+    expect:
+      message: "User ID NOT found..."
+      fieldErrors: [USRIDIN]
+      data: {FNAME: ""}

@@ -1,0 +1,17 @@
+# ENTER = READ, PF5 = UPDATE-USER-INFO + REWRITE.
+id: CU02-001
+title: lookup e aggiornamento
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: ENTER
+    fields: {USRIDIN: "USER0001"}
+    expect:
+      message: "Press PF5 key to save your updates ..."
+      data: {FNAME: USER, LNAME: "0001", USRTYPE: U, PASSWD: ""}
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "Mario", LNAME: "0001", PASSWD: "NEWPASS1", USRTYPE: "U"}
+    expect:
+      message: "User USER0001 has been updated ..."
+      data: {FNAME: Mario, PASSWD: ""}
+      db: {USER0001: {fname: Mario, bcrypt: true, password: NEWPASS1}}

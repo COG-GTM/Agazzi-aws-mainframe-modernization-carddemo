@@ -1,0 +1,14 @@
+# WHEN OTHER: Invalid selection, kept when the page has a next record.
+id: CU00-008
+title: selezione non valida
+tranid: CU00
+screen: COUSR00
+extraUsers: 15
+steps:
+  - method: GET
+  - action: ENTER
+    fields: {SEL0001: "X"}
+    expect:
+      nextScreen: null
+      message: "Invalid selection. Valid values are U and D"
+      data: {SEL0001: X}

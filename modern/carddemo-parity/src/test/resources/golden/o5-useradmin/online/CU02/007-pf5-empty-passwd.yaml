@@ -1,0 +1,12 @@
+# UPDATE-USER-INFO validation order.
+id: CU02-007
+title: PF5 con PASSWD vuoto
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "0001", PASSWD: "", USRTYPE: ""}
+    expect:
+      message: "Password can NOT be empty..."
+      fieldErrors: [PASSWD]
+      dbDelta: none

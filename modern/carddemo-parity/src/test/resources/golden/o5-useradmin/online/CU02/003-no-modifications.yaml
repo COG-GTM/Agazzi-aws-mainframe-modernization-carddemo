@@ -1,0 +1,12 @@
+# USR-MODIFIED-NO -> Please modify to update ...
+id: CU02-003
+title: nessuna modifica
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "0001", PASSWD: "PASSWORD", USRTYPE: "U"}
+    expect:
+      message: "Please modify to update ..."
+      fieldErrors: []
+      dbDelta: none
