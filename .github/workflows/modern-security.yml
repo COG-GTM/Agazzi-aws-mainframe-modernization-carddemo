@@ -41,8 +41,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.dependency-check-data
-          key: nvd-${{ github.run_id }}
-          restore-keys: nvd-
+          key: nvd-feed-${{ github.run_id }}
+          restore-keys: nvd-feed-
       - name: Install reactor (no tests)
         run: ./mvnw -B -q install -DskipTests -Djacoco.skip=true -Dcheckstyle.skip -Dspotless.check.skip=true
       # Unauthenticated NVD API access is throttled to failure (~50k/410k records in 15 min), so the
@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ~/.dependency-check-data
-          key: nvd-${{ github.run_id }}
+          key: nvd-feed-${{ github.run_id }}
       - name: Dependency-Check (parent reactor)
         run: >
           ./mvnw -B org.owasp:dependency-check-maven:12.1.0:aggregate
