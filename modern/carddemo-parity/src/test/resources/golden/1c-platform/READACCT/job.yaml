@@ -1,0 +1,14 @@
+# Golden master for app/jcl/READACCT.jcl (PGM=CBACT01C, uses COBDATFT) — copy pinned by 1c-platform (COBDATFT parity).
+job: READACCT
+jcl: app/jcl/READACCT.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "seed:acctdata.txt"}
+  PSCOMP: {org: raw}
+  ARRYPS: {org: raw}
+  VBPS: {org: raw}
+steps:
+  - name: STEP05
+    program: CBACT01C
+    dd: {ACCTFILE: ACCTDATA, OUTFILE: PSCOMP, ARRYFILE: ARRYPS, VBRCFILE: VBPS}
+outputs: [PSCOMP, ARRYPS, VBPS]
