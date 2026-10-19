@@ -1,0 +1,97 @@
+# Fase 5B — performance run on demand (never on push/PR): synthetic x1000 data, batch harness,
+# k6 smoke on actuator health and the online mix. Results are uploaded as an artifact.
+name: modern-perf
+
+on:
+  workflow_dispatch:
+    inputs:
+      scale:
+        description: Datagen scale (x sample)
+        default: '1000'
+      vus:
+        description: k6 concurrent virtual users
+        default: '200'
+      duration:
+        description: k6 steady-state duration
+        default: '3m'
+      p95_ms:
+        description: p95 threshold (ms)
+        default: '200'
+      jobs:
+        description: Spring Batch jobs to time
+        default: 'POSTTRAN INTCALC TRANREPT CREASTMT fullBatchCycle'
+      online_mix:
+        description: Run the online mix (needs the online modules integrated)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  MVNW_REPOURL: https://maven-central-eu.storage-download.googleapis.com/maven2
+  K6_VERSION: v0.54.0
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: carddemo
+          POSTGRES_USER: carddemo
+          POSTGRES_PASSWORD: carddemo
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U carddemo -d carddemo" --health-interval 5s --health-retries 20
+    defaults:
+      run:
+        working-directory: modern
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Install k6 and psql
+        run: |
+          curl -sSL "https://github.com/grafana/k6/releases/download/${K6_VERSION}/k6-${K6_VERSION}-linux-amd64.tar.gz" | tar xz
+          sudo mv "k6-${K6_VERSION}-linux-amd64/k6" /usr/local/bin/k6
+          sudo apt-get install -y -qq postgresql-client
+          k6 version
+      - name: Build app + datagen
+        run: |
+          ./mvnw -B -q -pl carddemo-app -am install -DskipTests -Dcheckstyle.skip -Dspotless.check.skip=true -Djacoco.skip=true
+          ./mvnw -B -q -f perf/datagen/pom.xml package -DskipTests
+      - name: Generate synthetic data
+        run: java -jar perf/datagen/target/carddemo-perf-datagen-0.1.0-SNAPSHOT.jar --sample ../app/data/ASCII --out target/perf-data --scale "${{ inputs.scale }}"
+      - name: Start app (schema V1-V3 + seed via Flyway)
+        run: |
+          nohup java -jar carddemo-app/target/carddemo-app-exec.jar \
+            --spring.profiles.active=local --carddemo.messaging.type=in-memory > target/app.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf localhost:8080/actuator/health && break; sleep 2; done
+      - name: Batch harness
+        continue-on-error: true
+        env:
+          JOBS: ${{ inputs.jobs }}
+          SCALE: ${{ inputs.scale }}
+          RESULTS: target/perf-results/batch
+          TIMEOUT_S: '1800'
+        run: perf/batch/run-batch-perf.sh
+      - name: k6 health
+        working-directory: modern/perf/k6
+        run: k6 run -e VUS=${{ inputs.vus }} -e DURATION=${{ inputs.duration }} -e P95_MS=${{ inputs.p95_ms }} --summary-export ../../target/perf-results/k6-health.json smoke-health.js
+      - name: k6 online mix
+        if: ${{ inputs.online_mix }}
+        working-directory: modern/perf/k6
+        run: k6 run -e VUS=${{ inputs.vus }} -e DURATION=${{ inputs.duration }} -e P95_MS=${{ inputs.p95_ms }} -e FIXTURES=$GITHUB_WORKSPACE/modern/target/perf-data/k6/fixtures.json --summary-export ../../target/perf-results/k6-online.json online-mix.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: perf-results
+          path: |
+            modern/target/perf-results
+            modern/target/app.log
