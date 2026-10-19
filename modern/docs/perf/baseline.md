@@ -14,11 +14,11 @@ Due build misurate:
 
 ## 1. Generatore dati ×1.000 — verificato
 
-- `./mvnw -B -f perf/datagen/pom.xml verify`: **23 test, 0 failure** (Checkstyle + Spotless ok).
+- `./mvnw -B -f perf/datagen/pom.xml verify`: **25 test, 0 failure** (Checkstyle + Spotless ok).
   Coprono: conteggi ×N, LRECL del piano §1.3 per ogni file, round-trip byte-per-byte con i codec
   Fase 0 (`CoreCodecs`: decode → encode di ogni record generato = riga originale), copia 0 = sample,
   unicità chiavi, tutte le FK risolte, segni overpunch (`{A..I` / `}J..R`) presenti e coerenti con il
-  segno del `BigDecimal`, stesso seed → file identici (SHA-256), seed diverso → file diversi,
+  segno del `BigDecimal`, storico TRANSACT non duplicato dai DALYTRAN pendenti, stesso seed → file identici (SHA-256), seed diverso → file diversi,
   CSV/`load.sql` allineati allo schema V1, rifiuto di scale fuori range.
 - Generazione `--scale 1000 --seed 20221231`: ~3 s, 0,8 GB.
 

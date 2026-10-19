@@ -44,6 +44,11 @@ public final class KeyMapper {
         freePrefixes.add(s);
       }
     }
+    if (scale - 1 > freePrefixes.size()) {
+      throw new IllegalArgumentException(
+          "scale %d needs %d free card prefixes, the sample leaves %d"
+              .formatted(scale, scale - 1, freePrefixes.size()));
+    }
   }
 
   public long acctId(int k, long sampleAcctId) {

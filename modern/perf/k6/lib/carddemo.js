@@ -30,14 +30,32 @@ export function screenPost(screen, tx, action, fields) {
 export function okScreen(r, screen) {
   return check(r, {
     [`${screen} 200`]: (x) => x.status === 200,
-    [`${screen} body`]: (x) => {
-      try {
-        return typeof x.json('screen') === 'string';
-      } catch (e) {
-        return false;
-      }
-    },
+    [`${screen} body`]: (x) => body(x) !== null && body(x).screen === screen.toUpperCase(),
   });
+}
+
+function body(r) {
+  try {
+    return r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Business-level assertions on a screen response, e.g. {'CT02 posted': messageMatches(/added/)}. */
+export function expectBody(r, checks) {
+  const b = body(r);
+  const named = {};
+  for (const [name, pred] of Object.entries(checks)) {
+    named[name] = () => b !== null && pred(b);
+  }
+  return check(r, named);
+}
+
+export const noFieldErrors = (b) => Array.isArray(b.fieldErrors) && b.fieldErrors.length === 0;
+
+export function messageMatches(re) {
+  return (b) => (b.messages || []).some((m) => re.test(m.text));
 }
 
 /** CC00: sign-on through COSGN00 (public endpoint); establishes the session cookie. */

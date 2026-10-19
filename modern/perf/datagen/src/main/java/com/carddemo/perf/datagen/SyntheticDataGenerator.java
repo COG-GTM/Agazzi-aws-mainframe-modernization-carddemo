@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +50,8 @@ public final class SyntheticDataGenerator {
   static final int FIXTURE_LIMIT = 2_000;
 
   private final SampleData sample;
+  static final int HISTORY_SHIFT_DAYS = 35;
+
   private final int scale;
   private final long seed;
   private final KeyMapper keys;
@@ -128,7 +131,7 @@ public final class SyntheticDataGenerator {
         for (DailyTransactionRecord d : sample.dailyTransactions()) {
           DailyTransactionRecord dr = dailyTran(k, d, rnd, ++daily);
           daly.put(CoreCodecs.DAILY_TRANSACTION, dr, dailyRow(dr));
-          TransactionRecord tr = posted(dr, ++posted);
+          TransactionRecord tr = history(dr, ++posted, rnd);
           tran.put(CoreCodecs.TRANSACTION, tr, tranRow(tr));
           if (fixtureTranIds.size() < FIXTURE_LIMIT && (k % 10 == 0)) {
             fixtureTranIds.add("\"" + tr.tranId() + "\"");
@@ -237,23 +240,36 @@ public final class SyntheticDataGenerator {
   }
 
   /** Posted history (TRANSACT) for CT00/CT01/TRANREPT/CREASTMT: one per daily record. */
-  private static TransactionRecord posted(DailyTransactionRecord d, long seq) {
+  /**
+   * Prior-cycle TRANSACT history for the same card: amount redrawn (same sign) and timestamps moved
+   * {@link #HISTORY_SHIFT_DAYS} back, so POSTTRAN posting DALYTRAN does not duplicate it.
+   */
+  private static TransactionRecord history(
+      DailyTransactionRecord d, long seq, SplittableRandom rnd) {
     String procTs = d.dalytranProcTs().isBlank() ? d.dalytranOrigTs() : d.dalytranProcTs();
+    BigDecimal amt = cents(rnd, 1, 50_000);
     return new TransactionRecord(
         "%016d".formatted(seq),
         d.dalytranTypeCd(),
         d.dalytranCatCd(),
         d.dalytranSource(),
         d.dalytranDesc(),
-        d.dalytranAmt(),
+        d.dalytranAmt().signum() < 0 ? amt.negate() : amt,
         d.dalytranMerchantId(),
         d.dalytranMerchantName(),
         d.dalytranMerchantCity(),
         d.dalytranMerchantZip(),
         d.dalytranCardNum(),
-        d.dalytranOrigTs(),
-        procTs,
+        shiftBack(d.dalytranOrigTs()),
+        shiftBack(procTs),
         d.filler());
+  }
+
+  private static String shiftBack(String ts) {
+    if (ts.length() < 10 || ts.isBlank()) {
+      return ts;
+    }
+    return LocalDate.parse(ts.substring(0, 10)).minusDays(HISTORY_SHIFT_DAYS) + ts.substring(10);
   }
 
   private static BigDecimal cents(SplittableRandom rnd, long minCents, long maxCents) {

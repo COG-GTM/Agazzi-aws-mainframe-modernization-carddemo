@@ -213,6 +213,19 @@ class SyntheticDataGeneratorTest {
     return s;
   }
 
+  @Test
+  void transactHistoryDoesNotDuplicatePendingDailyTransactions() throws IOException {
+    Set<String> pending =
+        decode("dailytran.txt", CoreCodecs.DAILY_TRANSACTION).stream()
+            .map(d -> d.dalytranCardNum() + d.dalytranOrigTs())
+            .collect(Collectors.toSet());
+    assertThat(
+            decode("transact.txt", CoreCodecs.TRANSACTION).stream()
+                .filter(t -> pending.contains(t.tranCardNum() + t.tranOrigTs()))
+                .count())
+        .isZero();
+  }
+
   private static <T> List<T> decode(String file, RecordCodec<T> codec) throws IOException {
     return lines(file).stream().map(codec::decodeLine).toList();
   }

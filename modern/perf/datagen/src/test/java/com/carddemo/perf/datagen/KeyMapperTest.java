@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 class KeyMapperTest {
@@ -23,5 +24,15 @@ class KeyMapperTest {
   void rejectsSamplesWhoseCardTailsCollide() {
     assertThatThrownBy(() -> new KeyMapper(List.of("1111000000000001", "2222000000000001"), 2))
         .isInstanceOf(IllegalStateException.class);
+  }
+
+  @Test
+  void rejectsScalesBeyondTheFreeCardPrefixes() {
+    List<String> sample =
+        IntStream.range(0, 100).mapToObj(i -> "%04d%012d".formatted(1000 + i, i)).toList();
+    assertThat(new KeyMapper(sample, 8_901).cardNum(8_900, sample.get(0))).startsWith("9999");
+    assertThatThrownBy(() -> new KeyMapper(sample, 8_902))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("8901 free card prefixes");
   }
 }

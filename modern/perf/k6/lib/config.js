@@ -44,10 +44,10 @@ export function thresholds(txIds) {
   return t;
 }
 
-export function rampingStages() {
+export function rampingStages(target = VUS) {
   return [
-    { duration: RAMP_UP, target: VUS },
-    { duration: DURATION, target: VUS },
+    { duration: RAMP_UP, target },
+    { duration: DURATION, target },
     { duration: '15s', target: 0 },
   ];
 }

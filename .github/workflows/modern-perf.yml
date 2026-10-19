@@ -66,15 +66,28 @@ jobs:
         run: |
           ./mvnw -B -q -pl carddemo-app -am install -DskipTests -Dcheckstyle.skip -Dspotless.check.skip=true -Djacoco.skip=true
           ./mvnw -B -q -f perf/datagen/pom.xml package -DskipTests
+      - name: Validate inputs
+        env:
+          SCALE: ${{ inputs.scale }}
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
+          P95_MS: ${{ inputs.p95_ms }}
+          JOBS: ${{ inputs.jobs }}
+        run: |
+          [[ "$SCALE" =~ ^[0-9]+$ && "$VUS" =~ ^[0-9]+$ && "$P95_MS" =~ ^[0-9]+$ ]] || { echo "scale/vus/p95_ms must be integers"; exit 1; }
+          [[ "$DURATION" =~ ^[0-9]+[smh]$ ]] || { echo "duration must look like 3m"; exit 1; }
+          [[ "$JOBS" =~ ^[A-Za-z0-9\ ]+$ ]] || { echo "jobs must be job names separated by spaces"; exit 1; }
       - name: Generate synthetic data
-        run: java -jar perf/datagen/target/carddemo-perf-datagen-0.1.0-SNAPSHOT.jar --sample ../app/data/ASCII --out target/perf-data --scale "${{ inputs.scale }}"
+        env:
+          SCALE: ${{ inputs.scale }}
+        run: java -jar perf/datagen/target/carddemo-perf-datagen-0.1.0-SNAPSHOT.jar --sample ../app/data/ASCII --out target/perf-data --scale "$SCALE"
       - name: Start app (schema V1-V3 + seed via Flyway)
         run: |
           nohup java -jar carddemo-app/target/carddemo-app-exec.jar \
             --spring.profiles.active=local --carddemo.messaging.type=in-memory > target/app.log 2>&1 &
           for i in $(seq 1 60); do curl -sf localhost:8080/actuator/health && break; sleep 2; done
+      # k6 steps still run (and the artifact is uploaded) when the batch harness fails; the job stays red.
       - name: Batch harness
-        continue-on-error: true
         env:
           JOBS: ${{ inputs.jobs }}
           SCALE: ${{ inputs.scale }}
@@ -82,12 +95,21 @@ jobs:
           TIMEOUT_S: '1800'
         run: perf/batch/run-batch-perf.sh
       - name: k6 health
+        if: ${{ !cancelled() }}
         working-directory: modern/perf/k6
-        run: k6 run -e VUS=${{ inputs.vus }} -e DURATION=${{ inputs.duration }} -e P95_MS=${{ inputs.p95_ms }} --summary-export ../../target/perf-results/k6-health.json smoke-health.js
+        env:
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
+          P95_MS: ${{ inputs.p95_ms }}
+        run: k6 run --summary-export ../../target/perf-results/k6-health.json smoke-health.js
       - name: k6 online mix
-        if: ${{ inputs.online_mix }}
+        if: ${{ !cancelled() && inputs.online_mix }}
         working-directory: modern/perf/k6
-        run: k6 run -e VUS=${{ inputs.vus }} -e DURATION=${{ inputs.duration }} -e P95_MS=${{ inputs.p95_ms }} -e FIXTURES=$GITHUB_WORKSPACE/modern/target/perf-data/k6/fixtures.json --summary-export ../../target/perf-results/k6-online.json online-mix.js
+        env:
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
+          P95_MS: ${{ inputs.p95_ms }}
+        run: k6 run -e FIXTURES=$GITHUB_WORKSPACE/modern/target/perf-data/k6/fixtures.json --summary-export ../../target/perf-results/k6-online.json online-mix.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:

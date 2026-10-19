@@ -35,7 +35,7 @@ sample (`docker-compose.yml`, `DUSRSECJ`): non puntare questi script a sistemi r
 ```bash
 cd modern
 ./mvnw -B -q install -pl carddemo-copybook -am -DskipTests      # codec Fase 0
-./mvnw -B -f perf/datagen/pom.xml verify                        # build + 23 test (round-trip incluso)
+./mvnw -B -f perf/datagen/pom.xml verify                        # build + 25 test (round-trip incluso)
 java -jar perf/datagen/target/carddemo-perf-datagen-0.1.0-SNAPSHOT.jar \
   --sample ../app/data/ASCII --out target/perf-data --scale 1000 --seed 20221231
 ```
@@ -53,8 +53,11 @@ Regole: la copia 0 è il sample identico; le copie 1..N-1 rimappano le chiavi co
 (`ACCT-ID + k·10⁶`, `CUST-ID + k·10⁴`, `CARD-NUM` = prefisso a 4 cifre non usato dal sample + ultime 12
 cifre) così tutte le FK (card→account, xref→card/customer/account, tcatbal→account,
 transaction/dalytran→xref) restano coerenti; importi, limiti, CVV, SSN, FICO e nomi sono perturbati
-con `SplittableRandom(seed, k)` (stesso seed → stessi byte). TRAN-ID posted `1..N`, DALYTRAN-ID
-`5·10¹⁵+n` (nessuna collisione con i nuovi id generati da CT02/CB00/POSTTRAN).
+con `SplittableRandom(seed, k)` (stesso seed → stessi byte). TRANSACT contiene storico del ciclo
+precedente (stessa carta, importo ridisegnato, timestamp −35 giorni) con TRAN-ID `1..N`, così POSTTRAN
+non duplica i DALYTRAN pendenti; DALYTRAN-ID `5·10¹⁵+n` (nessuna collisione con i nuovi id generati
+da CT02/CB00/POSTTRAN). Se `DATA` contiene un dataset con scale/seed diversi da quelli richiesti,
+`run-batch-perf.sh` lo rigenera (manifest in `k6/fixtures.json`).
 
 ## 3. Carico online (k6)
 
@@ -74,7 +77,10 @@ Parametri (`-e` o env): `BASE_URL`, `VUS` (200), `RAMP_UP` (1m), `DURATION` (5m)
 Ogni VU fa sign-on CC00 (`POST /api/v1/screens/cosgn00`, cookie di sessione nel cookie jar del VU) e
 poi cicla sul mix: GET = primo SEND della mappa, POST = input terminale `{action, fields}`.
 CCLI pagina con PF8/PF7, CT00 con PF8, CT02 e CB00 completano con `CONFIRM=Y` (scrivono TRANSACT),
-CU00 gira con un VU admin ogni 10. Thresholds: globali (`http_req_failed`, `checks`, p95/p99) e
+CU00 gira in uno scenario `admin` separato con `VUS·w(CU00)/Σw` VU (default 10 su 200).
+Check di business oltre a status 200 + schermata attesa: nessun `fieldErrors` su CAVW/CCLI/CT00/CT01/CT02,
+CT02 → "Transaction added successfully", CB00 → "Payment successful" o "You have nothing to pay"
+(account già saldato; i pagamenti reali sono contati in `cb00_payments`). Thresholds: globali (`http_req_failed`, `checks`, p95/p99) e
 per transazione (`http_req_duration{tx:CAVW}` …): un threshold violato → exit code 99.
 
 ## 4. Batch ×1.000
@@ -88,7 +94,8 @@ JOBS="POSTTRAN" STORAGE=file JAVA_OPTS="-Xmx2g" perf/batch/run-batch-perf.sh
 Lo script genera i dati se mancano, li carica (`load.sql`), poi per ogni job ricarica il dataset
 (`RELOAD=1`, tempi isolati; `RELOAD=0` = catena) e lancia
 `java -jar carddemo-app-exec.jar --spring.batch.job.name=<JOB> ... storage=<db|file> datasetDir=<dir> run.id=<ns>`.
-Esito da exit code + `batch_job_execution.status`; output in `target/perf-results/batch-<ts>/`
+Esito da exit code + `batch_job_execution.status` (lo script esce con 3 se un job non è `OK`, dopo aver
+scritto il report); output in `target/perf-results/batch-<ts>/`
 (`batch-results.csv|md`, log per job). Il throughput è record del DD di input del JCL
 (DALYTRAN per POSTTRAN/fullBatchCycle, TCATBALF per INTCALC, TRANSACT per TRANREPT/CREASTMT) / tempo
 wall-clock del JVM (avvio Spring incluso, ~2–5 s).

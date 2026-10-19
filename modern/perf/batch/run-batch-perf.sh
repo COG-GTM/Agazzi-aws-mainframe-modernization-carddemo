@@ -18,6 +18,7 @@
 #              as the app that created the schema; a different set fails Flyway validation)
 #   JAVA_OPTS  JVM flags for the job JVM (e.g. "-Xmx2g -XX:+UseZGC")
 #   JOB_ARGS   extra Spring args for every job (e.g. "--spring.datasource.hikari.maximum-pool-size=20")
+#   (exit 3 when any job is not OK, after writing the report)
 #   TIMEOUT_S  per-job timeout in seconds (default 3600)
 #   WEB_TYPE   spring.main.web-application-type for the job JVM (default servlet on a random port:
 #              the online security chain needs HttpSecurity; the B5 CLI exit stops the JVM)
@@ -52,6 +53,12 @@ need psql
 mkdir -p "$RESULTS"
 
 # --- 1. synthetic data -------------------------------------------------------------------------
+# Reuse DATA only if it was generated with the requested SCALE/SEED (k6/fixtures.json manifest).
+manifest() { sed -n 's/^{"seed":\([0-9]*\),"scale":\([0-9]*\),.*/\2 \1/p' "$DATA/k6/fixtures.json" 2>/dev/null; }
+if [[ -f "$DATA/load.sql" && "$(manifest)" != "$SCALE $SEED" ]]; then
+  log "dataset in $DATA is scale/seed '$(manifest)', requested '$SCALE $SEED': regenerating"
+  rm -rf "$DATA/ascii" "$DATA/csv" "$DATA/datasets" "$DATA/k6" "$DATA/load.sql"
+fi
 if [[ ! -f "$DATA/load.sql" ]]; then
   DG="$MODERN/perf/datagen/target/carddemo-perf-datagen-0.1.0-SNAPSHOT.jar"
   if [[ ! -f "$DG" ]]; then
@@ -100,6 +107,7 @@ echo "job,storage,status,exit_code,elapsed_ms,input_dataset,input_records,record
 
 # --- 3. jobs -----------------------------------------------------------------------------------
 RUN=0
+NOT_OK=0
 for JOB in $JOBS; do
   RUN=$((RUN + 1))
   RELOAD_MS=0
@@ -150,6 +158,7 @@ for JOB in $JOBS; do
   fi
   echo "$JOB,$STORAGE,$STATUS,$RC,$ELAPSED,$DSN,$NREC,$RPS,${BSTATUS:-none},$RELOAD_MS" >>"$CSV"
   log "$JOB: $STATUS rc=$RC ${ELAPSED} ms, ${RPS} rec/s (batch status: ${BSTATUS:-none})"
+  [[ "$STATUS" == "OK" ]] || NOT_OK=$((NOT_OK + 1))
 done
 
 # --- 4. report ---------------------------------------------------------------------------------
@@ -168,3 +177,7 @@ done
 } >"$RESULTS/batch-results.md"
 log "results: $RESULTS/batch-results.md"
 cat "$RESULTS/batch-results.md"
+if [[ $NOT_OK -gt 0 ]]; then
+  log "$NOT_OK job(s) not OK"
+  exit 3
+fi
