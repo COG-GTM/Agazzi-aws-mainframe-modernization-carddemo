@@ -57,7 +57,7 @@ public class CardScreensController {
   @PostMapping("/cocrdli")
   public ScreenResponse<CocrdliScreen.Output> cocrdliReceive(
       @RequestBody ScreenRequest<CardListFields> request, HttpSession session, Principal user) {
-    if (!conversation.hasContext(session)) {
+    if (!conversation.hasContext(session, user)) {
       cocrdli(session, user, Action.ENTER, null, true);
     }
     return cocrdli(session, user, request.action(), request.fields(), false);
@@ -73,7 +73,7 @@ public class CardScreensController {
       @RequestBody ScreenRequest<CocrdslScreen.Input> request,
       HttpSession session,
       Principal user) {
-    if (!conversation.hasContext(session)) {
+    if (!conversation.hasContext(session, user)) {
       cocrdsl(session, user, Action.ENTER, null, true);
     }
     return cocrdsl(session, user, request.action(), request.fields(), false);
@@ -87,7 +87,7 @@ public class CardScreensController {
   @PostMapping("/cocrdup")
   public ScreenResponse<CocrdupScreen.Output> cocrdupReceive(
       @RequestBody ScreenRequest<CardUpdateFields> request, HttpSession session, Principal user) {
-    if (!conversation.hasContext(session)) {
+    if (!conversation.hasContext(session, user)) {
       cocrdup(session, user, Action.ENTER, null, true);
     }
     return cocrdup(session, user, request.action(), request.fields(), false);

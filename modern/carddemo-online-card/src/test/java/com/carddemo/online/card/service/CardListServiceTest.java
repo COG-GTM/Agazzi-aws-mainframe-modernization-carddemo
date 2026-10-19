@@ -10,6 +10,7 @@ import com.carddemo.contracts.screen.ConversationContext;
 import com.carddemo.contracts.screen.FieldError;
 import com.carddemo.contracts.screen.ScreenId;
 import com.carddemo.contracts.screen.map.CocrdliScreen;
+import com.carddemo.domain.entity.Card;
 import com.carddemo.online.card.session.CardListState;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -202,6 +203,30 @@ class CardListServiceTest {
     assertThat(r.data().crdnum2()).isEqualTo(num(5));
     var other = post(Action.ENTER, filters(acctText(1), null)).response();
     assertThat(texts(other)).containsExactly(CardListService.MSG_NO_RECORDS);
+  }
+
+  @Test
+  void backwardsBrowseReadsBoundedChunksAcrossSparseMatches() {
+    var f = new CardFixtures(300);
+    for (int i : new int[] {1, 2, 3, 4, 5, 6, 7, 290}) {
+      Card c = CardFixtures.card(i);
+      c.setCardAcctId(999L);
+      f.put(c);
+    }
+    var big = new CardListService(f.browser, f.clock);
+    var flt = filters("%011d".formatted(999), null);
+    var o = big.process(ctx, CardListState.initial(), Optional.empty(), Action.ENTER, flt, true);
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.ENTER, flt, false);
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.PF8, flt, false);
+    assertThat(o.response().data().crdnum1()).isEqualTo(num(290));
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.PF7, flt, false);
+    assertThat(o.response().data().pageno()).isEqualTo("1");
+    assertThat(o.response().data().crdnum1()).isEqualTo(num(1));
+    assertThat(o.response().data().crdnum7()).isEqualTo(num(7));
+    org.mockito.Mockito.verify(f.browser, org.mockito.Mockito.never())
+        .readPrev(
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.eq(Integer.MAX_VALUE));
   }
 
   @Test

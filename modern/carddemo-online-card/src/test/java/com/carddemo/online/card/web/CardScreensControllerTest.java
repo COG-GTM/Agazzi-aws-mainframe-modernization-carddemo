@@ -100,6 +100,20 @@ class CardScreensControllerTest {
   }
 
   @Test
+  void contextOfAnotherUserIsDiscarded() throws Exception {
+    ConversationContext userCtx =
+        ContextEdit.of(ConversationContext.signedOn("USER001", ConversationContext.UserType.USER))
+            .from("CM00", "COMEN01C")
+            .account(CardFixtures.acct(2))
+            .build();
+    session.setAttribute(CardConversation.CONTEXT_ATTRIBUTE, userCtx);
+    send("cocrdli", "{\"action\":\"ENTER\",\"fields\":{}}", "ADMIN")
+        .andExpect(jsonPath("$.context.userId").value("ADMIN001"))
+        .andExpect(jsonPath("$.context.userType").value("ADMIN"))
+        .andExpect(jsonPath("$.data.CRDNUM2").value(CardFixtures.num(2)));
+  }
+
+  @Test
   void regularUserIsConfinedToTheCommareaAccount() throws Exception {
     ConversationContext menu =
         ContextEdit.of(ConversationContext.signedOn("USER001", ConversationContext.UserType.USER))

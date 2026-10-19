@@ -30,6 +30,7 @@ public class CardConversation {
    * and picked the option from the main menu COMEN01C.
    */
   public ConversationContext context(HttpSession session, Principal principal) {
+    discardIfOtherUser(session, principal);
     Object stored = session.getAttribute(CONTEXT_ATTRIBUTE);
     if (stored instanceof ConversationContext ctx) {
       rememberOwnedAccount(session, ctx);
@@ -43,8 +44,21 @@ public class CardConversation {
   }
 
   /** True once a screen of the conversation has been sent in this session. */
-  public boolean hasContext(HttpSession session) {
+  public boolean hasContext(HttpSession session, Principal principal) {
+    discardIfOtherUser(session, principal);
     return session.getAttribute(CONTEXT_ATTRIBUTE) instanceof ConversationContext;
+  }
+
+  /** A context signed on by another user never carries over to the authenticated principal. */
+  private static void discardIfOtherUser(HttpSession session, Principal principal) {
+    String user = principal == null ? null : principal.getName();
+    if (session.getAttribute(CONTEXT_ATTRIBUTE) instanceof ConversationContext ctx
+        && !java.util.Objects.equals(ctx.userId(), user)) {
+      session.removeAttribute(CONTEXT_ATTRIBUTE);
+      session.removeAttribute(LIST_STATE);
+      session.removeAttribute(UPDATE_STATE);
+      session.removeAttribute(OWNED_ACCOUNT);
+    }
   }
 
   public void store(HttpSession session, ConversationContext ctx) {

@@ -206,6 +206,19 @@ class CardUpdateServiceTest {
   }
 
   @Test
+  void cardMovedToAnotherAccountIsReportedAsChanged() {
+    fromList(5);
+    run(Action.ENTER, null, true);
+    run(Action.ENTER, edit("MINE", "Y", "1", "2030"), false);
+    Card moved = CardFixtures.card(5);
+    moved.setCardAcctId(999L);
+    fx.put(moved);
+    var r = run(Action.PF5, edit("MINE", "Y", "1", "2030"), false).response();
+    assertThat(texts(r)).contains(CardUpdateService.MSG_CHANGED);
+    assertThat(fx.file.get(num(5)).getCardEmbossedName().strip()).isNotEqualTo("MINE");
+  }
+
+  @Test
   void optimisticLockFailure() {
     fromList(5);
     run(Action.ENTER, null, true);

@@ -401,6 +401,10 @@ public class CardUpdateService {
     }
   }
 
+  private static long valueOrZero(Long v) {
+    return v == null ? 0L : v;
+  }
+
   private static CardDetails oldDetails(String acct, String cardNum, Card c) {
     String exp = padRight(c.getCardExpirationDate(), 10);
     return new CardDetails(
@@ -428,7 +432,9 @@ public class CardUpdateService {
       CardRewriter.Result res =
           rewriter.rewrite(
               r.ccCard,
-              cur -> oldDetails(expected.acctId(), expected.cardId(), cur).equals(expected),
+              cur ->
+                  parseOrZero(expected.acctId()) == valueOrZero(cur.getCardAcctId())
+                      && oldDetails(expected.acctId(), expected.cardId(), cur).equals(expected),
               values);
       switch (res.status()) {
         case NOT_FOUND -> {

@@ -308,15 +308,24 @@ public class CardListService {
     String oldFirst = r.st.firstCardNum();
     String first = oldFirst;
     int counter = MAX_SCREEN_LINES + 1;
-    List<Card> prev = browser.readPrev(oldFirst, Integer.MAX_VALUE);
-    if (!prev.isEmpty()) {
-      counter--;
-      for (Card c : prev.subList(1, prev.size())) {
+    String cursor = oldFirst;
+    boolean done = false;
+    while (!done) {
+      List<Card> chunk = browser.readPrev(cursor, BROWSE_CHUNK);
+      if (chunk.size() <= 1) {
+        break;
+      }
+      if (counter == MAX_SCREEN_LINES + 1) {
+        counter--;
+      }
+      for (Card c : chunk.subList(1, chunk.size())) {
+        cursor = c.getCardNum();
         if (r.include(c)) {
           rows[counter - 1] = new Row(c.getCardAcctId(), c.getCardNum(), c.getCardActiveStatus());
           counter--;
           if (counter == 0) {
             first = c.getCardNum();
+            done = true;
             break;
           }
         }
