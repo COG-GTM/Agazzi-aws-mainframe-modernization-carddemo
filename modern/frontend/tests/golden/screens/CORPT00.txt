@@ -1,0 +1,24 @@
+ Tran: ....          ........................................    Date: ........
+ Prog: ........      ........................................    Time: ........
+
+                              Transaction Reports
+
+
+          _    Monthly (Current Month)
+
+          _    Yearly (Current Year)
+
+          _    Custom (Date Range)
+
+               Start Date :  __ / __ / ____   (MM/DD/YYYY)
+                 End Date :  __ / __ / ____   (MM/DD/YYYY)
+
+
+
+
+      The Report will be submitted for printing. Please confirm:  _  (Y/N)
+
+
+
+ ..............................................................................
+ ENTER=Continue  F3=Back
