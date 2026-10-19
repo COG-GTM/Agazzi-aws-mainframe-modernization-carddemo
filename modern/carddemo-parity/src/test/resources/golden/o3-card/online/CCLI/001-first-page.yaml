@@ -1,0 +1,20 @@
+# COCRDLIC 9000-READ-FORWARD: 7 rows from start of CARDDAT, PAGENO 1
+id: CCLI-001
+title: prima pagina
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect:
+    screen: COCRDLI
+    nextScreen: null
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    fieldErrors: []
+    dbDelta: none
+    data:
+      PAGENO: '1'
+      CRDNUM1: '0500024453765740'
+      ACCTNO1: '00000000050'
+      CRDNUM7: '1142167692878931'
+      CRDSTS1: Y

@@ -1,0 +1,14 @@
+# COUSR00C PROCESS-ENTER-KEY first send: 10 users, READNEXT ENDFILE -> bottom notice.
+id: CU00-001
+title: prima pagina con il seed V2
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+    expect:
+      screen: COUSR00
+      nextScreen: null
+      message: "You have reached the bottom of the page..."
+      fieldErrors: []
+      data: {TRNNAME: CU00, PGMNAME: COUSR00C, CURDATE: "07/18/22", CURTIME: "12:00:00", PAGENUM: "00000001", USRID01: ADMIN001, FNAME01: ADMIN, LNAME01: "001", UTYPE01: A, USRID10: USER0005, UTYPE10: U}
+      dbDelta: none

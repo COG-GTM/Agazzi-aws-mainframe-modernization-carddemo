@@ -1,0 +1,14 @@
+# COACTVWC 0000-MAIN: EIBCALEN = 0 -> 1000-SEND-MAP, info WS-PROMPT-FOR-INPUT.
+id: CAVW-001
+title: primo ingresso (EIBCALEN 0)
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COACTVW
+      nextScreen: null
+      message: "Enter or update id of account to display"
+      fieldErrors: []
+      dbDelta: none

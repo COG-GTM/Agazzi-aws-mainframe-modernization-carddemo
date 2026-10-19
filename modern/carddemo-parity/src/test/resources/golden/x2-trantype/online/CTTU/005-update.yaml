@@ -1,0 +1,47 @@
+# 9600-WRITE-PROCESSING UPDATE.
+id: CTTU-005
+title: Update descrizione con conferma F5
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: "Purchase Retail"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes validated.Press F5 to save"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF5
+    fields: {TRTYPCD: "01", TRTYDSC: "Purchase Retail"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes committed to database"
+      fieldErrors: []
+      dbDelta: [UPDATE transaction_type 01]
+  - action: ENTER
+    fields: {TRTYPCD: "", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none

@@ -1,0 +1,17 @@
+# COMEN01C: option 11 = COPAUS0C, EXEC CICS INQUIRE PROGRAM not NORMAL (extension X1 off,
+#   carddemo.extensions.authorization.enabled=false) -> STRING 'This option ' NAME DELIMITED BY '  '
+#   ' is not installed...' (DFHRED).
+id: CM00-005
+title: opzione 11 con estensione authorization disattiva
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "11"}
+    expect:
+      screen: COMEN01
+      nextScreen: null
+      message: "This option Pending Authorization View is not installed..."
+      fieldErrors: []
+      dbDelta: none

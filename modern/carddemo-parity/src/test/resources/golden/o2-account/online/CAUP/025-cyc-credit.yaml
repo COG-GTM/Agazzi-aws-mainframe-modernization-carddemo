@@ -1,0 +1,19 @@
+# COACTUPC Current Cycle Credit
+id: CAUP-025
+title: 'errore: Current Cycle Credit Limit is not valid'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACRCYCR: ??
+  expect:
+    message: Current Cycle Credit Limit is not valid
+    fieldErrors:
+    - ACRCYCR
+    dbDelta: none

@@ -10,7 +10,7 @@
   </parent>
   <artifactId>carddemo-copybook</artifactId>
   <name>carddemo-copybook</name>
-  <description>Copybook record codecs (Fase 0 minimal zoned DISPLAY; 1A full)</description>
+  <description>Copybook parser, deterministic record generator and codecs (1A, ADR-004)</description>
 
   <dependencies>
     <dependency>
@@ -18,4 +18,21 @@
       <artifactId>carddemo-contracts</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- generated sources are byte-checked by GeneratedSourcesUpToDateTest instead -->
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <configuration>
+          <java>
+            <excludes>
+              <exclude>src/main/java/com/carddemo/copybook/generated/**</exclude>
+            </excludes>
+          </java>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

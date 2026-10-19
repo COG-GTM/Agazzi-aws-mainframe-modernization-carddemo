@@ -1,0 +1,16 @@
+# COCRDLIC 2250-EDIT-ARRAY: action code other than S/U
+id: CCLI-011
+title: codice azione non valido
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: ENTER
+  fields:
+    CRDSEL3: X
+  expect:
+    message: INVALID ACTION CODE
+    fieldErrors:
+    - CRDSEL3

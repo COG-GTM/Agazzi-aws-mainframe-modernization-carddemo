@@ -1,0 +1,17 @@
+# WRITE-USER-SEC-FILE NORMAL: success message, fields cleared; password stored as BCrypt.
+id: CU01-001
+title: inserimento utente
+tranid: CU01
+screen: COUSR01
+steps:
+  - method: GET
+    expect:
+      data: {TRNNAME: CU01, PGMNAME: COUSR01C, FNAME: ""}
+      message: null
+  - action: ENTER
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: "NEWUSER1", PASSWD: "Secr3t", USRTYPE: "U"}
+    expect:
+      message: "User NEWUSER1 has been added ..."
+      fieldErrors: []
+      data: {FNAME: "", USERID: "", PASSWD: ""}
+      db: {NEWUSER1: {fname: Jane, lname: Doe, type: U, bcrypt: true, password: Secr3t}}

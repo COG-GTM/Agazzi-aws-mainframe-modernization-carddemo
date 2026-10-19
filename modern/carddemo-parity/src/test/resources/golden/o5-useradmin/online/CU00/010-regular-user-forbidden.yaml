@@ -1,0 +1,11 @@
+# CU00 is reachable only from the admin menu: a regular user gets 403.
+id: CU00-010
+title: utente non admin
+tranid: CU00
+screen: COUSR00
+user: USER0001
+steps:
+  - method: GET
+    expect: {status: 403}
+  - action: ENTER
+    expect: {status: 403}

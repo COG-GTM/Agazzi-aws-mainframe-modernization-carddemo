@@ -30,6 +30,9 @@ public final class ZonedDecimal {
       } else if (n >= 0) {
         digit = (char) ('0' + n);
         negative = true;
+      } else if (last >= 'p' && last <= 'y') {
+        digit = (char) ('0' + (last - 'p'));
+        negative = true;
       }
     }
     String digits = (text.substring(0, text.length() - 1) + digit).replace(' ', '0');
@@ -48,6 +51,22 @@ public final class ZonedDecimal {
    * truncated.
    */
   public static String encode(BigDecimal value, int digits, int scale, boolean signed) {
+    return encode(value, digits, scale, signed, SignStyle.OVERPUNCH);
+  }
+
+  /**
+   * How the operational sign of a signed DISPLAY field is written. Decoding accepts every style.
+   */
+  public enum SignStyle {
+    /** IBM overpunch: positive {@code {A-I}} (EBCDIC {@code C0-C9}), negative {@code }J-R}}. */
+    OVERPUNCH,
+    /** GnuCOBOL ASCII: positive as a plain digit, negative as {@code p-y} ({@code 0x70+d}). */
+    ASCII_NATIVE
+  }
+
+  /** {@link #encode(BigDecimal, int, int, boolean)} with an explicit sign style. */
+  public static String encode(
+      BigDecimal value, int digits, int scale, boolean signed, SignStyle style) {
     BigInteger unscaled = value.setScale(scale, java.math.RoundingMode.DOWN).unscaledValue();
     boolean negative = unscaled.signum() < 0;
     String s = unscaled.abs().toString();
@@ -57,7 +76,13 @@ public final class ZonedDecimal {
     StringBuilder sb = new StringBuilder("0".repeat(digits - s.length())).append(s);
     if (signed) {
       int d = sb.charAt(digits - 1) - '0';
-      sb.setCharAt(digits - 1, (negative ? NEGATIVE : POSITIVE).charAt(d));
+      if (style == SignStyle.ASCII_NATIVE) {
+        if (negative) {
+          sb.setCharAt(digits - 1, (char) ('p' + d));
+        }
+      } else {
+        sb.setCharAt(digits - 1, (negative ? NEGATIVE : POSITIVE).charAt(d));
+      }
     }
     return sb.toString();
   }

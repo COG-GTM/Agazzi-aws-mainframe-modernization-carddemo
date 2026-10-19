@@ -1,0 +1,19 @@
+# COACTUPC 1265 part 2
+id: CAUP-029
+title: 'errore: SSN 4th & 5th chars must be all numeric.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACTSSN2: A1
+  expect:
+    message: SSN 4th & 5th chars must be all numeric.
+    fieldErrors:
+    - ACTSSN2
+    dbDelta: none

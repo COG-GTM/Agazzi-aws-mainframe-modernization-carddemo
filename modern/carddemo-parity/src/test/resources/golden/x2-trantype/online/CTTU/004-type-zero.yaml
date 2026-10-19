@@ -1,0 +1,23 @@
+# 1245-EDIT-NUM-REQD NUMVAL = 0.
+id: CTTU-004
+title: Tipo zero
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "00", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Tran Type code must not be zero."
+      fieldErrors: [TRTYPCD]
+      dbDelta: none

@@ -1,0 +1,20 @@
+# CORPT00 tasto non valido
+id: CR00-022
+title: tasto non valido
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: PF5
+  fields: {}
+  expect:
+    message: Invalid key pressed. Please see below...
+    fieldErrors:
+    - MONTHLY

@@ -1,0 +1,15 @@
+# COTRTUPC CDEMO-PGM-ENTER -> PROMPT-FOR-SEARCH-KEYS.
+id: CTTU-001
+title: Primo invio
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none

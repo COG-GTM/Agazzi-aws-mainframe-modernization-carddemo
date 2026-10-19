@@ -1,0 +1,14 @@
+# COCRDSLC 2210-EDIT-ACCOUNT: not numeric
+id: CCDL-004
+title: conto non numerico
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: 0000000000A
+    CARDSID: 0923877193247330
+  expect:
+    message: ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER
+    fieldErrors:
+    - ACCTSID

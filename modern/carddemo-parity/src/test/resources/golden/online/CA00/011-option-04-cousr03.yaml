@@ -1,0 +1,14 @@
+# COADM01C PROCESS-ENTER-KEY: option 4 (User Delete (Security)) -> XCTL PROGRAM(CDEMO-ADMIN-OPT-PGMNAME).
+id: CA00-011
+title: opzione 04 -> COUSR03
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "04"}
+    expect:
+      screen: COADM01
+      nextScreen: COUSR03
+      fieldErrors: []
+      dbDelta: none

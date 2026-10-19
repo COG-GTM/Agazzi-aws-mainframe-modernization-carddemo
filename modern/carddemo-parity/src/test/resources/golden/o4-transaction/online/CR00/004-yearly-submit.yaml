@@ -1,0 +1,20 @@
+# CORPT00 annuale confermato
+id: CR00-004
+title: annuale confermato
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    YEARLY: X
+    CONFIRM: y
+  expect:
+    message: Yearly report submitted for printing ...

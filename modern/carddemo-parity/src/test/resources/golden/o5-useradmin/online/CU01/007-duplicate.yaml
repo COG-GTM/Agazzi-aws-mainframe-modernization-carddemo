@@ -1,0 +1,13 @@
+# WRITE DUPKEY/DUPREC -> User ID already exist...
+id: CU01-007
+title: utente già esistente
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: ENTER
+    fields: {FNAME: "A", LNAME: "B", USERID: "ADMIN001", PASSWD: "X", USRTYPE: "A"}
+    expect:
+      message: "User ID already exist..."
+      fieldErrors: [USERID]
+      data: {USERID: ADMIN001, PASSWD: ""}
+      dbDelta: none

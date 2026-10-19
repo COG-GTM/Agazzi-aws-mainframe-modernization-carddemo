@@ -1,0 +1,14 @@
+# COCRDSLC 2210-EDIT-ACCOUNT: account blank
+id: CCDL-003
+title: conto mancante
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: ''
+    CARDSID: 0923877193247330
+  expect:
+    message: Account number not provided
+    fieldErrors:
+    - ACCTSID

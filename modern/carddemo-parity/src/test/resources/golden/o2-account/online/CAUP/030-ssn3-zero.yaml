@@ -1,0 +1,19 @@
+# COACTUPC 1265 part 3
+id: CAUP-030
+title: 'errore: SSN Last 4 chars must not be zero.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACTSSN3: '0000'
+  expect:
+    message: SSN Last 4 chars must not be zero.
+    fieldErrors:
+    - ACTSSN3
+    dbDelta: none

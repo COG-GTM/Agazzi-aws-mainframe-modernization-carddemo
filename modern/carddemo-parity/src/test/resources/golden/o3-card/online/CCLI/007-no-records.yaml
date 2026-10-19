@@ -1,0 +1,11 @@
+# COCRDLIC 9000: no card matches the filter
+id: CCLI-007
+title: nessun record
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: 00000000099
+  expect:
+    message: NO RECORDS FOUND FOR THIS SEARCH CONDITION.

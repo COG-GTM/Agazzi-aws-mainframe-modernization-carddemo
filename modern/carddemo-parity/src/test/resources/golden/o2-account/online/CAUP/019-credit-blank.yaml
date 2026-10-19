@@ -1,0 +1,19 @@
+# COACTUPC 1250-EDIT-SIGNED-9V2 blank
+id: CAUP-019
+title: 'errore: Credit Limit must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACRDLIM: ''
+  expect:
+    message: Credit Limit must be supplied.
+    fieldErrors:
+    - ACRDLIM
+    dbDelta: none

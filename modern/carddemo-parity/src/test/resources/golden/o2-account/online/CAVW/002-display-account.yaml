@@ -1,0 +1,16 @@
+# COACTVWC 9000-READ-ACCT happy path: xref (CXACAIX) -> ACCTDAT -> CUSTDAT, amounts via PICOUT.
+id: CAVW-002
+title: visualizza conto 00000000001
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: ENTER
+    fields: {ACCTSID: "00000000001"}
+    expect:
+      nextScreen: null
+      message: "Enter or update id of account to display"
+      fieldErrors: []
+      dbDelta: none
+      data: {ACSTTUS: "Y", ACURBAL: "+        194.00", ACRDLIM: "+      2,020.00", ADTOPEN: "2014-11-20"}

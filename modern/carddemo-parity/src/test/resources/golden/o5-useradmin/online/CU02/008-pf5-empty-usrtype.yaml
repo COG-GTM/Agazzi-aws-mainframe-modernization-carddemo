@@ -1,0 +1,12 @@
+# UPDATE-USER-INFO validation order.
+id: CU02-008
+title: PF5 con USRTYPE vuoto
+tranid: CU02
+screen: COUSR02
+steps:
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "0001", PASSWD: "PASSWORD", USRTYPE: ""}
+    expect:
+      message: "User Type can NOT be empty..."
+      fieldErrors: [USRTYPE]
+      dbDelta: none

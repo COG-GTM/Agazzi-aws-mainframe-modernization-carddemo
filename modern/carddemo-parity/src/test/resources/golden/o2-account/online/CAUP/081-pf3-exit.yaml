@@ -1,0 +1,16 @@
+# 0000-MAIN PF3: XCTL COMEN01C.
+id: CAUP-081
+title: PF3 esce al menu
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01
+    dbDelta: none

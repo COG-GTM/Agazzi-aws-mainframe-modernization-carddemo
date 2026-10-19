@@ -1,0 +1,26 @@
+# CORPT00 periodo personalizzato
+id: CR00-005
+title: periodo personalizzato
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '1'
+    SDTDD: '1'
+    SDTYYYY: '2022'
+    EDTMM: '06'
+    EDTDD: '30'
+    EDTYYYY: '2022'
+    CONFIRM: Y
+  expect:
+    message: Custom report submitted for printing ...

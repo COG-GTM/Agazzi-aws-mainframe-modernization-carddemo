@@ -1,0 +1,22 @@
+# ENTER = READ, PF5 = DELETE-USER-INFO.
+id: CU03-001
+title: lookup e cancellazione
+tranid: CU03
+screen: COUSR03
+steps:
+  - action: ENTER
+    fields: {USRIDIN: "USER0005"}
+    expect:
+      message: "Press PF5 key to delete this user ..."
+      data: {FNAME: USER, LNAME: "0005", USRTYPE: U}
+  - action: PF5
+    fields: {USRIDIN: "USER0005"}
+    expect:
+      message: "User USER0005 has been deleted ..."
+      data: {USRIDIN: "", FNAME: ""}
+      db: {USER0005: null}
+  - action: PF5
+    fields: {USRIDIN: "USER0005"}
+    expect:
+      message: "Unable to Update User..."
+      fieldErrors: [FNAME]

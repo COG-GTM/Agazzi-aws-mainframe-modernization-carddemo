@@ -1,0 +1,28 @@
+# CORPT00 validazione EDTDD
+id: CR00-017
+title: validazione EDTDD
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '01'
+    SDTDD: '01'
+    SDTYYYY: '2022'
+    EDTMM: '06'
+    EDTDD: '31'
+    EDTYYYY: '2022'
+    CONFIRM: Y
+  expect:
+    message: End Date - Not a valid date...
+    fieldErrors:
+    - EDTMM

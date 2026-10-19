@@ -1,0 +1,16 @@
+# SEL000n = D/d: XCTL COUSR03C.
+id: CU00-007
+title: selezione D -> COUSR03C
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: ENTER
+    fields: {SEL0009: "D"}
+    expect:
+      nextScreen: COUSR03
+  - method: GET
+    screen: COUSR03
+    expect:
+      message: "Press PF5 key to delete this user ..."
+      data: {USRIDIN: USER0004}

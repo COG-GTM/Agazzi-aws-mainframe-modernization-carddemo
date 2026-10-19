@@ -81,7 +81,7 @@ class CardDemoApplicationIT {
 
   @Test
   void protectedEndpointsRequireAuthentication() {
-    assertThat(http.getForEntity("/api/v1/screens/cosgn00", String.class).getStatusCode())
+    assertThat(http.getForEntity("/api/v1/screens/comen01", String.class).getStatusCode())
         .isEqualTo(HttpStatus.UNAUTHORIZED);
   }
 }

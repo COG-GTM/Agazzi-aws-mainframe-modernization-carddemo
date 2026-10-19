@@ -1,0 +1,28 @@
+# CORPT00 validazione EDTYYYY
+id: CR00-011
+title: validazione EDTYYYY
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '01'
+    SDTDD: '01'
+    SDTYYYY: '2022'
+    EDTMM: '06'
+    EDTDD: '30'
+    EDTYYYY: ''
+    CONFIRM: Y
+  expect:
+    message: End Date - Year can NOT be empty...
+    fieldErrors:
+    - EDTYYYY

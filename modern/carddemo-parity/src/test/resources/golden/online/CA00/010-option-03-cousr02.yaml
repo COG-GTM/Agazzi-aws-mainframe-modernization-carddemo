@@ -1,0 +1,14 @@
+# COADM01C PROCESS-ENTER-KEY: option 3 (User Update (Security)) -> XCTL PROGRAM(CDEMO-ADMIN-OPT-PGMNAME).
+id: CA00-010
+title: opzione 03 -> COUSR02
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "03"}
+    expect:
+      screen: COADM01
+      nextScreen: COUSR02
+      fieldErrors: []
+      dbDelta: none

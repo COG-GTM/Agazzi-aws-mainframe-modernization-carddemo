@@ -1,0 +1,14 @@
+# COACTVWC has no role/ownership check: an admin sees the same account data as a user.
+id: CAVW-009
+title: admin visualizza un conto qualsiasi
+tranid: CAVW
+screen: COACTVW
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+  - action: ENTER
+    fields: {ACCTSID: "00000000002"}
+    expect:
+      fieldErrors: []
+      data: {ACURBAL: "+        158.00"}

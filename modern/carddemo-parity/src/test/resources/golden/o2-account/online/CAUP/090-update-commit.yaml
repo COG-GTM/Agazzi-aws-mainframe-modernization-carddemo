@@ -1,0 +1,36 @@
+# Happy path: validate -> N, PF5 -> 9600 REWRITE ACCTDAT+CUSTDAT -> C, then ENTER resets to search.
+id: CAUP-090
+title: aggiornamento confermato con F5
+tranid: CAUP
+screen: COACTUP
+auth:
+  user: ADMIN001
+  password: PASSWORD
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '750'
+    ACSSTTE: NY
+    ACSPH2A: '908'
+  expect:
+    message: Changes validated.Press F5 to save
+    fieldErrors: []
+    dbDelta: none
+    data:
+      FKEY05: F5=Save
+- action: PF5
+  fields: {}
+  expect:
+    message: Changes committed to database
+    fieldErrors: []
+    dbDelta: any
+- action: ENTER
+  fields: {}
+  expect:
+    message: Enter or update id of account to update
+    dbDelta: none

@@ -1,0 +1,13 @@
+# COACTVWC 2210-EDIT-ACCOUNT: ACCTSID blank -> WS-PROMPT-FOR-ACCT.
+id: CAVW-003
+title: numero conto vuoto
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: ENTER
+    fields: {ACCTSID: ""}
+    expect:
+      message: "Account number not provided"
+      fieldErrors: [ACCTSID]

@@ -1,0 +1,23 @@
+# COCRDLIC PF8 -> next page (9000), PF7 -> previous page (9100-READ-BACKWARDS)
+id: CCLI-002
+title: PF8 poi PF7
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: PF8
+  fields: {}
+  expect:
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    data:
+      PAGENO: '2'
+      CRDNUM1: '1561409106491600'
+- action: PF7
+  fields: {}
+  expect:
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    data:
+      PAGENO: '1'
+      CRDNUM1: '0500024453765740'

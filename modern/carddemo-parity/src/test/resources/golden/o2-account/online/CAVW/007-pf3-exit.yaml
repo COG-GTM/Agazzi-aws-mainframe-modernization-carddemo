@@ -1,0 +1,13 @@
+# COACTVWC PF3: XCTL to CDEMO-FROM-PROGRAM or COMEN01C.
+id: CAVW-007
+title: PF3 torna al menu
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: PF3
+    fields: {}
+    expect:
+      nextScreen: COMEN01
+      dbDelta: none

@@ -1,0 +1,20 @@
+# COACTUPC EDIT-DAY-MONTH-YEAR Feb 30
+id: CAUP-017
+title: 'errore: Open Date:Cannot have 30 days in this month.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNMON: '02'
+    OPNDAY: '30'
+  expect:
+    message: Open Date:Cannot have 30 days in this month.
+    fieldErrors:
+    - OPNMON
+    dbDelta: none

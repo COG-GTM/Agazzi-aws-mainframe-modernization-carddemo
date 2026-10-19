@@ -1,0 +1,21 @@
+# COCRDUPC 1260-EDIT-EXPIRY-YEAR
+id: CCUP-013
+title: anno non valido
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: ENRICO
+    CRDSTCD: Y
+    EXPMON: 08
+    EXPYEAR: '1899'
+  expect:
+    message: Invalid card expiry year
+    fieldErrors:
+    - EXPYEAR

@@ -1,0 +1,123 @@
+# Keyset avanti (TR_TYPE >= last) e indietro (TR_TYPE < first); delete senza categorie.
+id: CTLI-015
+title: Aggiunta tipo 08, paginazione keyset, delete
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF2
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: COTRTUP
+      dbDelta: none
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "08", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "No record found for this key in database"
+      fieldErrors: [TRTYPCD]
+      dbDelta: none
+  - action: PF5
+    fields: {TRTYPCD: "08", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter new transaction type details."
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "08", TRTYDSC: "Annual Fee"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes validated.Press F5 to save"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF5
+    fields: {TRTYPCD: "08", TRTYDSC: "Annual Fee"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes committed to database"
+      fieldErrors: []
+      dbDelta: [INSERT transaction_type 08]
+  - action: PF3
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: COTRTLI
+      dbDelta: none
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF8
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No more pages for these search conditions"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF7
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No previous pages to display"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF8
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No more pages for these search conditions"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL1: "D"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Delete HIGHLIGHTED row ? Press F10 to confirm"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF10
+    fields: {TRTSEL1: "D"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "HIGHLIGHTED row deleted.Hit Enter to continue"
+      fieldErrors: []
+      dbDelta: [DELETE transaction_type 08]
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none

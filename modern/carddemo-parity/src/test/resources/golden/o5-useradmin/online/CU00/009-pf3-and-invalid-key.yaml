@@ -1,0 +1,14 @@
+# EIBAID OTHER -> CCDA-MSG-INVALID-KEY; PF3 -> COADM01C.
+id: CU00-009
+title: PF3 al menu admin, tasto non valido
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: PF5
+    expect:
+      message: "Invalid key pressed. Please see below..."
+      fieldErrors: [USRIDIN]
+  - action: PF3
+    expect:
+      nextScreen: COADM01

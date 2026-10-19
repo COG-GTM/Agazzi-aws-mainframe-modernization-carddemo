@@ -1,0 +1,26 @@
+# COCRDLIC U on a row: XCTL COCRDUPC with account/card of the row
+id: CCLI-013
+title: selezione U -> aggiornamento
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: ENTER
+  fields:
+    CRDSEL3: U
+  expect:
+    nextScreen: COCRDUP
+- action: ENTER
+  fields: {}
+  expect:
+    screen: COCRDUP
+    message: Details of selected card shown above
+    data:
+      CARDSID: 0923877193247330
+      CRDNAME: ENRICO ROSENBAUM
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COCRDLI

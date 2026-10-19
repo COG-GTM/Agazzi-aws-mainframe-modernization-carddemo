@@ -1,0 +1,15 @@
+job: CBEXPORT
+jcl: app/jcl/CBEXPORT.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  CUSTDATA: {org: ksds, lrecl: 500, key: [0, 9], layout: CVCUS01Y, input: "seed:custdata.txt"}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "seed:acctdata.txt"}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y, input: "seed:dailytran.txt", zoned_fields: [[132, 11]]}
+  CARDDATA: {org: ksds, lrecl: 150, key: [0, 16], layout: CVACT02Y, input: "seed:carddata.txt"}
+  EXPDATA: {org: ksds, lrecl: 500, key: [27, 4], layout: CVEXPORT}
+steps:
+  - name: STEP02
+    program: CBEXPORT
+    dd: {CUSTFILE: CUSTDATA, ACCTFILE: ACCTDATA, XREFFILE: CARDXREF, TRANSACT: TRANSACT, CARDFILE: CARDDATA, EXPFILE: EXPDATA}
+outputs: [EXPDATA]

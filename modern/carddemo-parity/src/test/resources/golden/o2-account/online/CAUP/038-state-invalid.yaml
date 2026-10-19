@@ -1,0 +1,21 @@
+# COACTUPC 1270-EDIT-US-STATE-CD
+id: CAUP-038
+title: 'errore: State: is not a valid state code'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSSTTE: XX
+    ACSPH2A: '908'
+  expect:
+    message: 'State: is not a valid state code'
+    fieldErrors:
+    - ACSSTTE
+    dbDelta: none

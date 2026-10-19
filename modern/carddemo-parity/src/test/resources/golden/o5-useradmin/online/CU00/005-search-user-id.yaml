@@ -1,0 +1,17 @@
+# STARTBR GTEQ on USRIDIN; past the last key -> NOTFND top notice.
+id: CU00-005
+title: ENTER con USRIDIN posiziona la lista
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: ENTER
+    fields: {USRIDIN: "USER0003"}
+    expect:
+      data: {USRID01: USER0003, USRID03: USER0005, USRID04: "", USRIDIN: ""}
+      message: "You have reached the bottom of the page..."
+  - action: ENTER
+    fields: {USRIDIN: "ZZZZZZZZ"}
+    expect:
+      message: "You are at the top of the page..."
+      data: {USRID01: USER0003}

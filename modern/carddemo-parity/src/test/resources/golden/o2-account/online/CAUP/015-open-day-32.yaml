@@ -1,0 +1,19 @@
+# COACTUPC EDIT-DAY range
+id: CAUP-015
+title: 'errore: Open Date:day must be a number between 1 and 31.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNDAY: '32'
+  expect:
+    message: Open Date:day must be a number between 1 and 31.
+    fieldErrors:
+    - OPNDAY
+    dbDelta: none
