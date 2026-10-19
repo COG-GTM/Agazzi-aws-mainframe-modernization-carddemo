@@ -230,6 +230,40 @@ class CardListServiceTest {
   }
 
   @Test
+  void backwardsBrowseKeepsCardsWhenTheCursorCardIsDeleted() {
+    var f = new CardFixtures(300);
+    for (int i : new int[] {1, 2, 3, 4, 5, 6, 7, 290}) {
+      Card c = CardFixtures.card(i);
+      c.setCardAcctId(999L);
+      f.put(c);
+    }
+    var big = new CardListService(f.browser, f.clock);
+    var flt = filters("%011d".formatted(999), null);
+    var o = big.process(ctx, CardListState.initial(), Optional.empty(), Action.ENTER, flt, true);
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.ENTER, flt, false);
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.PF8, flt, false);
+    Card late = CardFixtures.card(226);
+    late.setCardAcctId(999L);
+    f.put(late);
+    // the first chunk read backwards from card 290 ends on card 227; another session deletes it
+    String chunkEnd = num(290 - 63);
+    org.mockito.Mockito.when(
+            f.browser.readPrev(
+                org.mockito.ArgumentMatchers.eq(chunkEnd), org.mockito.ArgumentMatchers.anyInt()))
+        .thenAnswer(
+            a -> {
+              f.file.remove(chunkEnd);
+              return f.file.headMap(chunkEnd, true).descendingMap().values().stream()
+                  .limit(a.<Integer>getArgument(1))
+                  .toList();
+            });
+    o = big.process(o.response().context(), o.state(), Optional.empty(), Action.PF7, flt, false);
+    assertThat(o.response().data().crdnum7()).isEqualTo(num(226));
+    assertThat(o.response().data().crdnum6()).isEqualTo(num(7));
+    assertThat(o.response().data().crdnum1()).isEqualTo(num(2));
+  }
+
+  @Test
   void backwardsFromLastPageWithFilter() {
     first();
     post(Action.ENTER, filters(acctText(1), null));

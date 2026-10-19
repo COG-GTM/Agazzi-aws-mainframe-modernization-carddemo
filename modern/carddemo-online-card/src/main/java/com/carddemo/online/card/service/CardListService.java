@@ -312,13 +312,16 @@ public class CardListService {
     boolean done = false;
     while (!done) {
       List<Card> chunk = browser.readPrev(cursor, BROWSE_CHUNK);
-      if (chunk.size() <= 1) {
-        break;
-      }
-      if (counter == MAX_SCREEN_LINES + 1) {
+      if (counter == MAX_SCREEN_LINES + 1 && !chunk.isEmpty()) {
         counter--;
       }
-      for (Card c : chunk.subList(1, chunk.size())) {
+      if (!chunk.isEmpty() && chunk.get(0).getCardNum().equals(cursor)) {
+        chunk = chunk.subList(1, chunk.size());
+      }
+      if (chunk.isEmpty()) {
+        break;
+      }
+      for (Card c : chunk) {
         cursor = c.getCardNum();
         if (r.include(c)) {
           rows[counter - 1] = new Row(c.getCardAcctId(), c.getCardNum(), c.getCardActiveStatus());
