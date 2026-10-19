@@ -3,20 +3,23 @@ package com.carddemo.copybook;
 import com.carddemo.contracts.copybook.CobolField;
 import com.carddemo.contracts.copybook.CobolRecord;
 import com.carddemo.contracts.port.RecordCodec;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import com.carddemo.copybook.codec.CodecOptions;
+import com.carddemo.copybook.codec.LayoutCodec;
+import com.carddemo.copybook.layout.LayoutNode;
+import com.carddemo.copybook.layout.Picture;
+import com.carddemo.copybook.layout.RecordLayout;
+import com.carddemo.copybook.layout.Usage;
 import java.lang.reflect.RecordComponent;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Fase 0 reference codec: DISPLAY-only records (PIC X and zoned 9/S9 with overpunch), driven by the
- * {@link CobolRecord}/{@link CobolField} annotations of the contracts DTOs. Bytes not covered by
- * any field are spaces. 1A replaces it with the generated codecs.
+ * Codec for the contracts DTOs annotated with {@link CobolRecord}/{@link CobolField}. Since 1A the
+ * annotations are turned into a {@link RecordLayout} and encoding/decoding is delegated to the
+ * layout engine ({@link LayoutCodec}); bytes not covered by any field are spaces. The public API is
+ * unchanged from Fase 0.
  *
  * @param <T> record DTO type
  */
@@ -36,9 +39,9 @@ public final class ZonedRecordCodec<T extends Record> implements RecordCodec<T> 
   private final Class<T> type;
   private final int length;
   private final List<FieldLayout> fields;
-  private final Constructor<T> constructor;
-  private final RecordComponent[] components;
   private final Charset charset;
+  private final RecordLayout layout;
+  private final LayoutCodec<T> delegate;
 
   private ZonedRecordCodec(Class<T> type, Charset charset) {
     CobolRecord rec = type.getAnnotation(CobolRecord.class);
@@ -48,23 +51,58 @@ public final class ZonedRecordCodec<T extends Record> implements RecordCodec<T> 
     this.type = type;
     this.length = rec.length();
     this.charset = charset;
-    this.components = type.getRecordComponents();
     List<FieldLayout> list = new ArrayList<>();
-    for (RecordComponent c : components) {
+    List<LayoutNode> nodes = new ArrayList<>();
+    for (RecordComponent c : type.getRecordComponents()) {
       CobolField f = c.getAnnotation(CobolField.class);
       if (f == null) {
         throw new IllegalArgumentException(c + " has no @CobolField");
       }
-      list.add(layout(f, c));
+      Picture p = Picture.parse(f.pic());
+      list.add(
+          new FieldLayout(
+              f.name(),
+              c.getName(),
+              c.getType(),
+              f.offset(),
+              f.length(),
+              p.category() != Picture.Category.ALPHANUMERIC,
+              p.signed(),
+              p.scale()));
+      nodes.add(
+          new LayoutNode(
+              5,
+              f.name(),
+              p,
+              Usage.DISPLAY,
+              f.offset(),
+              f.length(),
+              1,
+              1,
+              null,
+              null,
+              List.of(),
+              List.of()));
     }
     this.fields = List.copyOf(list);
-    try {
-      this.constructor =
-          type.getDeclaredConstructor(
-              Arrays.stream(components).map(RecordComponent::getType).toArray(Class<?>[]::new));
-    } catch (NoSuchMethodException e) {
-      throw new IllegalStateException(e);
-    }
+    this.layout =
+        new RecordLayout(
+            rec.copybook(),
+            new LayoutNode(
+                1,
+                rec.copybook(),
+                null,
+                Usage.DISPLAY,
+                0,
+                length,
+                1,
+                1,
+                null,
+                null,
+                nodes,
+                List.of()));
+    this.delegate =
+        LayoutCodec.of(layout, type, new CodecOptions(charset, ZonedDecimal.SignStyle.OVERPUNCH));
   }
 
   public static <T extends Record> ZonedRecordCodec<T> of(Class<T> type) {
@@ -73,27 +111,16 @@ public final class ZonedRecordCodec<T extends Record> implements RecordCodec<T> 
 
   /** Same layout over EBCDIC CP037 bytes (zoned overpunch maps to the same characters). */
   public static <T extends Record> ZonedRecordCodec<T> ebcdic(Class<T> type) {
-    return new ZonedRecordCodec<>(type, Charset.forName("Cp037"));
-  }
-
-  private static FieldLayout layout(CobolField f, RecordComponent c) {
-    String pic = f.pic().toUpperCase(java.util.Locale.ROOT);
-    boolean numeric = !pic.startsWith("X");
-    boolean signed = pic.startsWith("S");
-    int scale = 0;
-    int v = pic.indexOf('V');
-    if (v >= 0) {
-      String frac = pic.substring(v + 1);
-      int open = frac.indexOf('(');
-      scale =
-          open >= 0 ? Integer.parseInt(frac.substring(open + 1, frac.indexOf(')'))) : frac.length();
-    }
-    return new FieldLayout(
-        f.name(), c.getName(), c.getType(), f.offset(), f.length(), numeric, signed, scale);
+    return new ZonedRecordCodec<>(type, CodecOptions.CP037);
   }
 
   public List<FieldLayout> fields() {
     return fields;
+  }
+
+  /** The {@link RecordLayout} derived from the annotations. */
+  public RecordLayout layout() {
+    return layout;
   }
 
   @Override
@@ -117,68 +144,11 @@ public final class ZonedRecordCodec<T extends Record> implements RecordCodec<T> 
       throw new IllegalArgumentException(
           type.getSimpleName() + ": expected " + length + " bytes, got " + record.length);
     }
-    String text = new String(record, charset);
-    Object[] args = new Object[fields.size()];
-    for (int i = 0; i < args.length; i++) {
-      FieldLayout f = fields.get(i);
-      String raw = text.substring(f.offset(), f.offset() + f.length());
-      args[i] = f.numeric() ? toJava(ZonedDecimal.decode(raw, f.scale(), f.signed()), f) : raw;
-    }
-    try {
-      return constructor.newInstance(args);
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      throw new IllegalStateException(e);
-    }
+    return delegate.decode(record);
   }
 
   @Override
   public byte[] encode(T value) {
-    char[] out = new char[length];
-    Arrays.fill(out, ' ');
-    for (int i = 0; i < fields.size(); i++) {
-      FieldLayout f = fields.get(i);
-      Object v;
-      try {
-        v = components[i].getAccessor().invoke(value);
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new IllegalStateException(e);
-      }
-      String s;
-      if (f.numeric()) {
-        s = ZonedDecimal.encode(toBigDecimal(v), f.length(), f.scale(), f.signed());
-      } else {
-        String str = v == null ? "" : (String) v;
-        s = str.length() >= f.length() ? str.substring(0, f.length()) : padRight(str, f.length());
-      }
-      s.getChars(0, f.length(), out, f.offset());
-    }
-    return new String(out).getBytes(charset);
-  }
-
-  private static String padRight(String s, int len) {
-    return s + " ".repeat(len - s.length());
-  }
-
-  private static Object toJava(BigDecimal d, FieldLayout f) {
-    if (f.type() == BigDecimal.class) {
-      return d;
-    }
-    if (f.type() == int.class || f.type() == Integer.class) {
-      return d.intValueExact();
-    }
-    if (f.type() == long.class || f.type() == Long.class) {
-      return d.longValueExact();
-    }
-    throw new IllegalStateException("Unsupported numeric type " + f.type());
-  }
-
-  private static BigDecimal toBigDecimal(Object v) {
-    if (v == null) {
-      return BigDecimal.ZERO;
-    }
-    if (v instanceof BigDecimal b) {
-      return b;
-    }
-    return BigDecimal.valueOf(((Number) v).longValue());
+    return delegate.encode(value);
   }
 }
