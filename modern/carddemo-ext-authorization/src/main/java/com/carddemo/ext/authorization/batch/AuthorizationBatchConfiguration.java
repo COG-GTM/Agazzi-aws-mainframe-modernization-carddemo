@@ -112,7 +112,8 @@ public class AuthorizationBatchConfiguration {
 
   /**
    * Publishes the root and child unloads as one unit: both are staged in unique files first, and
-   * the previous root entry (moved aside, never read) is restored if publication fails.
+   * the previous root entry (hard-linked aside, never read, never absent) is restored if
+   * publication fails.
    */
   static void publishPair(Path roots, byte[] rootData, Path children, byte[] childData)
       throws IOException {
@@ -129,15 +130,16 @@ public class AuthorizationBatchConfiguration {
       Path rootsBak = null;
       if (Files.exists(roots, LinkOption.NOFOLLOW_LINKS)) {
         rootsBak = roots.resolveSibling(roots.getFileName() + "." + UUID.randomUUID() + ".bak");
-        Files.move(roots, rootsBak);
+        Files.createLink(rootsBak, roots);
       }
       try {
-        Files.move(rootsTmp, roots);
+        Files.move(rootsTmp, roots, StandardCopyOption.REPLACE_EXISTING);
         Files.move(childrenTmp, children, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
-        Files.deleteIfExists(roots);
         if (rootsBak != null) {
-          Files.move(rootsBak, roots);
+          Files.move(rootsBak, roots, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+          Files.deleteIfExists(roots);
         }
         throw e;
       }
