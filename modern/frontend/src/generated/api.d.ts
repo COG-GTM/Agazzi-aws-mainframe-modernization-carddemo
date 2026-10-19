@@ -918,6 +918,20 @@ export interface components {
             ACCTSID?: string;
             /** @description row 7 col 44 */
             CARDSID?: string;
+            /** @description row 11 col 12 */
+            CRDSEL1?: string;
+            /** @description row 12 col 12 */
+            CRDSEL2?: string;
+            /** @description row 13 col 12 */
+            CRDSEL3?: string;
+            /** @description row 14 col 12 */
+            CRDSEL4?: string;
+            /** @description row 15 col 12 */
+            CRDSEL5?: string;
+            /** @description row 16 col 12 */
+            CRDSEL6?: string;
+            /** @description row 17 col 12 */
+            CRDSEL7?: string;
         };
         CocrdliOutput: {
             /** @description row 1 col 7 */
@@ -1078,6 +1092,8 @@ export interface components {
             context?: components["schemas"]["ConversationContext"];
         };
         CocrdupInput: {
+            /** @description row 7 col 45 */
+            ACCTSID?: string;
             /** @description row 8 col 45 */
             CARDSID?: string;
             /** @description row 11 col 25 */
@@ -1270,6 +1286,11 @@ export interface components {
             nextScreen?: string;
             fieldErrors: components["schemas"]["FieldError"][];
             context?: components["schemas"]["ConversationContext"];
+            /**
+             * Format: int64
+             * @description TRANREPT execution submitted by CR00 (ReportJobLauncherPort). Optional: until O4 fills it, the id is only in the X-CardDemo-Report-Execution-Id header and Location
+             */
+            reportExecutionId?: number | null;
         };
         Cosgn00Input: {
             /** @description row 19 col 43 */
@@ -2157,18 +2178,32 @@ export interface components {
             TRTYPE?: string;
             /** @description row 8 col 25 */
             TRDESC?: string;
+            /** @description row 12 col 6 */
+            TRTSEL1?: string;
             /** @description row 12 col 25 */
             TRTYPD1?: string;
+            /** @description row 13 col 6 */
+            TRTSEL2?: string;
             /** @description row 13 col 25 */
             TRTYPD2?: string;
+            /** @description row 14 col 6 */
+            TRTSEL3?: string;
             /** @description row 14 col 25 */
             TRTYPD3?: string;
+            /** @description row 15 col 6 */
+            TRTSEL4?: string;
             /** @description row 15 col 25 */
             TRTYPD4?: string;
+            /** @description row 16 col 6 */
+            TRTSEL5?: string;
             /** @description row 16 col 25 */
             TRTYPD5?: string;
+            /** @description row 17 col 6 */
+            TRTSEL6?: string;
             /** @description row 17 col 25 */
             TRTYPD6?: string;
+            /** @description row 18 col 6 */
+            TRTSEL7?: string;
             /** @description row 18 col 25 */
             TRTYPD7?: string;
         };

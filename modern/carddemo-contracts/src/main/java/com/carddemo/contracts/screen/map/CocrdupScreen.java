@@ -15,6 +15,8 @@ public final class CocrdupScreen {
 
   /** Unprotected fields sent by the terminal (map ...I fields). */
   public record Input(
+      @JsonProperty("ACCTSID") @ScreenField(row = 7, column = 45, length = 11, input = true)
+          String acctsid,
       @JsonProperty("CARDSID") @ScreenField(row = 8, column = 45, length = 16, input = true)
           String cardsid,
       @JsonProperty("CRDNAME") @ScreenField(row = 11, column = 25, length = 50, input = true)
@@ -24,7 +26,13 @@ public final class CocrdupScreen {
       @JsonProperty("EXPMON") @ScreenField(row = 15, column = 25, length = 2, input = true)
           String expmon,
       @JsonProperty("EXPYEAR") @ScreenField(row = 15, column = 30, length = 4, input = true)
-          String expyear) {}
+          String expyear) {
+
+    /** contracts-v1 constructor (without the runtime-unprotected fields). */
+    public Input(String cardsid, String crdname, String crdstcd, String expmon, String expyear) {
+      this(null, cardsid, crdname, crdstcd, expmon, expyear);
+    }
+  }
 
   /** All named fields of the map (map ...O fields). */
   public record Output(
@@ -34,7 +42,8 @@ public final class CocrdupScreen {
       @JsonProperty("PGMNAME") @ScreenField(row = 2, column = 7, length = 8) String pgmname,
       @JsonProperty("TITLE02") @ScreenField(row = 2, column = 21, length = 40) String title02,
       @JsonProperty("CURTIME") @ScreenField(row = 2, column = 71, length = 8) String curtime,
-      @JsonProperty("ACCTSID") @ScreenField(row = 7, column = 45, length = 11) String acctsid,
+      @JsonProperty("ACCTSID") @ScreenField(row = 7, column = 45, length = 11, input = true)
+          String acctsid,
       @JsonProperty("CARDSID") @ScreenField(row = 8, column = 45, length = 16, input = true)
           String cardsid,
       @JsonProperty("CRDNAME") @ScreenField(row = 11, column = 25, length = 50, input = true)
