@@ -204,6 +204,8 @@ def read_progress(path):
             tail = lines[n:]
             break
         cells = split_row(lines[n])
+        if len(cells) == 10:  # blank Note with no closing pipe: trailing whitespace is indistinguishable
+            cells.append("")
         if len(cells) == 11:
             status[cells[0].strip("`")] = cells[5:]
     return status, tail
