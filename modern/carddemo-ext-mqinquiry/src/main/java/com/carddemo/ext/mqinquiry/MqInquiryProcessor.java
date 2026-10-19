@@ -2,6 +2,7 @@ package com.carddemo.ext.mqinquiry;
 
 import com.carddemo.contracts.port.MessageChannelPort;
 import com.carddemo.contracts.port.MessageChannelPort.ChannelMessage;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -9,9 +10,9 @@ import java.util.function.Function;
  * 3000-GET-REQUEST / 4100-PUT-REPLY / 9000-ERROR over {@link MessageChannelPort}. Like the legacy
  * programs the reply goes to the fixed reply queue (MQMD-REPLYTOQ is saved but not used) and keeps
  * the request correlation id; requests longer than MQ-BUFFER-LENGTH fail like MQGET with
- * MQRC_TRUNCATED_MSG_FAILED. Payloads are mapped onto the single-byte repertoire first so the
- * 1000-character buffer is also 1000 bytes. Writes are retried a few times because the transport
- * may already have consumed the request.
+ * MQRC_TRUNCATED_MSG_FAILED (limit checked on the UTF-8 wire size). Accepted payloads are mapped
+ * onto the single-byte repertoire so the 1000-character reply buffer is also 1000 bytes. Writes are
+ * retried a few times because the transport may already have consumed the request.
  */
 public final class MqInquiryProcessor {
 
@@ -42,8 +43,8 @@ public final class MqInquiryProcessor {
       String inputQueue,
       String replyQueue,
       Function<String, InquiryOutcome> program) {
-    String payload = MqMessageLayout.ascii(request.payload());
-    if (payload.length() > MqMessageLayout.MESSAGE_LENGTH) {
+    String raw = request.payload() == null ? "" : request.payload();
+    if (raw.getBytes(StandardCharsets.UTF_8).length > MqMessageLayout.MESSAGE_LENGTH) {
       return send(
           errorQueue,
           MqMessageLayout.buffer(
@@ -51,7 +52,7 @@ public final class MqInquiryProcessor {
                   "", "INP MQGET ERR:", MQCC_WARNING, MQRC_TRUNCATED_MSG_FAILED, inputQueue)),
           Map.of());
     }
-    InquiryOutcome outcome = program.apply(payload);
+    InquiryOutcome outcome = program.apply(MqMessageLayout.ascii(raw));
     if (!outcome.reply()) {
       return send(errorQueue, outcome.payload(), Map.of());
     }

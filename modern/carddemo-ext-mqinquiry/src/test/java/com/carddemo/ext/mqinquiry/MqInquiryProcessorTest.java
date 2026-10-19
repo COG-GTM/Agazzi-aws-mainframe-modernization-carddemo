@@ -126,6 +126,18 @@ class MqInquiryProcessorTest {
   }
 
   @Test
+  void multibyteRequestOver1000BytesIsTruncationError() {
+    processor.handle(
+        new ChannelMessage("m10", "c10", "INQA" + "\uD83D\uDE00".repeat(251), Map.of()),
+        "IN",
+        "REPLY",
+        InquiryOutcome::reply);
+    assertThat(channel.receive("ERR", Duration.ZERO).orElseThrow().payload())
+        .contains("INP MQGET ERR:");
+    assertThat(channel.receive("REPLY", Duration.ZERO)).isEmpty();
+  }
+
+  @Test
   void oversizedRequestFailsLikeTruncatedMqget() {
     processor.handle(
         new ChannelMessage("m4", "c4", "X".repeat(1001), Map.of()),
