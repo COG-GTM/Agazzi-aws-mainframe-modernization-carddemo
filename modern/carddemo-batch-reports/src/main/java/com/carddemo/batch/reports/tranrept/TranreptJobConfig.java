@@ -3,6 +3,7 @@ package com.carddemo.batch.reports.tranrept;
 import static com.carddemo.batch.reports.config.ReportsJobSupport.step;
 
 import com.carddemo.batch.reports.config.ReportsJobSupport;
+import com.carddemo.batch.reports.support.DatasetSource;
 import com.carddemo.batch.reports.support.RecordSort;
 import com.carddemo.batch.reports.tranrept.Cbtrn03cService.DateParm;
 import java.util.List;
@@ -60,7 +61,7 @@ public class TranreptJobConfig {
                 jdbc,
                 ctx -> {
                   var ds = ctx.datasets();
-                  DateParm range = dateParm(ctx.params(), ds.optional("DATEPARM", 80));
+                  DateParm range = dateParm(ctx.params(), ds);
                   if (range == null) {
                     range = SYMNAMES_DEFAULT;
                   }
@@ -84,7 +85,7 @@ public class TranreptJobConfig {
                 jdbc,
                 ctx -> {
                   var ds = ctx.datasets();
-                  DateParm range = dateParm(ctx.params(), ds.optional("DATEPARM", 80));
+                  DateParm range = dateParm(ctx.params(), ds);
                   var lookups =
                       new Cbtrn03cService.Lookups(
                           ds.ksds("CARDXREF", 50, 0, 16),
@@ -100,12 +101,14 @@ public class TranreptJobConfig {
         .build();
   }
 
-  static DateParm dateParm(JobParameters params, List<String> dateParmFile) {
+  /** JobParameters replace DATEPARM; without them the DATEPARM dataset is required. */
+  static DateParm dateParm(JobParameters params, DatasetSource ds) {
     String start = params.getString(START_DATE);
     String end = params.getString(END_DATE);
     if (start != null && end != null) {
       return new DateParm(start, end);
     }
+    List<String> dateParmFile = ds.sequential("DATEPARM", 80);
     return dateParmFile.isEmpty() ? null : DateParm.parse(dateParmFile.get(0));
   }
 }

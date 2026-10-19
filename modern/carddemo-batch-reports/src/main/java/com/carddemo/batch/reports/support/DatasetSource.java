@@ -46,11 +46,6 @@ public final class DatasetSource {
     return FixedRecords.read(required(dd), lrecl);
   }
 
-  /** Reads a sequential dataset that may be absent (e.g. DATEPARM when JobParameters carry it). */
-  public List<String> optional(String dd, int lrecl) {
-    return FixedRecords.read(catalog.path(dd), lrecl);
-  }
-
   private java.nio.file.Path required(String dd) {
     java.nio.file.Path path = catalog.path(dd);
     if (!java.nio.file.Files.exists(path)) {

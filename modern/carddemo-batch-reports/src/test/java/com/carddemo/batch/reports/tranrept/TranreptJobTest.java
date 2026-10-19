@@ -71,6 +71,14 @@ class TranreptJobTest {
   }
 
   @Test
+  void missingDateParmWithoutJobParametersAbends() throws Exception {
+    Files.delete(dir.resolve("DATEPARM.dat"));
+    JobExecution e = launcher.run(job, B3Fixtures.params(dir, "run", "nodateparm"));
+    assertThat(e.getExitStatus().getExitCode()).isEqualTo("ABEND");
+    assertThat(B3Fixtures.returnCodes(e)).containsEntry("STEP05R-SORT", 16);
+  }
+
+  @Test
   void missingTransactDatasetAbends() throws Exception {
     Files.delete(dir.resolve("TRANSACT.dat"));
     JobExecution e = launcher.run(job, B3Fixtures.params(dir, "run", "nofile"));
