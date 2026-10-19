@@ -178,6 +178,9 @@
          05  WS-PFK-FLAG                           PIC X(1).
            88  PFK-VALID                           VALUE '0'.
            88  PFK-INVALID                         VALUE '1'.
+         05  WS-AUTH-FLAG                          PIC X(1).
+           88  USER-IS-AUTHORIZED                  VALUE '1'.
+           88  USER-NOT-AUTHORIZED                 VALUE '0'.
 
       *  Program specific edits
          05  WS-EDIT-ACCT-FLAG                     PIC X(1).
@@ -524,6 +527,8 @@
                'Update of record failed'.
            88  XREF-READ-ERROR                     VALUE
                'Error reading Card Data File'.
+           88  NOT-AUTHORIZED-TO-UPDATE            VALUE
+               'Account update is restricted to administrators'.
            88  CODING-TO-BE-DONE                   VALUE
                'Looks Good.... so far'.
       ******************************************************************
@@ -580,6 +585,14 @@
                                                    VALUE 'CARDAIX '.
           05 LIT-CARDXREFNAME-ACCT-PATH            PIC X(8)
                                                    VALUE 'CXACAIX '.
+          05 LIT-USRSECFILENAME                    PIC X(8)
+                                                   VALUE 'USRSEC  '.
+          05 LIT-SIGNONPGM                         PIC X(8)
+                                                   VALUE 'COSGN00C'.
+          05 LIT-ADMINPGM                          PIC X(8)
+                                                   VALUE 'COADM01C'.
+          05 LIT-ADMINTRANID                       PIC X(4)
+                                                   VALUE 'CA00'.
       ******************************************************************
       * Literals for use in INSPECT statements
       ******************************************************************
@@ -880,6 +893,8 @@
            IF EIBCALEN IS EQUAL TO 0
                OR (CDEMO-FROM-PROGRAM = LIT-MENUPGM
                AND NOT CDEMO-PGM-REENTER)
+               OR (CDEMO-FROM-PROGRAM = LIT-ADMINPGM
+               AND NOT CDEMO-PGM-REENTER)
               INITIALIZE CARDDEMO-COMMAREA
                          WS-THIS-PROGCOMMAREA
               SET CDEMO-PGM-ENTER TO TRUE
@@ -891,6 +906,11 @@
                                LENGTH OF WS-THIS-PROGCOMMAREA ) TO
                                 WS-THIS-PROGCOMMAREA
            END-IF
+      *****************************************************************
+      * Check that the signed on user may maintain account data       *
+      *****************************************************************
+           PERFORM 0100-CHECK-AUTHORIZATION
+              THRU 0100-CHECK-AUTHORIZATION-EXIT
       *****************************************************************
       * Remap PFkeys as needed.
       * Store the Mapped PF Key
@@ -944,7 +964,6 @@
                    MOVE LIT-THISTRANID     TO CDEMO-FROM-TRANID
                    MOVE LIT-THISPGM        TO CDEMO-FROM-PROGRAM
 
-                   SET  CDEMO-USRTYP-USER  TO TRUE
                    SET  CDEMO-PGM-ENTER    TO TRUE
                    MOVE LIT-THISMAPSET     TO CDEMO-LAST-MAPSET
                    MOVE LIT-THISMAP        TO CDEMO-LAST-MAP
@@ -1019,6 +1038,75 @@
            END-EXEC
            .
        0000-MAIN-EXIT.
+           EXIT
+           .
+
+       0100-CHECK-AUTHORIZATION.
+      *****************************************************************
+      * Account Update reads and rewrites the account and customer    *
+      * master records keyed by the account id typed on the screen.   *
+      * A regular user is not tied to an account, so maintenance of    *
+      * arbitrary accounts is restricted to administrators.           *
+      * The user type is read from the security file on every         *
+      * invocation instead of being trusted from the commarea, which  *
+      * the navigating programs overwrite.                            *
+      *****************************************************************
+           SET USER-NOT-AUTHORIZED   TO TRUE
+           MOVE SPACES               TO CDEMO-USER-TYPE
+
+           IF CDEMO-USER-ID NOT = SPACES AND LOW-VALUES
+              EXEC CICS READ
+                   DATASET   (LIT-USRSECFILENAME)
+                   RIDFLD    (CDEMO-USER-ID)
+                   KEYLENGTH (LENGTH OF CDEMO-USER-ID)
+                   INTO      (SEC-USER-DATA)
+                   LENGTH    (LENGTH OF SEC-USER-DATA)
+                   RESP      (WS-RESP-CD)
+                   RESP2     (WS-REAS-CD)
+              END-EXEC
+
+              IF WS-RESP-CD EQUAL TO DFHRESP(NORMAL)
+                 MOVE SEC-USR-TYPE    TO CDEMO-USER-TYPE
+              END-IF
+           END-IF
+
+           IF CDEMO-USRTYP-ADMIN
+              SET USER-IS-AUTHORIZED TO TRUE
+              GO TO 0100-CHECK-AUTHORIZATION-EXIT
+           END-IF
+
+           PERFORM 0110-DENY-ACCESS
+              THRU 0110-DENY-ACCESS-EXIT
+           .
+       0100-CHECK-AUTHORIZATION-EXIT.
+           EXIT
+           .
+
+       0110-DENY-ACCESS.
+      *****************************************************************
+      * Send an unauthorized user back where they came from without   *
+      * touching any account or customer data                         *
+      *****************************************************************
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+              MOVE LIT-SIGNONPGM      TO CDEMO-TO-PROGRAM
+              MOVE SPACES             TO CDEMO-TO-TRANID
+           ELSE
+              MOVE LIT-MENUPGM        TO CDEMO-TO-PROGRAM
+              MOVE LIT-MENUTRANID     TO CDEMO-TO-TRANID
+           END-IF
+
+           MOVE LIT-THISTRANID        TO CDEMO-FROM-TRANID
+           MOVE LIT-THISPGM           TO CDEMO-FROM-PROGRAM
+           SET  CDEMO-PGM-ENTER       TO TRUE
+           MOVE LIT-THISMAPSET        TO CDEMO-LAST-MAPSET
+           MOVE LIT-THISMAP           TO CDEMO-LAST-MAP
+
+           EXEC CICS XCTL
+                PROGRAM (CDEMO-TO-PROGRAM)
+                COMMAREA(CARDDEMO-COMMAREA)
+           END-EXEC
+           .
+       0110-DENY-ACCESS-EXIT.
            EXIT
            .
 
@@ -3886,6 +3974,17 @@
            EXIT
            .
        9600-WRITE-PROCESSING.
+
+      *****************************************************************
+      *    Authorization is verified again at the point of update     *
+      *****************************************************************
+           IF NOT USER-IS-AUTHORIZED
+              SET INPUT-ERROR                    TO TRUE
+              IF  WS-RETURN-MSG-OFF
+                  SET NOT-AUTHORIZED-TO-UPDATE   TO TRUE
+              END-IF
+              GO TO 9600-WRITE-PROCESSING-EXIT
+           END-IF
 
       *    Read the account file for update
 

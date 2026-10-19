@@ -247,7 +247,7 @@ The application supports two user roles:
 ![User Function Flow](./diagrams/Application-Flow-User.png "User Function Flow")
 
 The regular user can perform the following functions:
-- View and update account information
+- View account information (updating an account is an admin function)
 - Manage credit cards
 - View, add, and process transactions
 - Generate transaction reports
@@ -260,6 +260,7 @@ The regular user can perform the following functions:
 
 Admin users can perform the following functions:
 - User management (list, add, update, delete)
+- Account update
 - Transaction type management (with DB2 optional module)
 
 ### Application Inventory
@@ -271,7 +272,7 @@ Admin users can perform the following functions:
 | CC00        | COSGN00 | COSGN00C | Signon Screen                   |                                    |                                                           |
 | CM00        | COMEN01 | COMEN01C | Main Menu                       |                                    |                                                           |
 | CAVW        | COACTVW | COACTVWC | Account View                    |                                    |                                                           |
-| CAUP        | COACTUP | COACTUPC | Account Update                  |                                    |                                                           |
+| CAUP        | COACTUP | COACTUPC | Account Update                  |                                    | Admin only                                                |
 | CCLI        | COCRDLI | COCRDLIC | Credit Card List                |                                    |                                                           |
 | CCDL        | COCRDSL | COCRDSLC | Credit Card View                |                                    |                                                           |
 | CCUP        | COCRDUP | COCRDUPC | Credit Card Update              |                                    |                                                           |
