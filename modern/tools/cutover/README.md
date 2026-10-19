@@ -26,4 +26,4 @@ tools/cutover/tests/selftest.sh
 ```
 
 Exit code: `0` OK, `1` differenze/fallimento (no-go), `2` uso errato, `3` job non ancora registrato
-nell'app (modulo non integrato), `4` lato Java non congelato (rollback).
+nell'app (modulo non integrato), `4` lato Java non congelato (rollback), `5` job non lanciato entro `CARDDEMO_JOB_START_GRACE`, `124` timeout `CARDDEMO_JOB_TIMEOUT`.
