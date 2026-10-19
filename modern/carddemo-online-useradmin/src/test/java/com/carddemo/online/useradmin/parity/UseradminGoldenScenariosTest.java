@@ -42,9 +42,9 @@ import org.yaml.snakeyaml.Yaml;
  *
  * <p>Format = {@code golden/online} (OnlineScenarioRunner) plus optional keys: {@code user}
  * (signed-on user, default ADMIN001), {@code extraUsers} (seeded U0000001..), per step {@code
- * screen} (map of the step, default the scenario one), {@code method: GET} (first send), and in
- * {@code expect}: {@code status}, {@code data} (map fields), {@code db} (USRSEC rows after the
- * step; {@code null} = absent).
+ * screen} (map of the step, default the scenario one), {@code method: GET} (first send), {@code
+ * session} (named terminal, default {@code main}), and in {@code expect}: {@code status}, {@code
+ * data} (map fields), {@code db} (USRSEC rows after the step; {@code null} = absent).
  */
 @Tag("parity")
 @SpringBootTest(classes = UseradminTestApp.class)
@@ -91,7 +91,7 @@ class UseradminGoldenScenariosTest {
     assertThat(file.getParent().getFileName().toString()).isEqualTo(sc.get("tranid"));
     ((InMemoryUserStore) store).reseed(((Number) sc.getOrDefault("extraUsers", 0)).intValue());
     String user = (String) sc.getOrDefault("user", "ADMIN001");
-    MockHttpSession session = new MockHttpSession();
+    Map<String, MockHttpSession> sessions = new LinkedHashMap<>();
     int n = 0;
     for (Map<String, Object> step : (List<Map<String, Object>>) sc.get("steps")) {
       n++;
@@ -109,6 +109,9 @@ class UseradminGoldenScenariosTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(body));
       }
+      MockHttpSession session =
+          sessions.computeIfAbsent(
+              (String) step.getOrDefault("session", "main"), k -> new MockHttpSession());
       Map<String, UserRow> before = ((InMemoryUserStore) store).snapshot();
       MockHttpServletResponse res =
           mvc.perform(req.session(session).with(httpBasic(user, "PASSWORD")))

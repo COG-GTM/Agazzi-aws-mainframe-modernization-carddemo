@@ -47,7 +47,7 @@ public class UseradminSession {
                 && userId.equals(c.userId().trim().toUpperCase(Locale.ROOT))
             ? c
             : null;
-    UserType type = userType(auth, stored, userId);
+    UserType type = userType(auth, userId);
     ConversationContext ctx =
         stored != null && stored.userType() == type
             ? stored
@@ -56,7 +56,7 @@ public class UseradminSession {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
     UseradminState state =
-        session.getAttribute(STATE_ATTRIBUTE) instanceof UseradminState s
+        stored != null && session.getAttribute(STATE_ATTRIBUTE) instanceof UseradminState s
             ? s
             : new UseradminState();
     return new Conversation(ctx, state);
@@ -67,8 +67,8 @@ public class UseradminSession {
     session.setAttribute(STATE_ATTRIBUTE, state);
   }
 
-  /** CDEMO-USER-TYPE from the granted roles, else the session, else SEC-USR-TYPE of USRSEC. */
-  private UserType userType(Authentication auth, ConversationContext stored, String userId) {
+  /** CDEMO-USER-TYPE from the granted roles, else the current SEC-USR-TYPE of USRSEC. */
+  private UserType userType(Authentication auth, String userId) {
     for (GrantedAuthority a : auth.getAuthorities()) {
       String role = a.getAuthority();
       if ("ROLE_ADMIN".equals(role) || "ADMIN".equals(role)) {
@@ -80,9 +80,6 @@ public class UseradminSession {
       if ("ROLE_USER".equals(role) || "USER".equals(role)) {
         return UserType.USER;
       }
-    }
-    if (stored != null && stored.userType() != null) {
-      return stored.userType();
     }
     Optional<UserRow> row;
     try {

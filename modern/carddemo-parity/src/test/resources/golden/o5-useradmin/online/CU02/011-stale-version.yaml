@@ -1,0 +1,29 @@
+# Optimistic lock on the displayed record (PE-O5-04): another terminal rewrites the user between
+# the first send and PF5 -> 'Unable to Update User...', the newer data is kept.
+id: CU02-011
+title: aggiornamento concorrente
+tranid: CU02
+screen: COUSR02
+steps:
+  - method: GET
+    screen: COUSR00
+  - action: ENTER
+    screen: COUSR00
+    fields: {SEL0007: "U"}
+    expect:
+      nextScreen: COUSR02
+  - method: GET
+    expect:
+      data: {USRIDIN: USER0002}
+  - action: PF5
+    screen: COUSR02
+    session: other
+    fields: {USRIDIN: "USER0002", FNAME: "USER", LNAME: "Verdi", PASSWD: "", USRTYPE: "U"}
+    expect:
+      message: "User USER0002 has been updated ..."
+  - action: PF5
+    fields: {USRIDIN: "USER0002", FNAME: "USER", LNAME: "0002", PASSWD: "", USRTYPE: "A"}
+    expect:
+      message: "Unable to Update User..."
+      fieldErrors: [FNAME]
+      db: {USER0002: {lname: Verdi, type: U}}

@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.carddemo.contracts.screen.ConversationContext;
 import com.carddemo.contracts.screen.ConversationContext.UserType;
 import com.carddemo.online.useradmin.session.UseradminSession;
+import com.carddemo.online.useradmin.session.UseradminState;
+import com.carddemo.online.useradmin.support.InMemoryUserStore;
 import com.carddemo.online.useradmin.support.UseradminTestApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class UserAdminScreenControllerTest {
 
   @Autowired MockMvc mvc;
+  @Autowired com.carddemo.online.useradmin.store.UserStore store;
 
   private static final String[] SCREENS = {"cousr00", "cousr01", "cousr02", "cousr03"};
 
@@ -135,6 +138,32 @@ class UserAdminScreenControllerTest {
   }
 
   @Test
+  void demotedAdministratorLosesAccessAndUserSwitchDropsState() throws Exception {
+    InMemoryUserStore users = (InMemoryUserStore) store;
+    MockHttpSession session = new MockHttpSession();
+    mvc.perform(
+            get("/api/v1/screens/cousr00").session(session).with(httpBasic("ADMIN002", "PASSWORD")))
+        .andExpect(status().isOk());
+    users.put("ADMIN002", "ADMIN", "002", "PASSWORD", "U");
+    mvc.perform(
+            get("/api/v1/screens/cousr00").session(session).with(httpBasic("ADMIN002", "PASSWORD")))
+        .andExpect(status().isForbidden());
+    users.reseed(0);
+
+    UseradminState foreign = new UseradminState();
+    foreign.selected("USER0003");
+    session.setAttribute(UseradminSession.STATE_ATTRIBUTE, foreign);
+    session.setAttribute(
+        UseradminSession.CONTEXT_ATTRIBUTE,
+        ConversationContext.signedOn("ADMIN002", UserType.ADMIN));
+    mvc.perform(
+            get("/api/v1/screens/cousr03").session(session).with(httpBasic("ADMIN001", "PASSWORD")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.USRIDIN").value(""))
+        .andExpect(jsonPath("$.messages").isEmpty());
+  }
+
+  @Test
   void staleSessionContextOfAnotherUserIsIgnored() throws Exception {
     MockHttpSession session = new MockHttpSession();
     session.setAttribute(
@@ -148,6 +177,6 @@ class UserAdminScreenControllerTest {
         ConversationContext.signedOn("USER0002", UserType.ADMIN));
     mvc.perform(
             get("/api/v1/screens/cousr03").session(session).with(httpBasic("USER0002", "PASSWORD")))
-        .andExpect(status().isOk());
+        .andExpect(status().isForbidden());
   }
 }

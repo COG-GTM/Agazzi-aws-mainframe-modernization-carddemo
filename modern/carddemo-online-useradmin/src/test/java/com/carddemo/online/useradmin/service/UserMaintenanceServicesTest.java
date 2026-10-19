@@ -152,7 +152,7 @@ class UserMaintenanceServicesTest {
         "null,F,L,P,U,User ID can NOT be empty...,USRIDIN",
         "USER0001,null,L,P,U,First Name can NOT be empty...,FNAME",
         "USER0001,F,null,P,U,Last Name can NOT be empty...,LNAME",
-        "USER0001,F,L,null,U,Password can NOT be empty...,PASSWD",
+        "USER0001,F,L,null,U,User USER0001 has been updated ...,null",
         "USER0001,F,L,P,null,User Type can NOT be empty...,USRTYPE",
         "NOPE,F,L,P,U,Unable to Update User...,FNAME"
       })
@@ -248,6 +248,68 @@ class UserMaintenanceServicesTest {
     assertThat(msg(r)).isEqualTo(Messages.UNABLE_TO_UPDATE);
     assertThat(field(r)).isEqualTo("FNAME");
     assertThat(store.snapshot().get("USER0002").lastName().trim()).isEqualTo("OTHER");
+  }
+
+  @Test
+  void blankPasswordKeepsTheStoredCredential() {
+    ScreenResponse<Cousr02Screen.Output> r =
+        update.receive(
+            Action.PF5, new Cousr02Screen.Input("USER0003", "USER", "0003", "", "U"), ctx, st);
+    assertThat(msg(r)).isEqualTo(Messages.PLEASE_MODIFY);
+    r =
+        update.receive(
+            Action.PF5, new Cousr02Screen.Input("USER0003", "Anna", "0003", " ", "U"), ctx, st);
+    assertThat(msg(r)).isEqualTo("User USER0003 has been updated ...");
+    assertThat(store.snapshot().get("USER0003").password()).isEqualTo("PASSWORD");
+  }
+
+  @Test
+  void staleDisplayedVersionIsRejectedOnUpdateAndDelete() {
+    st.selected("USER0004");
+    update.send(fromList, st);
+    assertThat(st.displayedId()).isEqualTo("USER0004");
+    UserRow other = store.snapshot().get("USER0004");
+    store.update(
+        new UserRow(
+            other.id(),
+            other.firstName(),
+            "Smith",
+            other.password(),
+            other.type(),
+            other.filler(),
+            other.version()));
+    ScreenResponse<Cousr02Screen.Output> r =
+        update.receive(
+            Action.PF5, new Cousr02Screen.Input("USER0004", "USER", "0004", "", "A"), ctx, st);
+    assertThat(msg(r)).isEqualTo(Messages.UNABLE_TO_UPDATE);
+    assertThat(store.snapshot().get("USER0004").lastName().trim()).isEqualTo("Smith");
+
+    r =
+        update.receive(
+            Action.ENTER, new Cousr02Screen.Input("USER0004", null, null, null, null), ctx, st);
+    r =
+        update.receive(
+            Action.PF5, new Cousr02Screen.Input("USER0004", "USER", "Smith", "", "A"), ctx, st);
+    assertThat(msg(r)).isEqualTo("User USER0004 has been updated ...");
+    r =
+        update.receive(
+            Action.PF5, new Cousr02Screen.Input("USER0004", "USER", "Smith", "", "U"), ctx, st);
+    assertThat(msg(r)).isEqualTo("User USER0004 has been updated ...");
+    update.receive(Action.PF4, new Cousr02Screen.Input(null, null, null, null, null), ctx, st);
+    assertThat(st.displayedId()).isEmpty();
+
+    st.selected("USER0004");
+    delete.send(fromList, st);
+    UserRow now = store.snapshot().get("USER0004");
+    store.update(now);
+    ScreenResponse<Cousr03Screen.Output> d =
+        delete.receive(Action.PF5, new Cousr03Screen.Input("USER0004"), ctx, st);
+    assertThat(msg(d)).isEqualTo(Messages.UNABLE_TO_UPDATE);
+    assertThat(store.snapshot()).containsKey("USER0004");
+    delete.receive(Action.ENTER, new Cousr03Screen.Input("USER0004"), ctx, st);
+    d = delete.receive(Action.PF5, new Cousr03Screen.Input("USER0004"), ctx, st);
+    assertThat(msg(d)).isEqualTo("User USER0004 has been deleted ...");
+    assertThat(st.displayedId()).isEmpty();
   }
 
   @Test

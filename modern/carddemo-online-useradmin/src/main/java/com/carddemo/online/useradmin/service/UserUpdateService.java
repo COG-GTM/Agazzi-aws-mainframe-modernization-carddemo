@@ -42,7 +42,8 @@ public class UserUpdateService {
   }
 
   public ScreenResponse<Cousr02Screen.Output> send(ConversationContext ctx, UseradminState state) {
-    Map m = new Map(null);
+    Map m = new Map(null, state);
+    state.clearDisplayed();
     if (!Fields.isBlank(state.selected())) {
       m.usridin = Fields.received(state.selected(), 8);
       processEnterKey(m);
@@ -52,14 +53,17 @@ public class UserUpdateService {
 
   public ScreenResponse<Cousr02Screen.Output> receive(
       Action action, Cousr02Screen.Input input, ConversationContext ctx, UseradminState state) {
-    Map m = new Map(input);
+    Map m = new Map(input, state);
     switch (action) {
       case ENTER -> processEnterKey(m);
       case PF3 -> {
         updateUserInfo(m);
         m.reply.returnToCaller(ctx);
       }
-      case PF4 -> m.initializeAllFields();
+      case PF4 -> {
+        m.initializeAllFields();
+        state.clearDisplayed();
+      }
       case PF5 -> updateUserInfo(m);
       case PF12 -> m.reply.transferTo(ScreenId.COADM01);
       default -> m.reply.error(Messages.INVALID_KEY, null);
@@ -75,9 +79,11 @@ public class UserUpdateService {
     m.fname = "";
     m.lname = "";
     m.usrtype = "";
+    m.st.clearDisplayed();
     Optional<UserRow> row = read(m);
     row.ifPresent(
         r -> {
+          m.st.displayed(r.id(), r.version());
           m.fname = r.firstName();
           m.lname = r.lastName();
           m.usrtype = r.type();
@@ -91,8 +97,6 @@ public class UserUpdateService {
       m.reply.error(Messages.FIRST_NAME_EMPTY, "FNAME");
     } else if (Fields.isBlank(m.lname)) {
       m.reply.error(Messages.LAST_NAME_EMPTY, "LNAME");
-    } else if (Fields.isBlank(m.passwd)) {
-      m.reply.error(Messages.PASSWORD_EMPTY, "PASSWD");
     } else if (Fields.isBlank(m.usrtype)) {
       m.reply.error(Messages.USER_TYPE_EMPTY, "USRTYPE");
     } else {
@@ -103,10 +107,17 @@ public class UserUpdateService {
         return;
       }
       UserRow current = found.get();
+      if (current.id().equals(m.st.displayedId()) && current.version() != m.st.displayedVersion()) {
+        // changed by another terminal since this screen was displayed
+        m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
+        return;
+      }
       String fname = Fields.pad(m.fname, 20);
       String lname = Fields.pad(m.lname, 20);
       String type = Fields.pad(m.usrtype, 1);
-      boolean samePassword = passwords.matches(m.passwd, current.password());
+      // PASSWD is never sent to the screen: blank = keep the stored credential (PE-O5-05)
+      boolean samePassword =
+          Fields.isBlank(m.passwd) || passwords.matches(m.passwd, current.password());
       boolean modified =
           !fname.equals(current.firstName())
               || !lname.equals(current.lastName())
@@ -134,7 +145,10 @@ public class UserUpdateService {
       return;
     }
     switch (outcome) {
-      case OK -> m.reply.info(Messages.updated(current.id()));
+      case OK -> {
+        m.st.displayed(current.id(), current.version() + 1);
+        m.reply.info(Messages.updated(current.id()));
+      }
       case NOT_FOUND -> m.reply.error(Messages.USER_NOT_FOUND, "USRIDIN");
       default -> m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
     }
@@ -160,13 +174,15 @@ public class UserUpdateService {
   /** COUSR2AI / COUSR2AO. PASSWD is never sent back to the terminal. */
   private final class Map {
     final Reply reply = new Reply();
+    final UseradminState st;
     String usridin;
     String fname;
     String lname;
     String passwd;
     String usrtype;
 
-    Map(Cousr02Screen.Input in) {
+    Map(Cousr02Screen.Input in, UseradminState st) {
+      this.st = st;
       usridin = Fields.received(in == null ? null : in.usridin(), 8);
       fname = Fields.received(in == null ? null : in.fname(), 20);
       lname = Fields.received(in == null ? null : in.lname(), 20);

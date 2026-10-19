@@ -30,7 +30,8 @@ public class UserDeleteService {
   }
 
   public ScreenResponse<Cousr03Screen.Output> send(ConversationContext ctx, UseradminState state) {
-    Map m = new Map(null);
+    Map m = new Map(null, state);
+    state.clearDisplayed();
     if (!Fields.isBlank(state.selected())) {
       m.usridin = Fields.received(state.selected(), 8);
       processEnterKey(m);
@@ -40,11 +41,14 @@ public class UserDeleteService {
 
   public ScreenResponse<Cousr03Screen.Output> receive(
       Action action, Cousr03Screen.Input input, ConversationContext ctx, UseradminState state) {
-    Map m = new Map(input);
+    Map m = new Map(input, state);
     switch (action) {
       case ENTER -> processEnterKey(m);
       case PF3 -> m.reply.returnToCaller(ctx);
-      case PF4 -> m.initializeAllFields();
+      case PF4 -> {
+        m.initializeAllFields();
+        state.clearDisplayed();
+      }
       case PF5 -> deleteUserInfo(m);
       case PF12 -> m.reply.transferTo(ScreenId.COADM01);
       default -> m.reply.error(Messages.INVALID_KEY, null);
@@ -60,9 +64,11 @@ public class UserDeleteService {
     m.fname = "";
     m.lname = "";
     m.usrtype = "";
+    m.st.clearDisplayed();
     read(m)
         .ifPresent(
             r -> {
+              m.st.displayed(r.id(), r.version());
               m.fname = r.firstName();
               m.lname = r.lastName();
               m.usrtype = r.type();
@@ -80,9 +86,15 @@ public class UserDeleteService {
       m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
       return;
     }
+    UserRow current = found.get();
+    if (current.id().equals(m.st.displayedId()) && current.version() != m.st.displayedVersion()) {
+      // changed by another terminal since this screen was displayed
+      m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
+      return;
+    }
     UserStore.WriteOutcome outcome;
     try {
-      outcome = store.delete(found.get());
+      outcome = store.delete(current);
     } catch (RuntimeException e) {
       m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
       return;
@@ -91,6 +103,7 @@ public class UserDeleteService {
       case OK -> {
         String id = found.get().id();
         m.initializeAllFields();
+        m.st.clearDisplayed();
         m.reply.info(Messages.deleted(id));
       }
       case NOT_FOUND -> m.reply.error(Messages.USER_NOT_FOUND, "USRIDIN");
@@ -118,12 +131,14 @@ public class UserDeleteService {
   /** COUSR3AI / COUSR3AO. */
   private final class Map {
     final Reply reply = new Reply();
+    final UseradminState st;
     String usridin;
     String fname = "";
     String lname = "";
     String usrtype = "";
 
-    Map(Cousr03Screen.Input in) {
+    Map(Cousr03Screen.Input in, UseradminState st) {
+      this.st = st;
       usridin = Fields.received(in == null ? null : in.usridin(), 8);
     }
 

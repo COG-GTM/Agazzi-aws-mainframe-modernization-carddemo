@@ -31,6 +31,8 @@ public final class UseradminState implements Serializable {
   private String selected = "";
   private String pageNumDisplay = "";
   private Row[] rows = blankRows();
+  private String displayedId = "";
+  private long displayedVersion;
 
   static Row[] blankRows() {
     Row[] r = new Row[ROWS];
@@ -103,7 +105,26 @@ public final class UseradminState implements Serializable {
   }
 
   /** Program left the user administration area: the CU tail of the commarea is lost. */
+  /** Record shown by CU02/CU03 and its {@code @Version}, checked again on PF5. */
+  public void displayed(String id, long version) {
+    displayedId = id;
+    displayedVersion = version;
+  }
+
+  public void clearDisplayed() {
+    displayed("", 0L);
+  }
+
+  public String displayedId() {
+    return displayedId;
+  }
+
+  public long displayedVersion() {
+    return displayedVersion;
+  }
+
   public void reset() {
+    clearDisplayed();
     usridFirst = "";
     usridLast = "";
     pageNum = 0;
