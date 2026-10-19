@@ -1,0 +1,27 @@
+# Optional in-container TLS (end-to-end encryption ALB -> task, or running without a proxy).
+# Certificate and key are PEM, passed as content or file: locations through the environment.
+server:
+  port: ${CARDDEMO_TLS_PORT:8443}
+  ssl:
+    bundle: carddemo
+  http2:
+    enabled: true
+  servlet:
+    session:
+      cookie:
+        secure: true
+spring:
+  ssl:
+    bundle:
+      pem:
+        carddemo:
+          keystore:
+            certificate: ${CARDDEMO_TLS_CERT}
+            private-key: ${CARDDEMO_TLS_KEY}
+          options:
+            enabled-protocols: TLSv1.3,TLSv1.2
+            ciphers: >-
+              TLS_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256,TLS_CHACHA20_POLY1305_SHA256,
+              TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+              TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+              TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
