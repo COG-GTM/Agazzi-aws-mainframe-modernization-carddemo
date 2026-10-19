@@ -44,6 +44,26 @@
          05 WS-REAS-CD                 PIC S9(09) COMP VALUE ZEROS.
          05 WS-USER-ID                 PIC X(08).
          05 WS-USER-PWD                PIC X(08).
+         05 WS-DELAY-SECS              PIC S9(08) COMP VALUE ZEROS.
+         05 WS-LOCK-FLG                PIC X(01) VALUE 'N'.
+           88 USER-LOCKED                        VALUE 'Y'.
+           88 USER-NOT-LOCKED                    VALUE 'N'.
+         05 WS-NOW-SECONDS             PIC 9(12) VALUE ZEROS.
+         05 WS-LOCK-SECONDS            PIC 9(12) VALUE ZEROS.
+         05 WS-BAD-SIGNON-MSG          PIC X(80) VALUE
+            'Invalid user ID or password. Try again ...'.
+
+       01 WS-SIGNON-TS.
+         05 WS-SIGNON-DATE             PIC 9(08) VALUE ZEROS.
+         05 WS-SIGNON-HH               PIC 9(02) VALUE ZEROS.
+         05 WS-SIGNON-MI               PIC 9(02) VALUE ZEROS.
+         05 WS-SIGNON-SS               PIC 9(02) VALUE ZEROS.
+
+       01 WS-STORED-LOCK-TS.
+         05 WS-LOCK-DATE               PIC 9(08) VALUE ZEROS.
+         05 WS-LOCK-HH                 PIC 9(02) VALUE ZEROS.
+         05 WS-LOCK-MI                 PIC 9(02) VALUE ZEROS.
+         05 WS-LOCK-SS                 PIC 9(02) VALUE ZEROS.
 
        COPY COCOM01Y.
 
@@ -53,6 +73,8 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
        COPY CSUSR01Y.
+       COPY CSPWD01Y.
+       COPY CSPWD02Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -214,47 +236,235 @@
                 LENGTH    (LENGTH OF SEC-USER-DATA)
                 RIDFLD    (WS-USER-ID)
                 KEYLENGTH (LENGTH OF WS-USER-ID)
+                UPDATE
                 RESP      (WS-RESP-CD)
                 RESP2     (WS-REAS-CD)
            END-EXEC.
 
            EVALUATE WS-RESP-CD
                WHEN 0
-                   IF SEC-USR-PWD = WS-USER-PWD
-                       MOVE WS-TRANID    TO CDEMO-FROM-TRANID
-                       MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM
-                       MOVE WS-USER-ID   TO CDEMO-USER-ID
-                       MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
-                       MOVE ZEROS        TO CDEMO-PGM-CONTEXT
-
-                       IF CDEMO-USRTYP-ADMIN
-                            EXEC CICS XCTL
-                              PROGRAM ('COADM01C')
-                              COMMAREA(CARDDEMO-COMMAREA)
-                            END-EXEC
-                       ELSE
-                            EXEC CICS XCTL
-                              PROGRAM ('COMEN01C')
-                              COMMAREA(CARDDEMO-COMMAREA)
-                            END-EXEC
-                       END-IF
-                   ELSE
-                       MOVE 'Wrong Password. Try again ...' TO
-                                                          WS-MESSAGE
-                       MOVE -1       TO PASSWDL OF COSGN0AI
-                       PERFORM SEND-SIGNON-SCREEN
-                   END-IF
+                   PERFORM VALIDATE-SIGNON
                WHEN 13
-                   MOVE 'Y'      TO WS-ERR-FLG
-                   MOVE 'User not found. Try again ...' TO WS-MESSAGE
-                   MOVE -1       TO USERIDL OF COSGN0AI
-                   PERFORM SEND-SIGNON-SCREEN
+                   PERFORM REJECT-SIGNON
                WHEN OTHER
+                   PERFORM SIGNON-NOT-AVAILABLE
+           END-EVALUATE.
+
+      *----------------------------------------------------------------*
+      *                      VALIDATE-SIGNON
+      *  The stored password hash is never compared with the entered
+      *  password directly.  The entered password is re-hashed with
+      *  the salt held in the user record and the hashes are compared.
+      *----------------------------------------------------------------*
+       VALIDATE-SIGNON.
+
+           PERFORM CHECK-ACCOUNT-LOCK
+
+           EVALUATE TRUE
+               WHEN USER-LOCKED
+                   PERFORM UNLOCK-USER-SEC-FILE
                    MOVE 'Y'      TO WS-ERR-FLG
-                   MOVE 'Unable to verify the User ...' TO WS-MESSAGE
+                   MOVE 'Account is locked. Contact administrator.'
+                                 TO WS-MESSAGE
                    MOVE -1       TO USERIDL OF COSGN0AI
                    PERFORM SEND-SIGNON-SCREEN
+               WHEN SEC-USR-PWD-NOT-SET
+                   PERFORM UNLOCK-USER-SEC-FILE
+                   PERFORM REJECT-SIGNON
+               WHEN NOT SEC-USR-PWD-SHA256
+                   PERFORM UNLOCK-USER-SEC-FILE
+                   PERFORM SIGNON-NOT-AVAILABLE
+               WHEN OTHER
+                   PERFORM VERIFY-PASSWORD
            END-EVALUATE.
+
+      *----------------------------------------------------------------*
+      *                      VERIFY-PASSWORD
+      *----------------------------------------------------------------*
+       VERIFY-PASSWORD.
+
+           INITIALIZE WS-PWD-SERVICE-PARMS
+           SET PWD-FN-VERIFY     TO TRUE
+           MOVE SEC-USR-PWD-ALGO TO PWD-ALGO
+           MOVE SEC-USR-PWD-SALT TO PWD-SALT
+           MOVE WS-USER-PWD      TO PWD-CLEAR-PWD
+           MOVE SEC-USR-PWD-HASH TO PWD-EXPECTED-HASH
+
+           CALL 'CSUTLPWC' USING WS-PWD-SERVICE-PARMS
+
+           MOVE SPACES TO PWD-CLEAR-PWD
+                          PWD-HASH
+                          WS-USER-PWD
+
+           EVALUATE TRUE
+               WHEN PWD-OK
+                   PERFORM SIGNON-SUCCESS
+               WHEN PWD-MISMATCH
+                   PERFORM RECORD-FAILED-ATTEMPT
+               WHEN OTHER
+                   PERFORM UNLOCK-USER-SEC-FILE
+                   PERFORM SIGNON-NOT-AVAILABLE
+           END-EVALUATE.
+
+      *----------------------------------------------------------------*
+      *                      SIGNON-SUCCESS
+      *----------------------------------------------------------------*
+       SIGNON-SUCCESS.
+
+           IF SEC-USR-FAIL-CNT NOT = ZEROS
+           OR NOT SEC-USR-NOT-LOCKED
+               MOVE ZEROS  TO SEC-USR-FAIL-CNT
+               MOVE SPACES TO SEC-USR-LOCK-TS
+               PERFORM REWRITE-USER-SEC-FILE
+           ELSE
+               PERFORM UNLOCK-USER-SEC-FILE
+           END-IF
+
+           MOVE WS-TRANID    TO CDEMO-FROM-TRANID
+           MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM
+           MOVE WS-USER-ID   TO CDEMO-USER-ID
+           MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE
+           MOVE ZEROS        TO CDEMO-PGM-CONTEXT
+
+           IF CDEMO-USRTYP-ADMIN
+                EXEC CICS XCTL
+                  PROGRAM ('COADM01C')
+                  COMMAREA(CARDDEMO-COMMAREA)
+                END-EXEC
+           ELSE
+                EXEC CICS XCTL
+                  PROGRAM ('COMEN01C')
+                  COMMAREA(CARDDEMO-COMMAREA)
+                END-EXEC
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      RECORD-FAILED-ATTEMPT
+      *  Counts the failure in the user record and locks the account
+      *  once the policy limit is reached.
+      *----------------------------------------------------------------*
+       RECORD-FAILED-ATTEMPT.
+
+           IF SEC-USR-FAIL-CNT < 99
+               ADD 1 TO SEC-USR-FAIL-CNT
+           END-IF
+
+           IF SEC-USR-FAIL-CNT >= PWD-MAX-FAILED-ATTEMPTS
+               PERFORM GET-CURRENT-TIMESTAMP
+               MOVE WS-SIGNON-TS TO SEC-USR-LOCK-TS
+           END-IF
+
+           PERFORM REWRITE-USER-SEC-FILE
+           PERFORM REJECT-SIGNON.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-ACCOUNT-LOCK
+      *----------------------------------------------------------------*
+       CHECK-ACCOUNT-LOCK.
+
+           SET USER-NOT-LOCKED TO TRUE
+
+           IF SEC-USR-NOT-LOCKED
+               CONTINUE
+           ELSE
+               IF SEC-USR-LOCK-TS IS NUMERIC
+                   MOVE SEC-USR-LOCK-TS TO WS-STORED-LOCK-TS
+                   PERFORM GET-CURRENT-TIMESTAMP
+                   COMPUTE WS-NOW-SECONDS =
+                       FUNCTION INTEGER-OF-DATE(WS-SIGNON-DATE)
+                       * 86400
+                       + WS-SIGNON-HH * 3600
+                       + WS-SIGNON-MI * 60
+                       + WS-SIGNON-SS
+                   COMPUTE WS-LOCK-SECONDS =
+                       FUNCTION INTEGER-OF-DATE(WS-LOCK-DATE)
+                       * 86400
+                       + WS-LOCK-HH * 3600
+                       + WS-LOCK-MI * 60
+                       + WS-LOCK-SS
+                   IF WS-NOW-SECONDS < WS-LOCK-SECONDS
+                   OR WS-NOW-SECONDS - WS-LOCK-SECONDS <
+                                                 PWD-LOCKOUT-SECONDS
+                       SET USER-LOCKED TO TRUE
+                   ELSE
+                       MOVE ZEROS  TO SEC-USR-FAIL-CNT
+                       MOVE SPACES TO SEC-USR-LOCK-TS
+                   END-IF
+               ELSE
+      *            An unreadable lock stamp keeps the account locked.
+                   SET USER-LOCKED TO TRUE
+               END-IF
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      GET-CURRENT-TIMESTAMP
+      *----------------------------------------------------------------*
+       GET-CURRENT-TIMESTAMP.
+
+           MOVE FUNCTION CURRENT-DATE TO WS-CURDATE-DATA
+
+           MOVE WS-CURDATE-N       TO WS-SIGNON-DATE
+           MOVE WS-CURTIME-HOURS   TO WS-SIGNON-HH
+           MOVE WS-CURTIME-MINUTE  TO WS-SIGNON-MI
+           MOVE WS-CURTIME-SECOND  TO WS-SIGNON-SS.
+
+      *----------------------------------------------------------------*
+      *                      REJECT-SIGNON
+      *  One message for every failure - unknown user, disabled or
+      *  wrong password - so the screen never says which one it was.
+      *  The delay slows down automated guessing.
+      *----------------------------------------------------------------*
+       REJECT-SIGNON.
+
+           MOVE PWD-FAILED-DELAY-SECONDS TO WS-DELAY-SECS
+
+           EXEC CICS DELAY
+                     FOR SECONDS(WS-DELAY-SECS)
+                     RESP(WS-RESP-CD)
+                     RESP2(WS-REAS-CD)
+           END-EXEC
+
+           MOVE 'Y'                TO WS-ERR-FLG
+           MOVE WS-BAD-SIGNON-MSG  TO WS-MESSAGE
+           MOVE -1                 TO USERIDL OF COSGN0AI
+           PERFORM SEND-SIGNON-SCREEN.
+
+      *----------------------------------------------------------------*
+      *                      SIGNON-NOT-AVAILABLE
+      *----------------------------------------------------------------*
+       SIGNON-NOT-AVAILABLE.
+
+           MOVE 'Y'      TO WS-ERR-FLG
+           MOVE 'Unable to verify the User ...' TO WS-MESSAGE
+           MOVE -1       TO USERIDL OF COSGN0AI
+           PERFORM SEND-SIGNON-SCREEN.
+
+      *----------------------------------------------------------------*
+      *                      REWRITE-USER-SEC-FILE
+      *----------------------------------------------------------------*
+       REWRITE-USER-SEC-FILE.
+
+           EXEC CICS REWRITE
+                DATASET   (WS-USRSEC-FILE)
+                FROM      (SEC-USER-DATA)
+                LENGTH    (LENGTH OF SEC-USER-DATA)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           EXEC CICS SYNCPOINT
+           END-EXEC.
+
+      *----------------------------------------------------------------*
+      *                      UNLOCK-USER-SEC-FILE
+      *----------------------------------------------------------------*
+       UNLOCK-USER-SEC-FILE.
+
+           EXEC CICS UNLOCK
+                DATASET   (WS-USRSEC-FILE)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC.
       *
       * Ver: CardDemo_v1.0-15-g27d6c6f-68 Date: 2022-07-19 23:12:33 CDT
       *

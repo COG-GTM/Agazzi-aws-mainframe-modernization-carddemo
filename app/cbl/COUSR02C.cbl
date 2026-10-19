@@ -45,6 +45,10 @@
          05 WS-USR-MODIFIED            PIC X(01) VALUE 'N'.
            88 USR-MODIFIED-YES                   VALUE 'Y'.
            88 USR-MODIFIED-NO                    VALUE 'N'.
+         05 WS-PWD-IDX                 PIC 9(02) VALUE ZEROS.
+         05 WS-PWD-REJECTED            PIC X(01) VALUE 'N'.
+           88 PWD-VALUE-REJECTED                 VALUE 'Y'.
+           88 PWD-VALUE-ACCEPTED                 VALUE 'N'.
 
        COPY COCOM01Y.
           05 CDEMO-CU02-INFO.
@@ -63,6 +67,8 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
        COPY CSUSR01Y.
+       COPY CSPWD01Y.
+       COPY CSPWD02Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -166,7 +172,9 @@
            IF NOT ERR-FLG-ON
                MOVE SEC-USR-FNAME      TO FNAMEI    OF COUSR2AI
                MOVE SEC-USR-LNAME      TO LNAMEI    OF COUSR2AI
-               MOVE SEC-USR-PWD        TO PASSWDI   OF COUSR2AI
+      *        The password is not stored and can not be shown.
+      *        A blank entry leaves the current password unchanged.
+               MOVE SPACES             TO PASSWDI   OF COUSR2AI
                MOVE SEC-USR-TYPE       TO USRTYPEI  OF COUSR2AI
                PERFORM SEND-USRUPD-SCREEN
            END-IF.
@@ -195,12 +203,6 @@
                                    WS-MESSAGE
                    MOVE -1       TO LNAMEL OF COUSR2AI
                    PERFORM SEND-USRUPD-SCREEN
-               WHEN PASSWDI OF COUSR2AI = SPACES OR LOW-VALUES
-                   MOVE 'Y'     TO WS-ERR-FLG
-                   MOVE 'Password can NOT be empty...' TO
-                                   WS-MESSAGE
-                   MOVE -1       TO PASSWDL OF COUSR2AI
-                   PERFORM SEND-USRUPD-SCREEN
                WHEN USRTYPEI OF COUSR2AI = SPACES OR LOW-VALUES
                    MOVE 'Y'     TO WS-ERR-FLG
                    MOVE 'User Type can NOT be empty...' TO
@@ -224,25 +226,99 @@
                    MOVE LNAMEI   OF COUSR2AI TO SEC-USR-LNAME
                    SET USR-MODIFIED-YES TO TRUE
                END-IF
-               IF PASSWDI  OF COUSR2AI NOT = SEC-USR-PWD
-                   MOVE PASSWDI  OF COUSR2AI TO SEC-USR-PWD
-                   SET USR-MODIFIED-YES TO TRUE
+               IF PASSWDI OF COUSR2AI NOT = SPACES
+               AND PASSWDI OF COUSR2AI NOT = LOW-VALUES
+                   PERFORM CHECK-PASSWORD-VALUE
+                   IF NOT ERR-FLG-ON
+                       PERFORM SET-PASSWORD-HASH
+                       SET USR-MODIFIED-YES TO TRUE
+                   END-IF
                END-IF
                IF USRTYPEI  OF COUSR2AI NOT = SEC-USR-TYPE
                    MOVE USRTYPEI OF COUSR2AI TO SEC-USR-TYPE
                    SET USR-MODIFIED-YES TO TRUE
                END-IF
 
-               IF USR-MODIFIED-YES
-                   PERFORM UPDATE-USER-SEC-FILE
+               IF ERR-FLG-ON
+                   CONTINUE
                ELSE
-                   MOVE 'Please modify to update ...' TO
-                                   WS-MESSAGE
-                   MOVE DFHRED       TO ERRMSGC  OF COUSR2AO
-                   PERFORM SEND-USRUPD-SCREEN
+                   IF USR-MODIFIED-YES
+                       PERFORM UPDATE-USER-SEC-FILE
+                   ELSE
+                       MOVE 'Please modify to update ...' TO
+                                       WS-MESSAGE
+                       MOVE DFHRED       TO ERRMSGC  OF COUSR2AO
+                       PERFORM SEND-USRUPD-SCREEN
+                   END-IF
                END-IF
 
+           END-IF
+
+           MOVE SPACES TO PASSWDI OF COUSR2AI.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-PASSWORD-VALUE
+      *----------------------------------------------------------------*
+       CHECK-PASSWORD-VALUE.
+
+           SET PWD-VALUE-ACCEPTED TO TRUE
+
+           IF FUNCTION UPPER-CASE(PASSWDI OF COUSR2AI) =
+              FUNCTION UPPER-CASE(USRIDINI OF COUSR2AI)
+               SET PWD-VALUE-REJECTED TO TRUE
+           END-IF
+
+           PERFORM VARYING WS-PWD-IDX FROM 1 BY 1
+                   UNTIL WS-PWD-IDX > PWD-REJECT-COUNT
+               IF FUNCTION UPPER-CASE(PASSWDI OF COUSR2AI) =
+                  PWD-REJECT-VALUE(WS-PWD-IDX)
+                   SET PWD-VALUE-REJECTED TO TRUE
+               END-IF
+           END-PERFORM
+
+           IF PWD-VALUE-REJECTED
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'Password is not allowed. Choose another...' TO
+                               WS-MESSAGE
+               MOVE SPACES   TO PASSWDI OF COUSR2AI
+               MOVE -1       TO PASSWDL OF COUSR2AI
+               PERFORM SEND-USRUPD-SCREEN
            END-IF.
+
+      *----------------------------------------------------------------*
+      *                      SET-PASSWORD-HASH
+      *  Replaces the salt and hash held in the user record and
+      *  clears any sign on lockout.
+      *----------------------------------------------------------------*
+       SET-PASSWORD-HASH.
+
+           INITIALIZE WS-PWD-SERVICE-PARMS
+           SET PWD-FN-NEWSALT TO TRUE
+           CALL 'CSUTLPWC' USING WS-PWD-SERVICE-PARMS
+
+           IF PWD-OK
+               SET PWD-FN-HASH TO TRUE
+               MOVE FUNCTION UPPER-CASE(PASSWDI OF COUSR2AI)
+                 TO PWD-CLEAR-PWD
+               CALL 'CSUTLPWC' USING WS-PWD-SERVICE-PARMS
+           END-IF
+
+           IF PWD-OK
+               MOVE PWD-ALGO TO SEC-USR-PWD-ALGO
+               MOVE PWD-SALT TO SEC-USR-PWD-SALT
+               MOVE PWD-HASH TO SEC-USR-PWD-HASH
+               MOVE ZEROS    TO SEC-USR-FAIL-CNT
+               MOVE SPACES   TO SEC-USR-LOCK-TS
+           ELSE
+               MOVE 'Y'     TO WS-ERR-FLG
+               MOVE 'Unable to secure the password. Try later...' TO
+                               WS-MESSAGE
+               MOVE -1       TO PASSWDL OF COUSR2AI
+               PERFORM SEND-USRUPD-SCREEN
+           END-IF
+
+           MOVE SPACES TO PWD-CLEAR-PWD
+                          PWD-HASH.
 
       *----------------------------------------------------------------*
       *                      RETURN-TO-PREV-SCREEN

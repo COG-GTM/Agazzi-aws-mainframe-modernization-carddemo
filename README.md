@@ -130,7 +130,7 @@ CardDemo includes several optional modules that extend the base functionality:
 
      | Dataset name                      | Description                                  | Copybook     | Format | Length |
      | :---------------------------------| :------------------------------------------- | :----------- | :----- | -----: |
-     | AWS.M2.CARDDEMO.USRSEC.PS         | User Security file                           | CSUSR01Y     | FB     |     80 |
+     | AWS.M2.CARDDEMO.USRSEC.PS         | User Security file                           | CSUSR01Y     | FB     |    160 |
      | AWS.M2.CARDDEMO.ACCTDATA.PS       | Account Data                                 | CVACT01Y     | FB     |    300 |
      | AWS.M2.CARDDEMO.CARDDATA.PS       | Card Data                                    | CVACT02Y     | FB     |    150 |
      | AWS.M2.CARDDEMO.CUSTDATA.PS       | Customer Data                                | CVCUS01Y     | FB     |    500 |
@@ -200,8 +200,17 @@ CardDemo includes several optional modules that extend the base functionality:
 
 ### Accessing the Application
 - **Online Functions**: Start the CardDemo application using the CC00 transaction
-  - Admin access: Use userid ADMIN001 with password PASSWORD
-  - User access: Use userid USER0001 with password PASSWORD
+  - The sample users are loaded **without a password** and cannot sign on until
+    one is set. Passwords are never stored in USRSEC: the file holds only a
+    random salt and an iterated SHA-256 hash (copybook `CSUSR01Y`).
+  - Set the initial passwords by running the `USRSECPW` job, which reads a
+    protected control data set of user id / password pairs, stores the salted
+    hashes through `CBUSRPWC`, and then deletes the control data set. Choose
+    your own passwords; never commit them.
+  - Admin access: userid ADMIN001 (admin), user access: userid USER0001.
+  - After three consecutive failed sign-on attempts an account is locked for
+    15 minutes. An administrator can clear the lock by setting a new password
+    (transaction CU02 or the `USRSECPW` job).
 - **Batch Functions**: See the "Running Batch Jobs" section below
 
 ## Running Batch Jobs
@@ -222,6 +231,7 @@ Execute the following JCLs in sequence to run the full batch process:
 | DISCGRP  | Copies initial disclosure Group file to VSAM        |                 |
 | TCATBALF | Copies initial TCATBALF file to VSAM                |                 |
 | DUSRSECJ | Sets up user security VSAM file                     |                 |
+| USRSECPW | Sets sign-on passwords (salted hashes) in USRSEC    |                 |
 | POSTTRAN | Core transaction processing job                     |                 |
 | INTCALC  | Run interest calculations                           |                 |
 | TRANBKP  | Backup Transaction database                         |                 |
