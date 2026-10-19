@@ -1,0 +1,21 @@
+      * Harness-only stand-in for the IBM MQ CMQV copybook (values
+      * as documented by IBM MQ for z/OS).
+           05 MQCC-OK                 PIC S9(9) BINARY VALUE 0.
+           05 MQRC-NO-MSG-AVAILABLE   PIC S9(9) BINARY VALUE 2033.
+           05 MQOO-INPUT-SHARED       PIC S9(9) BINARY VALUE 2.
+           05 MQOO-OUTPUT             PIC S9(9) BINARY VALUE 16.
+           05 MQOO-SAVE-ALL-CONTEXT   PIC S9(9) BINARY VALUE 128.
+           05 MQOO-PASS-ALL-CONTEXT   PIC S9(9) BINARY VALUE 512.
+           05 MQOO-FAIL-IF-QUIESCING  PIC S9(9) BINARY VALUE 8192.
+           05 MQGMO-WAIT              PIC S9(9) BINARY VALUE 1.
+           05 MQGMO-SYNCPOINT         PIC S9(9) BINARY VALUE 2.
+           05 MQGMO-FAIL-IF-QUIESCING PIC S9(9) BINARY VALUE 8192.
+           05 MQGMO-CONVERT           PIC S9(9) BINARY VALUE 16384.
+           05 MQPMO-SYNCPOINT         PIC S9(9) BINARY VALUE 2.
+           05 MQPMO-DEFAULT-CONTEXT   PIC S9(9) BINARY VALUE 32.
+           05 MQPMO-FAIL-IF-QUIESCING PIC S9(9) BINARY VALUE 8192.
+           05 MQCO-NONE               PIC S9(9) BINARY VALUE 0.
+           05 MQCCSI-Q-MGR            PIC S9(9) BINARY VALUE 0.
+           05 MQMI-NONE               PIC X(24) VALUE LOW-VALUES.
+           05 MQCI-NONE               PIC X(24) VALUE LOW-VALUES.
+           05 MQFMT-STRING            PIC X(8)  VALUE 'MQSTR   '.
