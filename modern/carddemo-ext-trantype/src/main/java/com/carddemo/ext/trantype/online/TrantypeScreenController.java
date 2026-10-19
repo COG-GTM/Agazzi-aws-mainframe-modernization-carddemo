@@ -38,16 +38,23 @@ public class TrantypeScreenController {
   @GetMapping("/cotrtli")
   public ScreenResponse<CotrtliScreen.Output> ctliFirstSend(
       HttpServletRequest request, Principal user) {
-    return ctli.firstSend(ctliState(request), name(user));
+    CtliState s = ctliState(request);
+    ScreenResponse<CotrtliScreen.Output> r = ctli.firstSend(s, name(user));
+    conversations.save(request, CTLI_STATE, s);
+    return r;
   }
 
   @PostMapping("/cotrtli")
   public ScreenResponse<CotrtliScreen.Output> ctliReceive(
       @RequestBody ScreenRequest<CtliInput> body, HttpServletRequest request, Principal user) {
+    CtliState s = ctliState(request);
     ScreenResponse<CotrtliScreen.Output> r =
-        ctli.receive(body.action(), body.fields(), ctliState(request), name(user));
+        ctli.receive(body.action(), body.fields(), s, name(user));
+    conversations.save(request, CTLI_STATE, s);
     if (r.nextScreen() == ScreenId.COTRTUP) {
-      cttuState(request).enteredFrom(CtliService.TRANID, CtliService.PGM);
+      CttuState u = cttuState(request);
+      u.enteredFrom(CtliService.TRANID, CtliService.PGM);
+      conversations.save(request, CTTU_STATE, u);
     }
     return r;
   }
@@ -59,7 +66,9 @@ public class TrantypeScreenController {
     if (s.entered) {
       s.enteredFrom(ScreenSupport.ADMIN_TRANID, ScreenSupport.ADMIN_PGM);
     }
-    return cttu.firstSend(s, name(user));
+    ScreenResponse<CotrtupScreen.Output> r = cttu.firstSend(s, name(user));
+    conversations.save(request, CTTU_STATE, s);
+    return r;
   }
 
   @PostMapping("/cotrtup")
@@ -67,14 +76,18 @@ public class TrantypeScreenController {
       @RequestBody ScreenRequest<CotrtupScreen.Input> body,
       HttpServletRequest request,
       Principal user) {
+    CttuState s = cttuState(request);
     ScreenResponse<CotrtupScreen.Output> r =
-        cttu.receive(body.action(), body.fields(), cttuState(request), name(user));
+        cttu.receive(body.action(), body.fields(), s, name(user));
     if (r.nextScreen() != null) {
-      cttuState(request).enteredFrom(null, null);
+      s.enteredFrom(null, null);
       if (r.nextScreen() == ScreenId.COTRTLI) {
-        ctliState(request).entered = false;
+        CtliState l = ctliState(request);
+        l.entered = false;
+        conversations.save(request, CTLI_STATE, l);
       }
     }
+    conversations.save(request, CTTU_STATE, s);
     return r;
   }
 

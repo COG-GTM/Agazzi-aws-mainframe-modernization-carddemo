@@ -120,7 +120,8 @@ jobs:
         with:
           category: /language:java-kotlin
           output: codeql-results
-      - name: Fail on error/warning-level security alerts
+          upload: never
+      - name: Drop reviewed findings and fail on error/warning-level security alerts
         run: |
           python3 - <<'PY'
           import glob, json, sys
@@ -129,23 +130,34 @@ jobs:
                       for a in json.load(open("modern/security/codeql-suppressions.json"))}
           bad = []
           for f in glob.glob("codeql-results/*.sarif"):
-              for run in json.load(open(f))["runs"]:
+              sarif = json.load(open(f))
+              for run in sarif["runs"]:
                   rules = {r["id"]: r for r in run["tool"]["driver"].get("rules", [])}
+                  kept = []
                   for res in run.get("results", []):
+                      loc = res["locations"][0]["physicalLocation"]
+                      uri = loc["artifactLocation"]["uri"]
+                      if (res["ruleId"], uri) in accepted:
+                          print(f'accepted {res["ruleId"]} {uri}: {accepted[(res["ruleId"], uri)]}')
+                          continue
+                      kept.append(res)
                       if res.get("suppressions"):
                           continue
                       level = res.get("level") or rules.get(res["ruleId"], {}).get(
                           "defaultConfiguration", {}).get("level", "warning")
                       if level in ("error", "warning"):
-                          loc = res["locations"][0]["physicalLocation"]
-                          uri = loc["artifactLocation"]["uri"]
-                          if (res["ruleId"], uri) in accepted:
-                              print(f'accepted {res["ruleId"]} {uri}: {accepted[(res["ruleId"], uri)]}')
-                              continue
-                          bad.append(f'{res["ruleId"]} {loc["artifactLocation"]["uri"]}:{loc.get("region", {}).get("startLine")}')
+                          bad.append(f'{res["ruleId"]} {uri}:{loc.get("region", {}).get("startLine")}')
+                  run["results"] = kept
+              # Reviewed findings are left out of code scanning too, not only out of this gate.
+              json.dump(sarif, open(f, "w"))
           print("\n".join(bad) or "CodeQL: no error/warning security alerts")
           sys.exit(1 if bad else 0)
           PY
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: codeql-results
+          category: /language:java-kotlin
 
   gitleaks:
     name: Secret scanning (gitleaks, full history)
