@@ -51,7 +51,10 @@ public class SecurityHardeningAutoConfiguration {
     return reg;
   }
 
+  // Also guarded here: the app component-scans com.carddemo and would pick it up in non-web batch
+  // runs.
   @Configuration(proxyBeanMethods = false)
+  @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
   @ConditionalOnProperty(
       prefix = "carddemo.security.audit",
       name = "enabled",
