@@ -39,7 +39,15 @@ class CoactupFlowTest {
   @Autowired PlatformTransactionManager txm;
   @Autowired AccountUpdateWriter writer;
   @Autowired CustomerRepository customers;
-  @Autowired javax.sql.DataSource dataSource;
+
+  @org.springframework.beans.factory.annotation.Value("${spring.datasource.url}")
+  String jdbcUrl;
+
+  @org.springframework.beans.factory.annotation.Value("${spring.datasource.username:sa}")
+  String jdbcUser;
+
+  @org.springframework.beans.factory.annotation.Value("${spring.datasource.password:}")
+  String jdbcPassword;
 
   @AfterEach
   void resetHook() {
@@ -125,8 +133,10 @@ class CoactupFlowTest {
     List<String> blocked = new java.util.concurrent.CopyOnWriteArrayList<>();
     hook.action =
         id -> {
-          // a second terminal on its own connection, outside the CAUP unit of work
-          try (java.sql.Connection other = dataSource.getConnection();
+          // a second terminal on its own raw connection (not pooled: a lock timeout
+          // makes Hikari evict the connection), outside the CAUP unit of work
+          try (java.sql.Connection other =
+                  java.sql.DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
               java.sql.Statement st = other.createStatement()) {
             st.execute("SET LOCK_TIMEOUT 100");
             for (String table : new String[] {"customer", "account"}) {
@@ -138,9 +148,8 @@ class CoactupFlowTest {
                 blocked.add(table);
               }
             }
-            st.execute("SET LOCK_TIMEOUT 10000");
           } catch (java.sql.SQLException e) {
-            throw new IllegalStateException(e);
+            blocked.add("connection failed: " + e.getMessage());
           }
         };
     assertThat(Screens.messages(t.send("PF5"))).contains("Changes committed to database");
