@@ -1,0 +1,10 @@
+# TCATBALF STEP15 IDCAMS REPRO TCATBALF.PS -> KSDS (STEP05 DELETE/STEP10 DEFINE = empty cluster) — owner b2-interest.
+job: TCATBALF
+jcl: app/jcl/TCATBALF.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TCATBAL: {org: ps, lrecl: 50, layout: CVTRA01Y, input: "input/tcatbal-ps.txt"}
+  TCATBALV: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y}
+steps:
+  - {name: STEP15, kind: repro, infile: TCATBAL, outfile: TCATBALV}
+outputs: [TCATBALV]
