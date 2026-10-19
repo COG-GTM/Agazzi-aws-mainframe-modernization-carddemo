@@ -61,7 +61,9 @@ public class UsrsecPasswordMigration {
           for (Map<String, Object> r : rows) {
             String id = (String) r.get("sec_usr_id");
             String pwd = (String) r.get("sec_usr_pwd");
-            if (isEncoded(pwd)) {
+            // any brace-prefixed value is already treated as encoded by the credential service:
+            // left as is, so the cutover never changes who can sign in
+            if (pwd.startsWith("{")) {
               hashed++;
               continue;
             }
