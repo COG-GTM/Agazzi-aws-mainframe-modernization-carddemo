@@ -1,0 +1,22 @@
+# COACTUPC 1260 prefix
+id: CAUP-046
+title: 'errore: Phone Number 1: Prefix code cannot be zero'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH1B: '000'
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: 'Phone Number 1: Prefix code cannot be zero'
+    fieldErrors:
+    - ACSPH1B
+    dbDelta: none

@@ -1,0 +1,19 @@
+# COACTUPC EDIT-MONTH range
+id: CAUP-013
+title: 'errore: Open Date: Month must be a number between 1 and 12.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNMON: '13'
+  expect:
+    message: 'Open Date: Month must be a number between 1 and 12.'
+    fieldErrors:
+    - OPNMON
+    dbDelta: none

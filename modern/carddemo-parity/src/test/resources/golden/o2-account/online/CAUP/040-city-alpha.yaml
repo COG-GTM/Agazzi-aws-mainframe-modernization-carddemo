@@ -1,0 +1,22 @@
+# COACTUPC 1225 city
+id: CAUP-040
+title: 'errore: City can have alphabets only.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSCITY: City 9
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: City can have alphabets only.
+    fieldErrors:
+    - ACSCITY
+    dbDelta: none

@@ -1,0 +1,15 @@
+# 1210-EDIT-ACCOUNT: not numeric / zero.
+id: CAUP-003
+title: conto non numerico
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: ABC
+  expect:
+    message: Account Number if supplied must be a 11 digit Non-Zero Number
+    fieldErrors:
+    - ACCTSID

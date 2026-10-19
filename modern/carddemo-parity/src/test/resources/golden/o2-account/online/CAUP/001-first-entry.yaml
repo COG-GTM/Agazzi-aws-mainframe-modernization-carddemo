@@ -1,0 +1,14 @@
+# COACTUPC 0000-MAIN: EIBCALEN 0 -> 3000-SEND-MAP, PROMPT-FOR-SEARCH-KEYS.
+id: CAUP-001
+title: primo ingresso
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+  expect:
+    screen: COACTUP
+    nextScreen: null
+    message: Enter or update id of account to update
+    fieldErrors: []
+    dbDelta: none

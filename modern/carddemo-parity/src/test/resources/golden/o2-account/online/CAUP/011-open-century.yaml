@@ -1,0 +1,19 @@
+# COACTUPC EDIT-YEAR-CCYY century
+id: CAUP-011
+title: 'errore: Open Date : Century is not valid.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNYEAR: '1814'
+  expect:
+    message: 'Open Date : Century is not valid.'
+    fieldErrors:
+    - OPNYEAR
+    dbDelta: none

@@ -1,0 +1,13 @@
+# COACTVWC 9200-GETCARDXREF-BYACCT NOTFND (RESP 13, RESP2 80), WS-RETURN-MSG X(75) truncates.
+id: CAVW-006
+title: conto non presente in CXACAIX
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: ENTER
+    fields: {ACCTSID: "00000000099"}
+    expect:
+      message: "Account:00000000099 not found in Cross ref file.  Resp:000000013  Reas:0000"
+      fieldErrors: [ACCTSID]

@@ -1,0 +1,19 @@
+# COACTUPC 1265 part 1 blank
+id: CAUP-027
+title: 'errore: SSN: First 3 chars must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACTSSN1: ''
+  expect:
+    message: 'SSN: First 3 chars must be supplied.'
+    fieldErrors:
+    - ACTSSN1
+    dbDelta: none

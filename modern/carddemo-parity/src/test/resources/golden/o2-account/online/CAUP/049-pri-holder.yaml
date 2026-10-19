@@ -1,0 +1,22 @@
+# COACTUPC 1220 yes/no
+id: CAUP-049
+title: 'errore: Primary Card Holder must be Y or N.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPFLG: X
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: Primary Card Holder must be Y or N.
+    fieldErrors:
+    - ACSPFLG
+    dbDelta: none

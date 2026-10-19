@@ -1,0 +1,14 @@
+# COACTVWC: any AID other than ENTER/PF3 is processed as ENTER (PFK-INVALID).
+id: CAVW-008
+title: PF8 trattato come ENTER
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: PF8
+    fields: {ACCTSID: "00000000001"}
+    expect:
+      nextScreen: null
+      fieldErrors: []
+      data: {ACSTTUS: "Y"}

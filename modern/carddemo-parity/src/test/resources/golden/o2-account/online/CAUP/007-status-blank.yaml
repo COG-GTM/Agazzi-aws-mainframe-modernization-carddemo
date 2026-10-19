@@ -1,0 +1,19 @@
+# COACTUPC 1220-EDIT-YESNO blank
+id: CAUP-007
+title: 'errore: Account Status must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTTUS: ''
+  expect:
+    message: Account Status must be supplied.
+    fieldErrors:
+    - ACSTTUS
+    dbDelta: none
