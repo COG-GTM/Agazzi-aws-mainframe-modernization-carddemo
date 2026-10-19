@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY: '1 ' -> WS-OPTION-X JUST RIGHT ' 1' -> '01' -> XCTL COACTVWC.
+id: CM00-008
+title: opzione '1 ' giustificata a destra
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "1 "}
+    expect:
+      screen: COMEN01
+      nextScreen: COACTVW
+      fieldErrors: []
+      dbDelta: none

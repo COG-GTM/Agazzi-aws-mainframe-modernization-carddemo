@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 1 (Account View) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-009
+title: opzione 01 -> COACTVW
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "01"}
+    expect:
+      screen: COMEN01
+      nextScreen: COACTVW
+      fieldErrors: []
+      dbDelta: none
