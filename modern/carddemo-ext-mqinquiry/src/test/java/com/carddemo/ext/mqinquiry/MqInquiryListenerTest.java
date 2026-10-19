@@ -19,7 +19,8 @@ import org.junit.jupiter.api.Test;
 class MqInquiryListenerTest {
 
   private final MqInquiryProperties props =
-      new MqInquiryProperties(true, true, null, null, null, null, null, Duration.ofMillis(50));
+      new MqInquiryProperties(
+          true, true, null, null, null, null, null, Duration.ofMillis(50), false);
 
   private MqInquiryListener listener(MessageChannelPort channel) {
     AccountRepository repo = mock(AccountRepository.class);

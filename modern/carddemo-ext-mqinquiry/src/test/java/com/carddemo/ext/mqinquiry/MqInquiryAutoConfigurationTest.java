@@ -58,6 +58,7 @@ class MqInquiryAutoConfigurationTest {
     MqInquiryProperties d = MqInquiryProperties.defaults();
     assertThat(d.enabled()).isFalse();
     assertThat(d.listenerEnabled()).isTrue();
+    assertThat(d.honorReplyTo()).isFalse();
     assertThat(d.errorQueue()).isEqualTo("CARD-DEMO-ERROR");
     assertThat(d.accountRequestQueue()).isEqualTo("CARD-DEMO-REQUEST-ACCT");
   }

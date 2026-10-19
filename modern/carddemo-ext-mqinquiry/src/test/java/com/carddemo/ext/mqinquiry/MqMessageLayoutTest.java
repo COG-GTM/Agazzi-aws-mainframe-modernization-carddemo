@@ -15,6 +15,13 @@ class MqMessageLayoutTest {
   }
 
   @Test
+  void nonAsciiBecomesSingleByteSubstitute() {
+    assertThat(MqMessageLayout.ascii("A\u00e9\uD83D\uDE00B")).isEqualTo("A??B");
+    assertThat(MqMessageLayout.buffer("\u00e9").getBytes(java.nio.charset.StandardCharsets.UTF_8))
+        .hasSize(1000);
+  }
+
+  @Test
   void unsignedDisplayKeepsLowOrderDigits() {
     assertThat(MqMessageLayout.unsigned(7, 2)).isEqualTo("07");
     assertThat(MqMessageLayout.unsigned(2080, 2)).isEqualTo("80");

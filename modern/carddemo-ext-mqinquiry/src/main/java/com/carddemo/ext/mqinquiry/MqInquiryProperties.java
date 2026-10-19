@@ -15,6 +15,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @param accountReplyQueue COACCT01 reply queue (legacy {@code CARD.DEMO.REPLY.ACCT})
  * @param errorQueue error queue (legacy {@code CARD.DEMO.ERROR})
  * @param pollWait MQGET wait interval (legacy MQGMO-WAITINTERVAL 5000 ms)
+ * @param honorReplyTo reply to the request {@code replyTo} header when present instead of the fixed
+ *     program reply queue (default false = legacy behaviour; enable for concurrent callers that use
+ *     a private reply queue each)
  */
 @ConfigurationProperties(prefix = "carddemo.extensions.mqinquiry")
 public record MqInquiryProperties(
@@ -25,7 +28,8 @@ public record MqInquiryProperties(
     String accountRequestQueue,
     String accountReplyQueue,
     String errorQueue,
-    Duration pollWait) {
+    Duration pollWait,
+    boolean honorReplyTo) {
 
   public MqInquiryProperties {
     listenerEnabled = listenerEnabled == null || listenerEnabled;
@@ -39,7 +43,7 @@ public record MqInquiryProperties(
 
   /** Defaults, as bound when no property is set. */
   public static MqInquiryProperties defaults() {
-    return new MqInquiryProperties(false, null, null, null, null, null, null, null);
+    return new MqInquiryProperties(false, null, null, null, null, null, null, null, false);
   }
 
   private static String orDefault(String value, String fallback) {

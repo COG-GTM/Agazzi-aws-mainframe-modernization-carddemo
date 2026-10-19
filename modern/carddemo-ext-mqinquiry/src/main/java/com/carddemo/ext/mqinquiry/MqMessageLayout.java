@@ -1,5 +1,7 @@
 package com.carddemo.ext.mqinquiry;
 
+import java.nio.charset.StandardCharsets;
+
 /** Fixed MQ buffer layout shared by CODATE01 and COACCT01 (MQ-BUFFER / REPLY-MESSAGE X(1000)). */
 public final class MqMessageLayout {
 
@@ -8,9 +10,20 @@ public final class MqMessageLayout {
 
   private MqMessageLayout() {}
 
+  /**
+   * Maps a message onto the single-byte MQ repertoire (US-ASCII): every character that has no
+   * single-byte representation becomes {@code ?}, so character length equals byte length.
+   */
+  public static String ascii(String value) {
+    if (value == null) {
+      return "";
+    }
+    return new String(value.getBytes(StandardCharsets.US_ASCII), StandardCharsets.US_ASCII);
+  }
+
   /** COBOL MOVE into PIC X(n): left-justified, space padded, truncated on the right. */
   public static String pic(String value, int length) {
-    String v = value == null ? "" : value;
+    String v = ascii(value);
     if (v.length() >= length) {
       return v.substring(0, length);
     }

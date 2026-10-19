@@ -32,7 +32,7 @@ public class MqInquiryAutoConfiguration {
   @Bean
   MqInquiryProcessor mqInquiryProcessor(
       MessageChannelPort channel, MqInquiryProperties properties) {
-    return new MqInquiryProcessor(channel, properties.errorQueue());
+    return new MqInquiryProcessor(channel, properties.errorQueue(), properties.honorReplyTo());
   }
 
   @Bean
