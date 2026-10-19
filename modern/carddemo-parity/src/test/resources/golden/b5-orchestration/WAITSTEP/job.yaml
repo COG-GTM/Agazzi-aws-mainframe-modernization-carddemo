@@ -1,0 +1,10 @@
+# Golden master for app/jcl/WAITSTEP.jcl (COBSWAIT + MVSWAIT stub, GOLDEN_NOWAIT=Y) — owner b5-orchestration.
+job: WAITSTEP
+jcl: app/jcl/WAITSTEP.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets: {}
+steps:
+  - name: WAIT
+    program: COBSWAIT
+    sysin: "00003600      VALUE IN CENTISECONDS\n"
+outputs: []
