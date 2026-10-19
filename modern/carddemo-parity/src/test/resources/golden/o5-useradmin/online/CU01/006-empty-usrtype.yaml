@@ -1,0 +1,12 @@
+# PROCESS-ENTER-KEY validation order: USRTYPE checked before the later empty fields.
+id: CU01-006
+title: USRTYPE vuoto
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: ENTER
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: "NEWUSER1", PASSWD: "Secr3t", USRTYPE: " "}
+    expect:
+      message: "User Type can NOT be empty..."
+      fieldErrors: [USRTYPE]
+      dbDelta: none

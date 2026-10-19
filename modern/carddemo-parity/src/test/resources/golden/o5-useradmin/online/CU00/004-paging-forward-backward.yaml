@@ -1,0 +1,30 @@
+# STARTBR/READNEXT/READPREV keyset paging, 10 rows per page, keys in EBCDIC/byte order (U0000001 < USER0001).
+id: CU00-004
+title: paginazione PF8/PF7 su 25 utenti
+tranid: CU00
+screen: COUSR00
+extraUsers: 15
+steps:
+  - method: GET
+    expect:
+      message: null
+      data: {USRID01: ADMIN001, USRID05: ADMIN005, USRID06: U0000001, USRID10: U0000005, PAGENUM: "00000001"}
+  - action: PF8
+    expect:
+      message: null
+      data: {USRID01: U0000006, USRID10: U0000015, PAGENUM: "00000002"}
+  - action: PF8
+    expect:
+      message: "You have reached the bottom of the page..."
+      data: {USRID01: USER0001, USRID05: USER0005, USRID06: "", PAGENUM: "00000003"}
+  - action: PF8
+    expect:
+      message: "You are already at the bottom of the page..."
+  - action: PF7
+    expect:
+      message: null
+      data: {USRID01: U0000006, USRID10: U0000015, PAGENUM: "00000002"}
+  - action: PF7
+    expect:
+      message: "You have reached the top of the page..."
+      data: {USRID01: ADMIN001, PAGENUM: "00000001"}

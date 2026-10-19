@@ -1,0 +1,35 @@
+# EVALUATE EIBAID in COUSR02C (PF3 saves and XCTLs back to CDEMO-FROM-PROGRAM).
+id: CU02-009
+title: PF4, PF12, PF3 e tasto non valido
+tranid: CU02
+screen: COUSR02
+steps:
+  - method: GET
+    screen: COUSR00
+  - action: ENTER
+    screen: COUSR00
+    fields: {SEL0006: "U"}
+    expect:
+      nextScreen: COUSR02
+  - method: GET
+    expect:
+      data: {USRIDIN: USER0001}
+  - action: PF3
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "Rossi", PASSWD: "PASSWORD", USRTYPE: "U"}
+    expect:
+      message: "User USER0001 has been updated ..."
+      nextScreen: COUSR00
+      db: {USER0001: {lname: Rossi, password: PASSWORD, bcrypt: false}}
+  - action: PF4
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "0001", PASSWD: "PASSWORD", USRTYPE: "U"}
+    expect:
+      message: null
+      data: {USRIDIN: "", FNAME: ""}
+  - action: PF7
+    fields: {USRIDIN: "USER0001", FNAME: "USER", LNAME: "0001", PASSWD: "PASSWORD", USRTYPE: "U"}
+    expect:
+      message: "Invalid key pressed. Please see below..."
+      fieldErrors: []
+  - action: PF12
+    expect:
+      nextScreen: COADM01

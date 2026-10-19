@@ -1,0 +1,21 @@
+# PROCESS-ENTER-KEY / DELETE-USER-INFO with empty or unknown USRIDIN.
+id: CU03-002
+title: User ID vuoto / non trovato
+tranid: CU03
+screen: COUSR03
+steps:
+  - action: ENTER
+    fields: {USRIDIN: " "}
+    expect:
+      message: "User ID can NOT be empty..."
+      fieldErrors: [USRIDIN]
+  - action: PF5
+    fields: {USRIDIN: ""}
+    expect:
+      message: "User ID can NOT be empty..."
+      dbDelta: none
+  - action: ENTER
+    fields: {USRIDIN: "NOBODY"}
+    expect:
+      message: "User ID NOT found..."
+      fieldErrors: [USRIDIN]
