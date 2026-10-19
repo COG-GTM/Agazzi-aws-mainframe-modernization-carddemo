@@ -18,7 +18,27 @@ public final class CocrdliScreen {
       @JsonProperty("ACCTSID") @ScreenField(row = 6, column = 44, length = 11, input = true)
           String acctsid,
       @JsonProperty("CARDSID") @ScreenField(row = 7, column = 44, length = 16, input = true)
-          String cardsid) {}
+          String cardsid,
+      @JsonProperty("CRDSEL1") @ScreenField(row = 11, column = 12, length = 1, input = true)
+          String crdsel1,
+      @JsonProperty("CRDSEL2") @ScreenField(row = 12, column = 12, length = 1, input = true)
+          String crdsel2,
+      @JsonProperty("CRDSEL3") @ScreenField(row = 13, column = 12, length = 1, input = true)
+          String crdsel3,
+      @JsonProperty("CRDSEL4") @ScreenField(row = 14, column = 12, length = 1, input = true)
+          String crdsel4,
+      @JsonProperty("CRDSEL5") @ScreenField(row = 15, column = 12, length = 1, input = true)
+          String crdsel5,
+      @JsonProperty("CRDSEL6") @ScreenField(row = 16, column = 12, length = 1, input = true)
+          String crdsel6,
+      @JsonProperty("CRDSEL7") @ScreenField(row = 17, column = 12, length = 1, input = true)
+          String crdsel7) {
+
+    /** contracts-v1 constructor (without the runtime-unprotected fields). */
+    public Input(String acctsid, String cardsid) {
+      this(acctsid, cardsid, null, null, null, null, null, null, null);
+    }
+  }
 
   /** All named fields of the map (map ...O fields). */
   public record Output(
@@ -33,36 +53,43 @@ public final class CocrdliScreen {
           String acctsid,
       @JsonProperty("CARDSID") @ScreenField(row = 7, column = 44, length = 16, input = true)
           String cardsid,
-      @JsonProperty("CRDSEL1") @ScreenField(row = 11, column = 12, length = 1) String crdsel1,
+      @JsonProperty("CRDSEL1") @ScreenField(row = 11, column = 12, length = 1, input = true)
+          String crdsel1,
       @JsonProperty("ACCTNO1") @ScreenField(row = 11, column = 22, length = 11) String acctno1,
       @JsonProperty("CRDNUM1") @ScreenField(row = 11, column = 43, length = 16) String crdnum1,
       @JsonProperty("CRDSTS1") @ScreenField(row = 11, column = 67, length = 1) String crdsts1,
-      @JsonProperty("CRDSEL2") @ScreenField(row = 12, column = 12, length = 1) String crdsel2,
+      @JsonProperty("CRDSEL2") @ScreenField(row = 12, column = 12, length = 1, input = true)
+          String crdsel2,
       @JsonProperty("CRDSTP2") @ScreenField(row = 12, column = 14, length = 1) String crdstp2,
       @JsonProperty("ACCTNO2") @ScreenField(row = 12, column = 22, length = 11) String acctno2,
       @JsonProperty("CRDNUM2") @ScreenField(row = 12, column = 43, length = 16) String crdnum2,
       @JsonProperty("CRDSTS2") @ScreenField(row = 12, column = 67, length = 1) String crdsts2,
-      @JsonProperty("CRDSEL3") @ScreenField(row = 13, column = 12, length = 1) String crdsel3,
+      @JsonProperty("CRDSEL3") @ScreenField(row = 13, column = 12, length = 1, input = true)
+          String crdsel3,
       @JsonProperty("CRDSTP3") @ScreenField(row = 13, column = 14, length = 1) String crdstp3,
       @JsonProperty("ACCTNO3") @ScreenField(row = 13, column = 22, length = 11) String acctno3,
       @JsonProperty("CRDNUM3") @ScreenField(row = 13, column = 43, length = 16) String crdnum3,
       @JsonProperty("CRDSTS3") @ScreenField(row = 13, column = 67, length = 1) String crdsts3,
-      @JsonProperty("CRDSEL4") @ScreenField(row = 14, column = 12, length = 1) String crdsel4,
+      @JsonProperty("CRDSEL4") @ScreenField(row = 14, column = 12, length = 1, input = true)
+          String crdsel4,
       @JsonProperty("CRDSTP4") @ScreenField(row = 14, column = 14, length = 1) String crdstp4,
       @JsonProperty("ACCTNO4") @ScreenField(row = 14, column = 22, length = 11) String acctno4,
       @JsonProperty("CRDNUM4") @ScreenField(row = 14, column = 43, length = 16) String crdnum4,
       @JsonProperty("CRDSTS4") @ScreenField(row = 14, column = 67, length = 1) String crdsts4,
-      @JsonProperty("CRDSEL5") @ScreenField(row = 15, column = 12, length = 1) String crdsel5,
+      @JsonProperty("CRDSEL5") @ScreenField(row = 15, column = 12, length = 1, input = true)
+          String crdsel5,
       @JsonProperty("CRDSTP5") @ScreenField(row = 15, column = 14, length = 1) String crdstp5,
       @JsonProperty("ACCTNO5") @ScreenField(row = 15, column = 22, length = 11) String acctno5,
       @JsonProperty("CRDNUM5") @ScreenField(row = 15, column = 43, length = 16) String crdnum5,
       @JsonProperty("CRDSTS5") @ScreenField(row = 15, column = 67, length = 1) String crdsts5,
-      @JsonProperty("CRDSEL6") @ScreenField(row = 16, column = 12, length = 1) String crdsel6,
+      @JsonProperty("CRDSEL6") @ScreenField(row = 16, column = 12, length = 1, input = true)
+          String crdsel6,
       @JsonProperty("CRDSTP6") @ScreenField(row = 16, column = 14, length = 1) String crdstp6,
       @JsonProperty("ACCTNO6") @ScreenField(row = 16, column = 22, length = 11) String acctno6,
       @JsonProperty("CRDNUM6") @ScreenField(row = 16, column = 43, length = 16) String crdnum6,
       @JsonProperty("CRDSTS6") @ScreenField(row = 16, column = 67, length = 1) String crdsts6,
-      @JsonProperty("CRDSEL7") @ScreenField(row = 17, column = 12, length = 1) String crdsel7,
+      @JsonProperty("CRDSEL7") @ScreenField(row = 17, column = 12, length = 1, input = true)
+          String crdsel7,
       @JsonProperty("CRDSTP7") @ScreenField(row = 17, column = 14, length = 1) String crdstp7,
       @JsonProperty("ACCTNO7") @ScreenField(row = 17, column = 22, length = 11) String acctno7,
       @JsonProperty("CRDNUM7") @ScreenField(row = 17, column = 43, length = 16) String crdnum7,

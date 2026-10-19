@@ -388,6 +388,18 @@ EXT_SCREENS = {
     "COTRTLI": ("CTLI", "COTRTLIC", "x2-trantype"), "COTRTUP": ("CTTU", "COTRTUPC", "x2-trantype"),
 }
 COMMON_OUT = {"TRNNAME", "TITLE01", "TITLE02", "CURDATE", "CURTIME", "PGMNAME", "ERRMSG"}
+# contracts-v1.1: fields that are PROT in the BMS source but that the program unprotects at runtime
+# (MOVE DFHBMFSE TO <field>A) and RECEIVEs, so they are terminal input too.
+RUNTIME_INPUT = {
+    "COCRDLI": {f"CRDSEL{i}" for i in range(1, 8)},  # COCRDLIC 2200-EDIT-ARRAY (S/U selection)
+    "COCRDUP": {"ACCTSID"},  # COCRDUPC 1210-EDIT-ACCOUNT while no card is fetched
+    "COTRTLI": {f"TRTSEL{i}" for i in range(1, 8)},  # COTRTLIC 1100-RECEIVE-SCREEN (U/D selection)
+}
+# contracts-v1.1: extra optional properties of a screen response (not BMS fields).
+RESPONSE_EXTRA = {
+    "CORPT00": ["        reportExecutionId: { type: integer, format: int64, nullable: true, "
+                "description: TRANREPT execution submitted by CR00 (ReportJobLauncherPort) }"],
+}
 
 
 def screens():
@@ -397,8 +409,11 @@ def screens():
         ms = b["mapset"]
         if ms in BASE_SCREENS or ms in EXT_SCREENS:
             tran, prog, ws = BASE_SCREENS.get(ms) or EXT_SCREENS[ms]
+            extra = RUNTIME_INPUT.get(ms, set())
+            fields = [dict(f, input=True, v1_input=f["input"]) if f["name"] in extra
+                      else dict(f, v1_input=f["input"]) for f in b["fields"]]
             result.append(dict(mapset=ms, map=b["maps"][0], tranid=tran, program=prog, workstream=ws,
-                               optional=ms in EXT_SCREENS, fields=b["fields"], path=b["path"]))
+                               optional=ms in EXT_SCREENS, fields=fields, path=b["path"]))
     return sorted(result, key=lambda s: (s["optional"], s["mapset"]))
 
 
@@ -413,13 +428,21 @@ def gen_screens(scr):
         ins = [f for f in s["fields"] if f["input"]]
         doc = (f"BMS map {s['map']} of mapset {s['mapset']} ({s['path']}), transaction {s['tranid']}, "
                f"program {s['program']}, owner {s['workstream']}{' (optional extension)' if s['optional'] else ''}")
-        def rec(name, fields, what):
+        def rec(name, fields, what, v1=None):
             comps = ",\n".join(screen_field(f) for f in fields)
-            return (f"  /** {what} */\n  public record {name}(\n{comps}) {{}}\n")
+            if v1 is None or len(v1) == len(fields):
+                return (f"  /** {what} */\n  public record {name}(\n{comps}) {{}}\n")
+            params = ", ".join(f"String {camel(f['name'])}" for f in v1)
+            v1names = {f["name"] for f in v1}
+            args = ", ".join(camel(f["name"]) if f["name"] in v1names else "null" for f in fields)
+            return (f"  /** {what} */\n  public record {name}(\n{comps}) {{\n\n"
+                    f"    /** contracts-v1 constructor (without the runtime-unprotected fields). */\n"
+                    f"    public {name}({params}) {{\n      this({args});\n    }}\n  }}\n")
         body = (f"package com.carddemo.contracts.screen.map;\n\n{HEADER}\n"
                 "import com.carddemo.contracts.screen.ScreenField;\nimport com.fasterxml.jackson.annotation.JsonProperty;\n\n"
                 f"/** {doc}. */\npublic final class {cls}Screen {{\n\n  private {cls}Screen() {{}}\n\n" +
-                rec("Input", ins, "Unprotected fields sent by the terminal (map ...I fields).") + "\n" +
+                rec("Input", ins, "Unprotected fields sent by the terminal (map ...I fields).",
+                    [f for f in s["fields"] if f["v1_input"]]) + "\n" +
                 rec("Output", s["fields"], "All named fields of the map (map ...O fields).") + "}\n")
         write(CONTRACTS / f"java/com/carddemo/contracts/screen/map/{cls}Screen.java", body)
     consts = ",\n".join(f'  {s["mapset"]}("{s["map"]}", "{s["tranid"]}", "{s["program"]}", "{s["workstream"]}", '
@@ -442,7 +465,7 @@ def gen_screens(scr):
 
 # ---------------------------------------------------------------- OpenAPI
 def gen_openapi(scr):
-    L = ["openapi: 3.0.3", "info:", "  title: CardDemo online API", "  version: contracts-v1",
+    L = ["openapi: 3.0.3", "info:", "  title: CardDemo online API", "  version: contracts-v1.1",
          "  description: |",
          "    One resource per BMS map (plan §3.3, Fase 3). GET = first send (PGM-CONTEXT ENTER),",
          "    POST = terminal input (action = AID key + unprotected map fields). Every response is a",
@@ -542,6 +565,7 @@ def gen_openapi(scr):
               "        nextScreen: { type: string, description: 'XCTL target mapset, null = same screen' }",
               "        fieldErrors: { type: array, items: { $ref: '#/components/schemas/FieldError' } }",
               "        context: { $ref: '#/components/schemas/ConversationContext' }"]
+        L += RESPONSE_EXTRA.get(s["mapset"], [])
     write(CONTRACTS / "resources/openapi/openapi.yaml", "\n".join(L) + "\n")
 
 
