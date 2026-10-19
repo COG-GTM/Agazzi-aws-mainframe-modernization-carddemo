@@ -1,0 +1,23 @@
+# COPAUS1C MARK-AUTH-FRAUD + COPAUS2C: PF5 toggles PA-AUTH-FRAUD F/R and writes AUTHFRDS
+# (INSERT, UPDATE on SQLCODE -803); PF8 reads the next (older) authorization.
+id: CPVD-001
+title: PF5 marca / rimuove frode, PF8 successiva
+tranid: CPVD
+screen: COPAU00
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {ACCTID: "00000000001", SEL0001: ""}
+    expect: {screen: COPAU00, message: "", dbDelta: none}
+  - action: ENTER
+    fields: {ACCTID: "00000000001", SEL0001: "S"}
+    expect: {screen: COPAU00, nextScreen: COPAU01, dbDelta: none}
+  - action: PF5
+    fields: {}
+    expect: {screen: COPAU01, message: "AUTH MARKED FRAUD...", dbDelta: any}
+  - action: PF5
+    fields: {}
+    expect: {screen: COPAU01, message: "AUTH FRAUD REMOVED...", dbDelta: any}
+  - action: PF8
+    fields: {}
+    expect: {screen: COPAU01, message: "", dbDelta: none}

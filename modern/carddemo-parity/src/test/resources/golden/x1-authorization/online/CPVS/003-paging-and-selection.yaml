@@ -1,0 +1,29 @@
+# COPAUS0C: page 1 (5 rows, newest first), PF7 on page 1 -> top message, PF8 -> page 2,
+# invalid selection, 'S' -> XCTL COPAUS1C (COPAU01). Seed: account 1, 7 approved auths.
+id: CPVS-003
+title: Paginazione PF7/PF8 e selezione
+tranid: CPVS
+screen: COPAU00
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {ACCTID: "00000000001"}
+    expect: {screen: COPAU00, nextScreen: null, message: "", dbDelta: none}
+  - action: PF7
+    fields: {}
+    expect: {screen: COPAU00, message: "You are already at the top of the page...", dbDelta: none}
+  - action: PF8
+    fields: {}
+    expect: {screen: COPAU00, message: "", dbDelta: none}
+  - action: ENTER
+    fields: {ACCTID: "00000000001", SEL0001: "X"}
+    expect: {screen: COPAU00, message: "Invalid selection. Valid value is S", dbDelta: none}
+  - action: ENTER
+    fields: {ACCTID: "00000000001", SEL0001: "S"}
+    expect: {screen: COPAU00, nextScreen: COPAU01, dbDelta: none}
+  - action: PF3
+    fields: {}
+    expect: {screen: COPAU01, nextScreen: COPAU00, dbDelta: none}
+  - action: PF3
+    fields: {}
+    expect: {screen: COPAU00, nextScreen: COMEN01, dbDelta: none}

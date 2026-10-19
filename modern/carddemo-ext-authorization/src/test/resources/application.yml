@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:x1;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: ""
+  flyway:
+    enabled: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+carddemo:
+  extensions:
+    authorization:
+      enabled: true
+      listener-enabled: false
