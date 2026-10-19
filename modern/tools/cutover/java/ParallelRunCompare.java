@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class ParallelRunCompare {
 
@@ -41,14 +40,9 @@ public class ParallelRunCompare {
     Path jv = Path.of(a.get("java"));
     String date = a.getOrDefault("date", LocalDate.now().toString());
     Path out = Path.of(a.getOrDefault("out", "target/cutover/parallel-run")).resolve(date);
-    List<String> jobs;
-    if (a.containsKey("jobs")) {
-      jobs = List.of(a.get("jobs").split(","));
-    } else {
-      try (Stream<Path> s = Files.list(mf)) {
-        jobs = s.filter(Files::isDirectory).map(p -> p.getFileName().toString()).sorted().toList();
-      }
-    }
+    // Expected jobs of the business day: explicit --jobs (runbook 7.6), else every golden job.
+    // A job missing on either side is a NO-GO, never silently skipped.
+    List<String> jobs = a.containsKey("jobs") ? List.of(a.get("jobs").split(",")) : GoldenJob.jobNames(modern);
     ParityExceptions exc = ParityExceptions.load(modern.resolve("PARITY_EXCEPTIONS.md"));
     RecordComparator cmp = new RecordComparator(exc);
     RecordComparator raw = new RecordComparator(ParityExceptions.none());
@@ -58,6 +52,11 @@ public class ParallelRunCompare {
     int registered = 0;
     for (String job : jobs) {
       GoldenJob g = GoldenJob.load(modern, job);
+      if (!Files.isDirectory(mf.resolve(job)) || !Files.isDirectory(jv.resolve(job))) {
+        String side = Files.isDirectory(mf.resolve(job)) ? "java" : "mainframe";
+        results.add(new DdResult(job, "*", "MISSING " + side, 0, 0, List.of()));
+        continue;
+      }
       for (String dd : g.outputs()) {
         GoldenJob.Dataset ds = g.datasets().get(dd);
         Path m = mf.resolve(job).resolve(dd + ".dat");
@@ -75,7 +74,9 @@ public class ParallelRunCompare {
       }
       Path rm = mf.resolve(job).resolve("RETURN-CODES.txt");
       Path rj = jv.resolve(job).resolve("RETURN-CODES.txt");
-      if (Files.exists(rm) && Files.exists(rj)) {
+      if (!Files.exists(rm) || !Files.exists(rj)) {
+        results.add(new DdResult(job, "RETURN-CODES", "MISSING " + (Files.exists(rm) ? "java" : "mainframe"), 0, 0, List.of()));
+      } else {
         boolean same = Files.readString(rm).strip().equals(Files.readString(rj).strip());
         rcLines.add("| " + job + " | " + Files.readString(rm).strip().replace("\n", ", ") + " | "
             + Files.readString(rj).strip().replace("\n", ", ") + " | " + (same ? "MATCH" : "DIFF") + " |");

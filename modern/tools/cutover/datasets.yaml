@@ -3,7 +3,7 @@
 # rollback/relational-to-vsam.sh (relationalToVsam export). Source files are relative to
 # --source-root: `ascii` = app/data/ASCII-style text (one record per line), `ebcdic` =
 # IDCAMS REPRO unload (RECFM=F, CP037, no line ends). `<file>#<DD>` = instream DD of a JCL.
-# exclude_columns: columns left out of the checksum (registered deviation in PARITY_EXCEPTIONS).
+# seed_empty: see TRANSACT. exclude_columns: columns left out of the checksum (registered deviation in PARITY_EXCEPTIONS).
 datasets:
   ACCTDATA:
     vsam: AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS
@@ -57,9 +57,11 @@ datasets:
     vsam: AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS
     table: transaction
     copybook: CVTRA05Y
-    # empty in the sample seed (filled by POSTTRAN); production: REPRO unload of the KSDS.
-    ascii: EMPTY
-    ebcdic: EMPTY
+    ascii: transact.txt
+    ebcdic: AWS.M2.CARDDEMO.TRANSACT.PS
+    # The sample seed has no TRANSACT file (filled by POSTTRAN): only with `reconcile --seed`
+    # a missing source file is compared as an empty dataset. Production always needs the unload.
+    seed_empty: true
   DALYTRAN:
     vsam: AWS.M2.CARDDEMO.DALYTRAN.PS
     table: daily_transaction

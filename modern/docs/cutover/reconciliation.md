@@ -10,6 +10,12 @@ numerici normalizzati alla scala del PIC) calcolato in modo identico sui due lat
 diverse/mancanti/extra. Un `DbSnapshot` prima e dopo prova che il DB non è cambiato durante il controllo
 (altrimenti esito FAILED anche con checksum uguali).
 
+Tabelle con PK non presente nel copybook (`daily_transaction.seq_no`, identity): confronto come multiset
+delle righe canoniche, indipendente dall'ordine di caricamento.
+
+`TRANSACT` non ha file nel seed: solo con `--seed` un file mancante con `seed_empty: true` vale come vuoto;
+in produzione l'unload è obbligatorio.
+
 ## Esito sul seed di oggi
 
 - `app/data/ASCII` vs DB V1+V2: **11/11 MATCH** (incluso USRSEC con la password esclusa, PE-001).

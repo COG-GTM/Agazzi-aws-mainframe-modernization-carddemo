@@ -25,6 +25,8 @@ terraform plan -var-file=env/<env>.tfvars
 ```
 
 `example.tfvars` contiene solo segnaposto. Nessun deploy reale è stato eseguito in Fase 5D.
+Prerequisito immagine: il bundle CA RDS (`global-bundle.pem`) in `db_ca_bundle_path`, perché la connessione usa
+`sslmode=verify-full`; il container gira con `SPRING_PROFILES_ACTIVE=aws` (`application-aws.yml`).
 Variabili d'ambiente passate al container (`CARDDEMO_MESSAGING_TYPE=sqs`, `CARDDEMO_GDG_TYPE=s3`,
 `CARDDEMO_GDG_BUCKET`, `CARDDEMO_REPORT_QUEUE_URL`) sono i nomi attesi dagli adapter di 1C/3A: se gli
 adapter usano chiavi diverse, aggiornare `local.container_env` in `main.tf`.

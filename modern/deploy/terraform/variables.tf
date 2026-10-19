@@ -83,3 +83,9 @@ variable "maintenance_page" {
   default     = true
   description = "503 on /api/* (CLOSEFIL window). Set false at T-0 step 0.8 to open traffic."
 }
+
+variable "db_ca_bundle_path" {
+  type        = string
+  default     = "/opt/carddemo/rds-global-bundle.pem"
+  description = "Path in the image of https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem (sslmode=verify-full)."
+}

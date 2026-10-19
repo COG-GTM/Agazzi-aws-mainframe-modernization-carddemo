@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 def screen(name, data=None, messages=None, next_screen=None):
     return {"screen": name, "data": data or {}, "messages": messages or [], "nextScreen": next_screen,
-            "fieldErrors": {}, "context": {}}
+            "fieldErrors": [], "context": {}}
 
 
 class H(BaseHTTPRequestHandler):

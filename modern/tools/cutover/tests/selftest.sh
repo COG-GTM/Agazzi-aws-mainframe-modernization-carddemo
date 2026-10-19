@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2015  # `checks && ... || fail` is intended: any failing check fails
 # Self-test of the cutover tooling against today's seed (V1 baseline + V2 seed) and goldens.
 # Needs: docker (or CARDDEMO_SELFTEST_DB_URL + psql access via PG* env), java 21, python3 + PyYAML,
 # built modules (./mvnw -B install -DskipTests). Run from modern/: tools/cutover/tests/selftest.sh
@@ -29,11 +30,22 @@ psqlx < carddemo-domain/src/main/resources/db/seed/V2__seed_sample_data.sql
 ok "seed V1+V2 loaded"
 
 # 1. reconciliation: seed DB == app/data/ASCII
-tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root ../app/data/ASCII --out "$T/rec" >/dev/null \
+tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root ../app/data/ASCII --seed --out "$T/rec" >/dev/null \
   || fail "reconcile seed vs ASCII"
 python3 -c "import json,sys; d=json.load(open('$T/rec/reconciliation.json')); sys.exit(0 if d['ok'] and len(d['datasets'])==11 and all(x['status']=='MATCH' for x in d['datasets']) else 1)" \
   || fail "reconciliation.json"
-ok "reconcile ASCII: 11/11 MATCH"
+ok "reconcile ASCII (--seed): 11/11 MATCH"
+if tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root ../app/data/ASCII --datasets TRANSACT --out "$T/rec-notx" >/dev/null; then
+  fail "missing TRANSACT unload accepted without --seed"
+fi
+ok "reconcile: missing TRANSACT unload is a MISMATCH outside --seed"
+
+# 1b. DALYTRAN (PK seq_no not in the copybook) reconciles as a multiset, independent of load order
+cols=$(psqlx -At -c "SELECT string_agg(column_name, ',' ORDER BY ordinal_position) FROM information_schema.columns WHERE table_name = 'daily_transaction' AND column_name <> 'seq_no'")
+psqlx -c "CREATE TEMP TABLE d AS SELECT * FROM daily_transaction; DELETE FROM daily_transaction; INSERT INTO daily_transaction ($cols) SELECT $cols FROM d ORDER BY seq_no DESC"
+tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root ../app/data/ASCII --datasets DALYTRAN --out "$T/rec-daly" >/dev/null \
+  || fail "DALYTRAN reloaded in reverse order"
+ok "reconcile DALYTRAN: reverse load order still MATCH (multiset)"
 
 # 2. reconciliation detects a changed DB row (and only that dataset)
 psqlx -c "UPDATE account SET acct_curr_bal = acct_curr_bal + 1 WHERE acct_id = 1"
@@ -54,11 +66,24 @@ ok "reconcile EBCDIC (CP037): 8 datasets MATCH"
 # 4. parallel run: identical outputs -> GO, one changed field -> NO-GO with field-level diff
 G=carddemo-parity/src/test/resources/golden/batch
 for side in mf java; do for j in POSTTRAN INTCALC TRANREPT CREASTMT; do mkdir -p "$T/pr/$side"; cp -r "$G/$j/expected" "$T/pr/$side/$j"; done; done
-tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --date 2022-07-18 --out "$T/pr/out" >/dev/null \
+J=POSTTRAN,INTCALC,TRANREPT,CREASTMT
+tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --jobs $J --date 2022-07-18 --out "$T/pr/out" >/dev/null \
   || fail "parallel run identical outputs"
 ok "parallel run: identical outputs -> OK"
+mv "$T/pr/java/INTCALC" "$T/pr/INTCALC.java"
+if tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --jobs $J --date 2022-07-18 --out "$T/pr/out-missing" >/dev/null; then
+  fail "missing Java job accepted"
+fi
+grep -q "| INTCALC | \* | MISSING java |" "$T/pr/out-missing/2022-07-18/parallel-run-report.md" || fail "missing job report"
+mv "$T/pr/INTCALC.java" "$T/pr/java/INTCALC"
+rm "$T/pr/java/POSTTRAN/RETURN-CODES.txt"
+if tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --jobs $J --date 2022-07-18 --out "$T/pr/out-rc" >/dev/null; then
+  fail "missing RETURN-CODES accepted"
+fi
+cp "$T/pr/mf/POSTTRAN/RETURN-CODES.txt" "$T/pr/java/POSTTRAN/"
+ok "parallel run: missing job or RETURN-CODES -> NO-GO"
 sed -i '1s/^\(.\{20\}\)./\19/' "$T/pr/java/POSTTRAN/ACCTDATA.dat"
-if tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --date 2022-07-18 --out "$T/pr/out" >/dev/null; then
+if tools/cutover/cutover.sh compare --mainframe "$T/pr/mf" --java "$T/pr/java" --jobs $J --date 2022-07-18 --out "$T/pr/out" >/dev/null; then
   fail "parallel run did not detect the change"
 fi
 grep -q "POSTTRAN ACCTDATA record 1 field ACCT-CURR-BAL" "$T/pr/out/2022-07-18/parallel-run-report.md" || fail "diff report"
@@ -66,10 +91,15 @@ ok "parallel run: changed ACCT-CURR-BAL -> NO-GO with field diff"
 
 # 5. rollback wrapper on an existing export (ASCII seed as stand-in for relationalToVsam output)
 tools/cutover/rollback/relational-to-vsam.sh --out "$T/rb" --format ascii --from-dir ../app/data/ASCII \
+  --datasets ACCTDATA,CARDDATA,CARDXREF,CUSTDATA,TCATBALF,DISCGRP,TRANTYPE,TRANCATG,DALYTRAN,USRSEC \
   --db-url "$DB_URL" --no-freeze-check >/dev/null || fail "rollback wrapper"
-grep -q "REPRO INFILE(IN) OUTDATASET(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS) REPLACE" "$T/rb/ROLLBACK.jcl" \
-  && [[ $(wc -l < "$T/rb/SHA256SUMS") -eq 9 ]] || fail "ROLLBACK.jcl / SHA256SUMS"
-ok "rollback wrapper: export verified, ROLLBACK.jcl + SHA256SUMS"
+grep -q "DELETE AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS CLUSTER PURGE" "$T/rb/ROLLBACK.jcl" \
+  && grep -q "DEFINE CLUSTER (NAME(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS) KEYS(11 0) RECORDSIZE(300 300)" "$T/rb/ROLLBACK.jcl" \
+  && grep -q "REPRO INFILE(IN) OUTDATASET(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS)$" "$T/rb/ROLLBACK.jcl" \
+  && grep -q "BLDINDEX INDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.KSDS) OUTDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.AIX)" "$T/rb/ROLLBACK.jcl" \
+  && grep -q "DEFINE PATH (NAME(AWS.M2.CARDDEMO.CARDXREF.VSAM.AIX.PATH)" "$T/rb/ROLLBACK.jcl" \
+  && [[ $(wc -l < "$T/rb/SHA256SUMS") -eq 10 ]] || fail "ROLLBACK.jcl / SHA256SUMS"
+ok "rollback wrapper: export verified, ROLLBACK.jcl (DELETE/DEFINE/REPRO/AIX) + SHA256SUMS"
 
 # 6. smoke test client: health PASS against a stub, PENDING endpoints accepted only without --strict
 python3 tools/cutover/tests/stub_server.py 18099 & stub=$!
@@ -82,6 +112,14 @@ ok "smoke test: health, maintenance, sign-on, CAVW, CT02 PASS on contract stub"
 STUB_MISSING=1 python3 tools/cutover/smoke_test.py --base-url http://localhost:18099 >/dev/null || fail "smoke non-strict"
 if python3 tools/cutover/smoke_test.py --base-url http://localhost:18099/missing --strict >/dev/null; then fail "smoke strict"; fi
 ok "smoke test: --strict turns PENDING (404) into NO-GO"
+set +e; tools/cutover/rollback/relational-to-vsam.sh --out "$T/rb-open" --base-url http://localhost:18099 >/dev/null 2>&1; rc=$?; set -e
+[[ $rc -eq 4 ]] || fail "rollback freeze gate (rc=$rc)"
+ok "rollback wrapper: refuses to export while Java files are open (exit 4)"
+
+# 7. run-job.sh against the real carddemo-app: returns (no hang) with exit 3 while POSTTRAN is not integrated
+set +e; CARDDEMO_DB_URL="$DB_URL" SPRING_FLYWAY_ENABLED=false timeout 180 tools/cutover/run-job.sh POSTTRAN >/dev/null 2>&1; rc=$?; set -e
+[[ $rc -eq 3 || $rc -eq 0 ]] || fail "run-job.sh POSTTRAN rc=$rc"
+ok "run-job.sh POSTTRAN returned rc=$rc (3 = not integrated yet)"
 
 python3 tools/cutover/decommission_inventory.py --check >/dev/null || fail "decommission inventory stale"
 ok "decommission inventory up to date"

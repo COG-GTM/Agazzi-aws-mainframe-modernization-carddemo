@@ -34,7 +34,8 @@ public class Reconcile {
 
   static final int MAX_DETAILS = 20;
 
-  record Dataset(String name, String table, String copybook, String source, List<String> exclude) {}
+  record Dataset(
+      String name, String table, String copybook, String source, List<String> exclude, boolean seedEmpty) {}
 
   record Result(
       String dataset,
@@ -55,6 +56,7 @@ public class Reconcile {
           """
           usage: cutover.sh reconcile --db-url JDBC_URL [--db-user U] --source-root DIR
                  [--format ascii|ebcdic] [--manifest datasets.yaml] [--datasets A,B] [--out DIR]
+                 [--seed]  (seed_empty datasets without a file are compared as empty)
           password: env CARDDEMO_DB_PASSWORD (never on the command line)""");
       System.exit(a.containsKey("help") ? 0 : 2);
     }
@@ -76,7 +78,7 @@ public class Reconcile {
       List<String> tables = datasets.stream().map(Dataset::table).toList();
       DbSnapshot before = DbSnapshot.take(c, tables);
       for (Dataset d : datasets) {
-        results.add(reconcile(c, d, root, format, before));
+        results.add(reconcile(c, d, root, format, before, a.containsKey("seed")));
       }
       List<DbSnapshot.RowChange> drift = before.diff(DbSnapshot.take(c, tables));
       frozen = drift.isEmpty();
@@ -127,7 +129,8 @@ public class Reconcile {
                     (String) d.get("table"),
                     (String) d.get("copybook"),
                     (String) d.get(format),
-                    (List<String>) d.getOrDefault("exclude_columns", List.of())));
+                    (List<String>) d.getOrDefault("exclude_columns", List.of()),
+                    Boolean.TRUE.equals(d.get("seed_empty"))));
           }
         });
     if (filter != null && list.size() != filter.size()) {
@@ -136,7 +139,8 @@ public class Reconcile {
     return list;
   }
 
-  static Result reconcile(Connection c, Dataset d, Path root, String format, DbSnapshot snap)
+  static Result reconcile(
+      Connection c, Dataset d, Path root, String format, DbSnapshot snap, boolean seed)
       throws Exception {
     ZonedRecordCodec<?> codec =
         "ebcdic".equals(format)
@@ -153,8 +157,8 @@ public class Reconcile {
     }
     List<byte[]> records = new ArrayList<>();
     String fileSha = null;
-    if (!d.source().equals("EMPTY")) {
-      Path file = root.resolve(d.source().replaceAll("#.*", ""));
+    Path file = root.resolve(d.source().replaceAll("#.*", ""));
+    if (!(seed && d.seedEmpty() && !Files.exists(file))) {
       if (!Files.exists(file)) {
         return new Result(d.name(), d.table(), "MISMATCH", d.source(), null, 0, snap.rowCount(d.table()), null,
             null, List.of("source file not found: " + file));
@@ -165,29 +169,27 @@ public class Reconcile {
     }
 
     TreeMap<String, Map<String, String>> fileRows = new TreeMap<>();
-    int n = 0;
+    Map<String, Integer> seen = new java.util.HashMap<>();
     for (byte[] r : records) {
       Record rec = (Record) codec.decode(r);
       Map<String, String> row = new LinkedHashMap<>();
       for (ZonedRecordCodec.FieldLayout f : fields) {
         row.put(column(f.name()), canonical(component(rec, f.component()), f));
       }
-      n++;
-      fileRows.put(ordinalKey ? "%012d".formatted(n) : key(row, pk), row);
+      fileRows.put(ordinalKey ? multisetKey(row, seen) : key(row, pk), row);
     }
 
     TreeMap<String, Map<String, String>> dbRows = new TreeMap<>();
     String order = String.join(", ", pk);
     try (Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM " + d.table() + " ORDER BY " + order)) {
-      int i = 0;
+      Map<String, Integer> dbSeen = new java.util.HashMap<>();
       while (rs.next()) {
         Map<String, String> row = new LinkedHashMap<>();
         for (ZonedRecordCodec.FieldLayout f : fields) {
           row.put(column(f.name()), canonical(rs.getObject(column(f.name())), f));
         }
-        i++;
-        dbRows.put(ordinalKey ? "%012d".formatted(i) : key(row, pk), row);
+        dbRows.put(ordinalKey ? multisetKey(row, dbSeen) : key(row, pk), row);
       }
     }
 
@@ -295,6 +297,17 @@ public class Reconcile {
       throw new IllegalStateException("table " + table + " not found or without primary key");
     }
     return List.copyOf(seq.values());
+  }
+
+  /**
+   * Key for tables whose primary key is not a copybook field (daily_transaction.seq_no is an
+   * identity): the canonical row itself plus its occurrence number, i.e. a multiset compare that
+   * does not depend on load order and keeps duplicates.
+   */
+  static String multisetKey(Map<String, String> row, Map<String, Integer> seen) {
+    String k = String.join("|", row.values()).strip();
+    int occ = seen.merge(k, 1, Integer::sum);
+    return (k.length() > 60 ? k.substring(0, 60) + "~" + Integer.toHexString(k.hashCode()) : k) + "#" + occ;
   }
 
   static String key(Map<String, String> row, List<String> pk) {

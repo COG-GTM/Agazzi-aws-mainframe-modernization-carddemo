@@ -56,10 +56,10 @@ tools/cutover/rollback/relational-to-vsam.sh --out /data/rollback/2026-11-02 \
   [--format ebcdic] [--datasets ACCTDATA,...] [--db-url jdbc:...] [--base-url https://...] [--hlq AWS.M2.CARDDEMO]
 ```
 
-1. verifica che il lato Java sia congelato (`GET /actuator/maintenance` con `closedFiles` non vuoto), altrimenti exit 4;
-2. lancia `relationalToVsam` (exit 3 se il job non è ancora deployato → usare l'unload T-0 + R.3a solo se nessuna scrittura);
+1. verifica che il lato Java sia congelato: `GET /actuator/maintenance` deve riportare chiusi **tutti** i file CSD (ACCTDAT, CARDAIX, CARDDAT, CCXREF, CUSTDAT, CXACAIX, TRANSACT, USRSEC) o `*`, altrimenti exit 4;
+2. lancia `relationalToVsam` (exit 3 se il job non è ancora deployato → usare l'unload T-0 + R.3a solo se nessuna scrittura); con `CARDDEMO_JOB_MODE=ecs` l'output va su `s3://$CARDDEMO_GDG_BUCKET/rollback/<ts>/` e viene scaricato in `--out`;
 3. riconcilia l'export con il DB (`cutover.sh reconcile`): conteggi + checksum devono coincidere;
-4. scrive `SHA256SUMS` e `ROLLBACK.jcl` (IDCAMS `REPRO INFILE(IN) OUTDATASET(<KSDS>) REPLACE` per ogni KSDS).
+4. scrive `SHA256SUMS` e `ROLLBACK.jcl`: per ogni KSDS `DELETE … CLUSTER PURGE`, `DEFINE CLUSTER` (KEYS/RECORDSIZE da `docs/inventory/inventory.json`, come i job `app/jcl/*FILE`), `REPRO`, poi `DEFINE ALTERNATEINDEX`/`PATH` + `BLDINDEX`. Ricostruire il cluster evita che record cancellati lato Java sopravvivano al reload; il deck va validato da MFO alla prova T-14 (14.10).
 
 `--from-dir DIR` salta il passo 2 e verifica un export già prodotto (usato oggi nel self-test con il seed ASCII).
 

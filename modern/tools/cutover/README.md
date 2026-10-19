@@ -18,9 +18,9 @@ Prerequisito per i tool Java: `./mvnw -B install -DskipTests` (il classpath vien
 credenziali smoke solo da `CARDDEMO_SMOKE_USER` / `CARDDEMO_SMOKE_PASSWORD`.
 
 ```
-tools/cutover/cutover.sh reconcile --db-url jdbc:postgresql://localhost:5432/carddemo --source-root ../app/data/ASCII
+tools/cutover/cutover.sh reconcile --db-url jdbc:postgresql://localhost:5432/carddemo --source-root ../app/data/ASCII --seed
 tools/cutover/cutover.sh reconcile --db-url ... --source-root /data/T-0 --format ebcdic --datasets ACCTDATA,CARDXREF
-tools/cutover/cutover.sh compare --mainframe /data/pr/2026-11-02/mainframe --java /data/pr/2026-11-02/java --date 2026-11-02
+tools/cutover/cutover.sh compare --mainframe /data/pr/2026-11-02/mainframe --java /data/pr/2026-11-02/java --jobs POSTTRAN,INTCALC,COMBTRAN,TRANREPT,CREASTMT --date 2026-11-02
 tools/cutover/smoke_test.py --base-url https://carddemo.example --strict --allow-write --posttran --report smoke.json
 tools/cutover/tests/selftest.sh
 ```

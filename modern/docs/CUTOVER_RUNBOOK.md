@@ -71,7 +71,7 @@ Il mainframe resta il sistema di record. Ogni notte, dopo il batch mainframe:
 | 7.3 | QA | Esegue la catena batch Java con la stessa data di business | `for j in POSTTRAN INTCALC COMBTRAN TRANREPT CREASTMT; do CARDDEMO_JOB_MODE=ecs tools/cutover/run-job.sh $j run.date=$D || break; done` | 30 min |
 | 7.4 | MFO | Scarica gli output mainframe (`<JOB>/<DD>.dat` testo + `RETURN-CODES.txt`) | `aws s3 cp --recursive s3://$GDG_BUCKET/parallel/$D/mainframe/ /data/pr/$D/mainframe/` | 15 min |
 | 7.5 | QA | Scarica gli output Java (stesso layout) | `aws s3 cp --recursive s3://$GDG_BUCKET/parallel/$D/java/ /data/pr/$D/java/` | 5 min |
-| 7.6 | QA | Confronto + report giornaliero | `tools/cutover/cutover.sh compare --mainframe /data/pr/$D/mainframe --java /data/pr/$D/java --date $D --out reports/parallel-run` | 5 min |
+| 7.6 | QA | Confronto + report giornaliero | `tools/cutover/cutover.sh compare --mainframe /data/pr/$D/mainframe --java /data/pr/$D/java --jobs POSTTRAN,INTCALC,COMBTRAN,TRANREPT,CREASTMT --date $D --out reports/parallel-run` (job mancanti o `RETURN-CODES.txt` assenti = NO-GO) | 5 min |
 | 7.7 | QA | Riconciliazione master post-batch (DB Java vs unload mainframe post-batch) | `tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root /data/pr/$D/master-post --format ebcdic --out reports/parallel-run/$D/reconciliation` | 10 min |
 | 7.8 | QA | Pubblica `reports/parallel-run/$D/parallel-run-report.md` sul canale #carddemo-cutover | — | 5 min |
 | 7.9 | CM | Triage differenze: bug → fix su `migration/phase-5` + giorno ripetuto; deviazione accettata → voce in `PARITY_EXCEPTIONS.md` firmata BO | — | — |
@@ -116,7 +116,7 @@ Dettagli e contratto CLI: [cutover/rollback.md](cutover/rollback.md).
 | R.2 | PLT | Stop traffico Java: pagina manutenzione, CLOSEFIL lato Java | `terraform ... -var maintenance_page=true`; `POST /actuator/maintenance` closedFiles=ALL | 10 min |
 | R.3a | MFO | *Prima di qualsiasi scrittura Java* (no-go T-0): riapre CICS sui VSAM invariati | submit `app/jcl/OPENFIL.jcl`, release Control-M | 10 min |
 | R.3b | DM | *Dopo scritture Java*: export PostgreSQL → VSAM | `tools/cutover/rollback/relational-to-vsam.sh --out /data/rollback/$(date +%F) --base-url https://carddemo.<dominio>` | 30 min |
-| R.4 | MFO | Upload binario dei file, submit `ROLLBACK.jcl` generato (REPRO REPLACE nei KSDS) | `sha256sum -c SHA256SUMS`, poi submit | 30 min |
+| R.4 | MFO | Upload binario dei file, submit `ROLLBACK.jcl` generato (DELETE/DEFINE/REPRO dei KSDS + rebuild AIX) | `sha256sum -c SHA256SUMS`, poi submit | 30 min |
 | R.5 | MFO | OPENFIL CICS + release Control-M/CA-7 + DNS al mainframe/3270 | `app/jcl/OPENFIL.jcl` | 15 min |
 | R.6 | QA | Verifica: riconciliazione VSAM (nuovo unload) vs DB congelato, transazioni CC00/CAVW/CT02 da 3270 | `cutover.sh reconcile --format ebcdic` | 20 min |
 

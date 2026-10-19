@@ -274,7 +274,9 @@ resource "aws_ecs_cluster" "carddemo" {
 
 locals {
   container_env = [
-    { name = "CARDDEMO_DB_URL", value = "jdbc:postgresql://${aws_db_instance.carddemo.endpoint}/carddemo?sslmode=require" },
+    { name = "SPRING_PROFILES_ACTIVE", value = "aws" },
+    # verify-full: certificate chain + hostname checked against the RDS CA bundle baked into the image.
+    { name = "CARDDEMO_DB_URL", value = "jdbc:postgresql://${aws_db_instance.carddemo.endpoint}/carddemo?sslmode=verify-full&sslrootcert=${var.db_ca_bundle_path}" },
     { name = "CARDDEMO_DB_USER", value = "carddemo" },
     { name = "CARDDEMO_MESSAGING_TYPE", value = "sqs" },
     { name = "CARDDEMO_GDG_TYPE", value = "s3" },

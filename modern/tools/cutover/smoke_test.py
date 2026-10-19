@@ -56,7 +56,10 @@ def screen(base, name, fields, auth, action="ENTER"):
 def errors(resp):
     if not isinstance(resp, dict):
         return ["no JSON body"]
-    out = [f"{k}: {v}" for k, v in (resp.get("fieldErrors") or {}).items()]
+    fe = resp.get("fieldErrors") or []
+    if isinstance(fe, dict):
+        fe = [{"field": k, "message": v} for k, v in fe.items()]
+    out = [f"{e.get('field')}: {e.get('message')}" for e in fe]
     out += [m.get("text", "") for m in resp.get("messages") or [] if m.get("severity") == "ERROR"]
     return out
 
