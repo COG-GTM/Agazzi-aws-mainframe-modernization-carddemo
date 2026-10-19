@@ -21,13 +21,15 @@ export function initialInput(id: ScreenIdName, state: ScreenState): Fields {
 }
 
 /**
- * Same-screen redisplay. A response carrying `data` is the full SEND MAP (fields it omits are cleared);
- * a response without `data` (e.g. validation errors only) keeps what the operator typed.
+ * Same-screen redisplay: fields present in `data` win (an explicit '' clears, e.g. COUSR01 PF4),
+ * fields the response omits keep what the operator typed.
  */
 export function mergeInput(id: ScreenIdName, prev: Fields, state: ScreenState): Fields {
-  if (state.data) return initialInput(id, state);
   const out: Fields = {};
-  for (const f of inputFields(layoutOf(id))) out[f.name!] = prev[f.name!] ?? '';
+  for (const f of inputFields(layoutOf(id))) {
+    const v = state.data?.[f.name!];
+    out[f.name!] = v != null ? v.trimEnd().slice(0, f.length) : (prev[f.name!] ?? '');
+  }
   return out;
 }
 
@@ -136,10 +138,13 @@ export function App({ api: apiProp, flags: flagsProp }: AppProps) {
     async (action: Action) => {
       setBusy(true);
       try {
-        const retry = retryTarget;
-        setRetryTarget(undefined);
-        if (retry && action === 'ENTER') await enter(retry);
-        else await apply(id, await api.post(id, action, buildFields(id, input)));
+        if (retryTarget && action === 'ENTER') {
+          await enter(retryTarget);
+        } else {
+          const res = await api.post(id, action, buildFields(id, input));
+          if (res.ok) setRetryTarget(undefined);
+          await apply(id, res);
+        }
       } finally {
         setBusy(false);
       }

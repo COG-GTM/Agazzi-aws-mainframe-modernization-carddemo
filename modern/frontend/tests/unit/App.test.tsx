@@ -167,8 +167,8 @@ describe('buildFields', () => {
     expect(api.post).toHaveBeenLastCalledWith('COSGN00', 'PF3', expect.anything());
   });
 
-  it('clears inputs when a same-screen response carries data without them (SEND MAP of a cleared map)', async () => {
-    const api = fakeApi(async () => st('COSGN00', { data: {} }));
+  it('clears inputs the same-screen response sets to an empty string', async () => {
+    const api = fakeApi(async () => st('COSGN00', { data: { USERID: '' } }));
     const { container } = render(<App api={api} flags={flagsOff} />);
     await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
     fireEvent.change(container.querySelector('input[name="USERID"]')!, { target: { value: 'USER0001' } });
@@ -176,6 +176,28 @@ describe('buildFields', () => {
       fireEvent.keyDown(container.querySelector('input[name="USERID"]')!, { key: 'F4' });
     });
     await waitFor(() => expect((container.querySelector('input[name="USERID"]') as HTMLInputElement).value).toBe(''));
+  });
+
+  it('keeps the pending retry when a PF action fails in the meantime', async () => {
+    let down = true;
+    const api = fakeApi(
+      async (_id, action) => (action === 'PF3' && down ? { ok: false, status: 503, reason: 'error' } : st('COSGN00', { nextScreen: 'COMEN01' })),
+      async (id) => (id === 'COMEN01' && down ? { ok: false, status: 503, reason: 'error' } : st(id)),
+    );
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!); // ENTER -> GET COMEN01 fails
+    });
+    await act(async () => {
+      fireEvent.keyDown(container.querySelector('input[name="USERID"]')!, { key: 'F3' }); // POST fails
+    });
+    down = false;
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!); // ENTER = retry GET
+    });
+    expect(api.post).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(mapOf(container)).toBe('COMEN1A'));
   });
 
   it('treats an initial 401 on COSGN00 as a sign-on prompt, not an outage', async () => {
