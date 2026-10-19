@@ -25,7 +25,7 @@ jobs:
   dependency-check:
     name: OWASP Dependency-Check (fail CVSS >= 7)
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
     defaults:
       run:
         working-directory: modern
@@ -36,14 +36,30 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+      # The NVD mirror is large (~410k records). Without NVD_API_KEY the first download is slow, so the
+      # partial database is saved even if the update times out and the next run resumes from it.
       - name: Restore NVD database
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.dependency-check-data
           key: nvd-${{ github.run_id }}
           restore-keys: nvd-
       - name: Install reactor (no tests)
         run: ./mvnw -B -q install -DskipTests -Djacoco.skip=true -Dcheckstyle.skip -Dspotless.check.skip=true
+      - name: Update NVD database
+        timeout-minutes: 280
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: >
+          ./mvnw -B -N org.owasp:dependency-check-maven:12.1.0:update-only
+          -DdataDirectory=$HOME/.dependency-check-data
+          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
+      - name: Save NVD database
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.dependency-check-data
+          key: nvd-${{ github.run_id }}
       - name: Dependency-Check (parent reactor)
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -51,8 +67,8 @@ jobs:
           ./mvnw -B org.owasp:dependency-check-maven:12.1.0:aggregate
           -DfailBuildOnCVSS=7
           -DsuppressionFiles=security/dependency-check-suppressions.xml
+          -DautoUpdate=false
           -DdataDirectory=$HOME/.dependency-check-data
-          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
           -DossindexAnalyzerEnabled=false -DretireJsAnalyzerEnabled=false
           -DnodeAnalyzerEnabled=false -DnodeAuditAnalyzerEnabled=false
           -DassemblyAnalyzerEnabled=false
