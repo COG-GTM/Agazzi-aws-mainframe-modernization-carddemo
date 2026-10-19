@@ -1,0 +1,21 @@
+# PF03 senza CDEMO-FROM-PROGRAM -> COADM01C.
+id: CTTU-013
+title: PF3 torna al menu admin
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF3
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: COADM01
+      dbDelta: none

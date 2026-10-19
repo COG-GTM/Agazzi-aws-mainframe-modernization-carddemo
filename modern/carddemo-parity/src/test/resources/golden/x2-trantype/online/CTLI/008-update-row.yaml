@@ -1,0 +1,31 @@
+# U + F10: 9200-UPDATE-RECORD.
+id: CTLI-008
+title: Update descrizione riga 2
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL2: "U", TRTYPD2: "Payment Received"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Update HIGHLIGHTED row. Press F10 to save"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF10
+    fields: {TRTSEL2: "U", TRTYPD2: "Payment Received"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "HIGHLIGHTED row was updated"
+      fieldErrors: []
+      dbDelta: [UPDATE transaction_type 02]

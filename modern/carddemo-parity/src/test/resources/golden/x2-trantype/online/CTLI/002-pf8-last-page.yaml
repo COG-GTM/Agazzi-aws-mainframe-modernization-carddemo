@@ -1,0 +1,31 @@
+# 8000-READ-FORWARD +100 con PF8 -> WS-MESG-NO-MORE-RECORDS; secondo PF8 con CA-LAST-PAGE-SHOWN -> 'No more pages to display'.
+id: CTLI-002
+title: PF8 oltre l'ultima pagina
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF8
+    fields: {TRTYPE: "", TRDESC: ""}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No more pages for these search conditions"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF8
+    fields: {TRTYPE: "", TRDESC: ""}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No more pages to display"
+      fieldErrors: []
+      dbDelta: none

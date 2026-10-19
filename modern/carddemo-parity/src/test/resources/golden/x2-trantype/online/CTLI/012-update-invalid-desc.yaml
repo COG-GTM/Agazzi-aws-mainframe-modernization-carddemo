@@ -1,0 +1,31 @@
+# 1240-EDIT-ALPHANUM-REQD.
+id: CTLI-012
+title: Descrizione non alfanumerica
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL2: "U", TRTYPD2: "Pay$"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Transaction Desc can have numbers or alphabets only."
+      fieldErrors: [TRTYPD2]
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL2: "U", TRTYPD2: "*"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Transaction Desc must be supplied."
+      fieldErrors: [TRTYPD2]
+      dbDelta: none
