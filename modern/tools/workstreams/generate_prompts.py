@@ -187,7 +187,7 @@ def split_row(line):
             cur = ""
         else:
             cur += ch
-    if cur.strip():
+    if cur.strip() or not line.strip().endswith("|"):
         cells.append(cur.strip())
     return cells[1:]
 
