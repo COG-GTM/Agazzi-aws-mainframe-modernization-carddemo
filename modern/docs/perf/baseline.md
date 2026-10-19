@@ -59,25 +59,46 @@ App: `SPRING_PROFILES_ACTIVE=local`, DB dedicato `carddemo_integ` caricato con `
 (vedi finding F1). Comando:
 `k6 run -e BASE_URL=http://localhost:8081 -e VUS=200 -e RAMP_UP=30s -e DURATION=2m -e FIXTURES=$PWD/../../target/perf-data/k6/fixtures.json online-mix.js`
 
-Totale: 67.530 richieste (400 req/s, 31.623 iterazioni), **0,00 % errori, 100 % checks** (status 200
-+ schermata attesa), p50 23,6 ms, p95 **196,9 ms**, p99 13,3 s (trascinato da CCLI).
+Run 1 (2 min, check solo status 200 + schermata): 67.530 richieste (400 req/s), 0,00 % errori HTTP,
+100 % checks, p95 196,9 ms, p99 13,3 s (trascinato da CCLI).
+
+Run 2, dopo la review (check di business: `nextScreen` ≠ COSGN00, nessun `fieldErrors`, CT02
+"Confirm to add" → "Transaction added successfully", CB00 "Confirm to make a bill payment" →
+"Payment successful" / "nothing to pay"), `RAMP_UP=20s DURATION=60s`: 30.743 richieste (308 req/s),
+**0,00 % errori HTTP ma 96,98 % checks**: circa un terzo delle chiamate a CT00/CT01/CT02/CB00 viene
+rimandato a COSGN00 (finding F6). Le latenze per TX restano quelle del run 1:
 
 | TX | p50 | p90 | p95 | p99 | max | p95 < 200 ms |
 |---|---:|---:|---:|---:|---:|:---:|
-| CC00 sign-on | 47,2 | 133,8 | 167,5 | 249,4 | 376,7 | ✓ |
-| CAVW | 18,1 | 100,5 | 134,1 | 199,4 | 344,2 | ✓ |
-| CCLI (filtro account + PF8/PF7) | 2.053 | 13.944 | **14.731** | 16.116 | 18.221 | ✗ |
-| CT00 (+ PF8) | 44,1 | 133,0 | 162,8 | 229,2 | 409,2 | ✓ |
-| CT01 | 31,3 | 119,1 | 153,3 | 221,0 | 344,0 | ✓ |
-| CT02 add + CONFIRM | 34,7 | 124,2 | 159,7 | 241,2 | 435,4 | ✓ |
-| CB00 pay + CONFIRM | 32,4 | 123,0 | 156,1 | 214,3 | 364,2 | ✓ |
-| CU00 (admin, PF8) | 19,2 | 101,2 | 135,8 | 212,0 | 510,0 | ✓ |
+| CC00 sign-on | 39,0 | 113,1 | 146,7 | 212,1 | 404,9 | ✓ |
+| CAVW | 6,8 | 87,4 | 119,4 | 192,7 | 339,6 | ✓ |
+| CCLI (filtro account + PF8/PF7) | 168,3 | 13.190 | **13.900** | 14.990 | 17.330 | ✗ |
+| CT00 (+ PF8) | 31,2 | 111,8 | 144,0 | 213,7 | 425,6 | ✓ |
+| CT01 | 21,2 | 99,8 | 133,0 | 215,2 | 281,9 | ✓ |
+| CT02 add + CONFIRM | 27,9 | 104,6 | 137,2 | 192,0 | 325,0 | ✓ |
+| CB00 pay + CONFIRM | 22,4 | 107,4 | 145,2 | 203,2 | 362,1 | ✓ |
+| CU00 (admin, scenario `admin`, PF8) | 7,0 | 88,4 | 120,5 | 193,4 | 515,8 | ✓ |
 
-(ms; k6 esce con 99 per i threshold CCLI e p99 globale.)
+(ms; k6 esce con 99 per i threshold `checks`, CCLI e p95 globale. 285 pagamenti CB00 effettivi,
+`cb00_payments`.) Le TX con check falliti (sessione rimandata a COSGN00) rispondono comunque in
+fretta, quindi i loro p95 vanno ri-misurati dopo il fix F6.
 
 ## 4. Batch ×1.000 — vedi tabella
 
-BATCH_RESULTS_PLACEHOLDER
+`RELOAD=1` (dataset ×1.000 ricaricato prima di ogni job, ~5 s: 50.000 account/carte, 300.000
+TRANSACT + 300.000 DALYTRAN), `STORAGE=db`, `TIMEOUT_S=900`.
+
+| Build | Job | Esito | Tempo | Note |
+|---|---|---|---:|---|
+| `migration/phase-5` (base) | POSTTRAN, INTCALC, TRANREPT, CREASTMT, fullBatchCycle | NOT_AVAILABLE | ~4 s | moduli batch assenti: job inesistente, rc=1 |
+| integ, `WEB_TYPE=none` | POSTTRAN, INTCALC, TRANREPT | NOT_AVAILABLE | ~4,4 s | il contesto non parte (F4) |
+| integ, `WEB_TYPE=servlet` | POSTTRAN | **TIMEOUT** | 900 s | `STEP15` STARTED, read/write/commit = 0 (F3) |
+| integ, `WEB_TYPE=servlet` | INTCALC | fermato a mano dopo ~6 min | — | `STEP15` STARTED, 0 letture; thread dump in `IntcalcTasklet.readXref` → `findByXrefAcctId` (F3) |
+| integ | TRANREPT, CREASTMT, fullBatchCycle | non misurati | — | da eseguire dopo F3 |
+
+Throughput (rec/s) non ancora disponibile: nessun job integrato completa a ×1.000 entro 15 min.
+L'harness ora esce con 3 se un job non è `OK`; verificato anche su un dataset ×2 (`JOBS=NOPE` →
+NOT_AVAILABLE, exit 3; cambio `SEED` → dataset rigenerato, report con il nuovo seed).
 
 ## 5. Finding per i workstream (non corretti in questa PR: fuori perimetro)
 
@@ -94,16 +115,25 @@ BATCH_RESULTS_PLACEHOLDER
   tutto DALYTRAN); il persistence context cresce e ogni query provoca un auto-flush che scorre tutte
   le entity gestite (`EntityEntryContext.reentrantSafeEntityEntries` nel thread dump) → costo
   quadratico. Serve chunking (commit ogni N record, piano §4) o `flush()+clear()` periodico.
+  Stesso schema in **B2 INTCALC** (`IntcalcTasklet`: una `findByXrefAcctId` per record TCATBAL
+  dentro un'unica transazione).
 - **F4 — O1, CLI batch**: con `--spring.main.web-application-type=none` l'app non parte
   (`onlineAuthSecurityFilterChain` richiede `HttpSecurity`): le configurazioni web di O1 vanno rese
   `@ConditionalOnWebApplication`. L'harness usa quindi `WEB_TYPE=servlet --server.port=0`.
 - **F5 — k6**: il cookie di sessione CC00 deve sopravvivere tra iterazioni (`noCookiesReset: true`
   in `online-mix.js`), altrimenti ogni iterazione dopo la prima riceve 401.
+- **F6 — O1/O4, COMMAREA tra moduli**: dopo CC00 (anche passando da `GET /comen01`), CT00/CT01/
+  CT02/CB00 rispondono `nextScreen: COSGN00` con `context: null` finché la sessione non ha visitato
+  una schermata di O2/O3 (CAVW/CCLI). `ScreenSupport` di `carddemo-online-transaction` legge il
+  contesto solo da `ConversationStore.CONTEXT_ATTRIBUTE`, che sign-on/menu non popolano. Il
+  COMMAREA va condiviso tramite un'unica chiave di sessione (contratto O1) da tutti i moduli online.
 
 ## 6. Da eseguire quando i moduli sono integrati su `migration/phase-1-4`
 
 1. `online-mix.js` con 200 VU / 5 min sulla build integrata (senza esclusioni di autoconfig),
    app e k6 su host separati; aggiornare questa tabella.
-2. `run-batch-perf.sh` con `STORAGE=db` e `STORAGE=file` per tutti e cinque i job, dopo i fix F3/F4.
-3. Ripetere dopo ogni voce della checklist di tuning del README (indici AIX, chunk, virtual thread,
+2. `run-batch-perf.sh` con `STORAGE=db` e `STORAGE=file` per tutti e cinque i job, dopo i fix F3/F4,
+   per avere i primi tempi e rec/s.
+3. Ripetere `online-mix.js` dopo F6 (checks attesi > 99 %) e dopo F2 (CCLI p95 < 200 ms).
+4. Ripetere dopo ogni voce della checklist di tuning del README (indici AIX, chunk, virtual thread,
    Hikari) e registrare il delta.

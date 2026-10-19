@@ -31,6 +31,9 @@ export function okScreen(r, screen) {
   return check(r, {
     [`${screen} 200`]: (x) => x.status === 200,
     [`${screen} body`]: (x) => body(x) !== null && body(x).screen === screen.toUpperCase(),
+    // nextScreen COSGN00 on any other map = no COMMAREA in the session (EIBCALEN = 0 / not signed on)
+    [`${screen} in session`]: (x) =>
+      screen === 'cosgn00' || (body(x) !== null && body(x).nextScreen !== 'COSGN00'),
   });
 }
 

@@ -132,7 +132,10 @@ const FLOWS = {
       MZIP: '00000',
     };
     screenGet('cotrn02', 'CT02');
-    expectBody(screenPost('cotrn02', 'CT02', 'ENTER', fields), { 'CT02 validated': noFieldErrors });
+    // first ENTER validates every field and asks for CONFIRM (the only field error allowed)
+    expectBody(screenPost('cotrn02', 'CT02', 'ENTER', fields), {
+      'CT02 validated': messageMatches(/Confirm to add this transaction/),
+    });
     const r = screenPost('cotrn02', 'CT02', 'ENTER', { ...fields, CONFIRM: 'Y' });
     expectBody(r, { 'CT02 added': messageMatches(/Transaction added successfully/) });
   },
@@ -140,7 +143,9 @@ const FLOWS = {
   CB00: (f) => {
     const acct = pick(f.accounts).acctId;
     screenGet('cobil00', 'CB00');
-    screenPost('cobil00', 'CB00', 'ENTER', { ACTIDIN: acct });
+    expectBody(screenPost('cobil00', 'CB00', 'ENTER', { ACTIDIN: acct }), {
+      'CB00 balance shown': messageMatches(/Confirm to make a bill payment|nothing to pay/),
+    });
     const r = screenPost('cobil00', 'CB00', 'ENTER', { ACTIDIN: acct, CONFIRM: 'Y' });
     // an account already paid off by an earlier iteration answers "You have nothing to pay..."
     expectBody(r, { 'CB00 paid or nothing due': messageMatches(/Payment successful|nothing to pay/) });
