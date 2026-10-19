@@ -83,17 +83,22 @@ for i, n in enumerate(names.split(",")):
     if not vsam.endswith(".KSDS"):
         continue
     c = defs[vsam]
-    stmts = [f"  DELETE {vsam} CLUSTER PURGE", "  SET MAXCC = 0",
-             f"  DEFINE CLUSTER (NAME({vsam}) KEYS({kv(c['keys'])}) RECORDSIZE({kv(c['recordsize'])}) -",
-             "         INDEXED SHAREOPTIONS(2 3) ERASE CYLINDERS(1 5)) -",
-             f"    DATA (NAME({vsam}.DATA)) INDEX (NAME({vsam}.INDX))",
-             f"  REPRO INFILE(IN) OUTDATASET({vsam})"]
+    # IDCAMS reads columns 1-72: one clause per line, " -" continuation (as app/jcl/*FILE.jcl).
+    stmts = [f"  DELETE {vsam} -", "         CLUSTER PURGE", "  SET MAXCC = 0",
+             "  DEFINE CLUSTER -", f"         (NAME({vsam}) -", f"         KEYS({kv(c['keys'])}) -",
+             f"         RECORDSIZE({kv(c['recordsize'])}) -", "         INDEXED SHAREOPTIONS(2 3) -",
+             "         ERASE CYLINDERS(1 5)) -", f"    DATA (NAME({vsam}.DATA)) -",
+             f"    INDEX (NAME({vsam}.INDX))", "  REPRO INFILE(IN) -", f"         OUTDATASET({vsam})"]
     for aix in [x for x in defs.values() if x["type"] == "ALTERNATEINDEX" and x["relate"] == vsam]:
-        stmts += [f"  DEFINE ALTERNATEINDEX (NAME({aix['name']}) RELATE({vsam}) KEYS({kv(aix['keys'])}) -",
-                  f"         RECORDSIZE({kv(aix['recordsize'])}) NONUNIQUEKEY UPGRADE CYLINDERS(1 5))"]
+        stmts += ["  DEFINE ALTERNATEINDEX -", f"         (NAME({aix['name']}) -", f"         RELATE({vsam}) -",
+                  f"         KEYS({kv(aix['keys'])}) -", f"         RECORDSIZE({kv(aix['recordsize'])}) -",
+                  "         NONUNIQUEKEY UPGRADE CYLINDERS(1 5))"]
         for path in [x for x in defs.values() if x["type"] == "PATH" and x["relate"] == aix["name"]]:
-            stmts.append(f"  DEFINE PATH (NAME({path['name']}) PATHENTRY({aix['name']}))")
-        stmts.append(f"  BLDINDEX INDATASET({vsam}) OUTDATASET({aix['name']})")
+            stmts += ["  DEFINE PATH -", f"         (NAME({path['name']}) -", f"         PATHENTRY({aix['name']}))"]
+        stmts += ["  BLDINDEX -", f"         INDATASET({vsam}) -", f"         OUTDATASET({aix['name']})"]
+    long = [l for l in stmts if len(l) > 71]
+    if long:
+        sys.exit(f"IDCAMS statement over 71 columns: {long[0]}")
     deck += [f"//S{i:02d}{n[:5]} EXEC PGM=IDCAMS", "//SYSPRINT DD SYSOUT=*",
              f"//IN       DD DISP=SHR,DSN={hlq}.{n}.ROLLBK", "//SYSIN    DD *", *stmts, "/*"]
 Path(out, "SHA256SUMS").write_text("\n".join(sums) + "\n")

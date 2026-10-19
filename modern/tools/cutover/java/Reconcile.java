@@ -197,13 +197,13 @@ public class Reconcile {
     for (var e : fileRows.entrySet()) {
       Map<String, String> db = dbRows.get(e.getKey());
       if (db == null) {
-        details.add("missing in DB: " + e.getKey());
+        details.add("missing in DB: " + shortKey(e.getKey()));
       } else if (!db.equals(e.getValue())) {
         String col = e.getValue().keySet().stream().filter(k -> !e.getValue().get(k).equals(db.get(k))).findFirst().orElse("?");
-        details.add("differs " + e.getKey() + " " + col + ": file [" + e.getValue().get(col).strip() + "] db [" + String.valueOf(db.get(col)).strip() + "]");
+        details.add("differs " + shortKey(e.getKey()) + " " + col + ": file [" + e.getValue().get(col).strip() + "] db [" + String.valueOf(db.get(col)).strip() + "]");
       }
     }
-    dbRows.keySet().stream().filter(k -> !fileRows.containsKey(k)).forEach(k -> details.add("extra in DB: " + k));
+    dbRows.keySet().stream().filter(k -> !fileRows.containsKey(k)).forEach(k -> details.add("extra in DB: " + shortKey(k)));
     String fileSum = checksum(fileRows);
     String dbSum = checksum(dbRows);
     long count = snap.rowCount(d.table());
@@ -306,8 +306,11 @@ public class Reconcile {
    */
   static String multisetKey(Map<String, String> row, Map<String, Integer> seen) {
     String k = String.join("|", row.values()).strip();
-    int occ = seen.merge(k, 1, Integer::sum);
-    return (k.length() > 60 ? k.substring(0, 60) + "~" + Integer.toHexString(k.hashCode()) : k) + "#" + occ;
+    return k + "#" + seen.merge(k, 1, Integer::sum);
+  }
+
+  static String shortKey(String k) {
+    return k.length() > 80 ? k.substring(0, 60) + "…" + k.substring(k.length() - 12) : k;
   }
 
   static String key(Map<String, String> row, List<String> pk) {

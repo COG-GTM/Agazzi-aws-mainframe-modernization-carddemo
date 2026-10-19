@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Launches one Spring Batch job by its JCL name (CONVENTIONS: job name = JCL name), on the target
-# where the cutover runs. Exit codes: job exit code, 3 = job not registered in the deployed app yet.
+# where the cutover runs. Exit codes: 0 COMPLETED, 1 other status, 3 = job not registered in the
+# deployed app yet (Spring Batch "No job found with name"), 124 = CARDDEMO_JOB_TIMEOUT (default 4 h).
 #   run-job.sh POSTTRAN [key=value ...]
 # Modes (CARDDEMO_JOB_MODE):
 #   local (default) java -jar $CARDDEMO_APP_JAR --spring.batch.job.name=<JOB> run.date=... [params]
@@ -20,12 +21,14 @@ case "${CARDDEMO_JOB_MODE:-local}" in
     java -jar "$jar" --server.port=0 --spring.batch.job.enabled=true \
       --spring.batch.job.name="$job" "${params[@]}" >"$log" 2>&1 &
     pid=$!
-    status=""
+    status="" deadline=$((SECONDS + ${CARDDEMO_JOB_TIMEOUT:-14400}))
     while kill -0 "$pid" 2>/dev/null; do
       status=$(grep -o "Job: \[[^]]*name=$job\][^$]*status: \[[A-Z_]*\]" "$log" | grep -o "status: \[[A-Z_]*\]" | tail -1 || true)
       [[ -n "$status" ]] && break
-      grep -q "Started .* in [0-9.]* seconds" "$log" && ! grep -q "Job: \[" "$log" && sleep 5 \
-        && ! grep -q "Job: \[" "$log" && { kill "$pid"; wait "$pid" 2>/dev/null || true; tail -20 "$log"; echo "run-job: job $job not registered (module not integrated yet)" >&2; exit 3; }
+      if (( SECONDS > deadline )); then
+        kill "$pid"; wait "$pid" 2>/dev/null || true; tail -20 "$log"
+        echo "run-job: $job TIMEOUT after ${CARDDEMO_JOB_TIMEOUT:-14400}s (CARDDEMO_JOB_TIMEOUT)" >&2; exit 124
+      fi
       sleep 2
     done
     if [[ -n "$status" ]]; then

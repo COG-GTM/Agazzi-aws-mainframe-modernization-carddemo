@@ -93,11 +93,12 @@ ok "parallel run: changed ACCT-CURR-BAL -> NO-GO with field diff"
 tools/cutover/rollback/relational-to-vsam.sh --out "$T/rb" --format ascii --from-dir ../app/data/ASCII \
   --datasets ACCTDATA,CARDDATA,CARDXREF,CUSTDATA,TCATBALF,DISCGRP,TRANTYPE,TRANCATG,DALYTRAN,USRSEC \
   --db-url "$DB_URL" --no-freeze-check >/dev/null || fail "rollback wrapper"
-grep -q "DELETE AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS CLUSTER PURGE" "$T/rb/ROLLBACK.jcl" \
-  && grep -q "DEFINE CLUSTER (NAME(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS) KEYS(11 0) RECORDSIZE(300 300)" "$T/rb/ROLLBACK.jcl" \
-  && grep -q "REPRO INFILE(IN) OUTDATASET(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS)$" "$T/rb/ROLLBACK.jcl" \
-  && grep -q "BLDINDEX INDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.KSDS) OUTDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.AIX)" "$T/rb/ROLLBACK.jcl" \
-  && grep -q "DEFINE PATH (NAME(AWS.M2.CARDDEMO.CARDXREF.VSAM.AIX.PATH)" "$T/rb/ROLLBACK.jcl" \
+grep -A1 "DELETE AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS -" "$T/rb/ROLLBACK.jcl" | grep -q "CLUSTER PURGE" \
+  && grep -A2 "(NAME(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS) -" "$T/rb/ROLLBACK.jcl" | grep -q "RECORDSIZE(300 300) -" \
+  && grep -q "OUTDATASET(AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS)$" "$T/rb/ROLLBACK.jcl" \
+  && grep -A1 "INDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.KSDS) -" "$T/rb/ROLLBACK.jcl" | grep -q "OUTDATASET(AWS.M2.CARDDEMO.CARDDATA.VSAM.AIX)" \
+  && grep -q "(NAME(AWS.M2.CARDDEMO.CARDXREF.VSAM.AIX.PATH) -" "$T/rb/ROLLBACK.jcl" \
+  && ! grep -v "^//" "$T/rb/ROLLBACK.jcl" | grep -q ".\{72\}" \
   && [[ $(wc -l < "$T/rb/SHA256SUMS") -eq 10 ]] || fail "ROLLBACK.jcl / SHA256SUMS"
 ok "rollback wrapper: export verified, ROLLBACK.jcl (DELETE/DEFINE/REPRO/AIX) + SHA256SUMS"
 
