@@ -1,0 +1,10 @@
+job: READXREF
+jcl: app/jcl/READXREF.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "seed:cardxref.txt"}
+steps:
+  - name: STEP05
+    program: CBACT03C
+    dd: {XREFFILE: CARDXREF}
+outputs: []

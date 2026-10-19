@@ -1,0 +1,16 @@
+---- STEP STEP01 PGM=CBIMPORT
+CBIMPORT: Starting Customer Data Import
+CBIMPORT: Import Date: 2022-07-18
+CBIMPORT: Import Time: 12:00:00
+CBIMPORT: Import validation completed
+CBIMPORT: No validation errors detected
+CBIMPORT: Import completed
+CBIMPORT: Total Records Read: 000000006
+CBIMPORT: Customers Imported: 000000001
+CBIMPORT: Accounts Imported: 000000001
+CBIMPORT: XRefs Imported: 000000000
+CBIMPORT: Transactions Imported: 000000001
+CBIMPORT: Cards Imported: 000000000
+CBIMPORT: Errors Written: 000000003
+CBIMPORT: Unknown Record Types: 000000003
+---- RC=0
