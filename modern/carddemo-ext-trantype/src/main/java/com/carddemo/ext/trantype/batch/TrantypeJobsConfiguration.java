@@ -34,6 +34,9 @@ public class TrantypeJobsConfiguration {
   public static final String MNTTRDB2 = "MNTTRDB2";
   public static final String TRANEXTR = "TRANEXTR";
 
+  /** Exit code for legacy RC 4 (warning); RC 8+ maps to {@link ExitStatus#FAILED}. */
+  public static final String COMPLETED_WITH_WARNINGS = "COMPLETED WITH WARNINGS";
+
   @Bean
   Job mnttrdb2Job(JobRepository repo, PlatformTransactionManager tx, TranTypeMaintenance job) {
     Step step =
@@ -83,7 +86,7 @@ public class TrantypeJobsConfiguration {
 
   private static List<String> optional(Map<String, Object> p, String name) {
     Object v = p.get(name);
-    return v == null ? null : readLines(Path.of(v.toString()));
+    return v == null ? null : readRecords(Path.of(v.toString()), 60);
   }
 
   private static void finish(
@@ -96,8 +99,11 @@ public class TrantypeJobsConfiguration {
         throw new UncheckedIOException(e);
       }
     }
-    contribution.setExitStatus(
-        ExitStatus.COMPLETED.addExitDescription(String.format("RC=%04d", rc)));
+    ExitStatus status =
+        rc == 0
+            ? ExitStatus.COMPLETED
+            : rc < 8 ? new ExitStatus(COMPLETED_WITH_WARNINGS) : ExitStatus.FAILED;
+    contribution.setExitStatus(status.addExitDescription(String.format("RC=%04d", rc)));
   }
 
   /** RECFM=F dataset (no line ends, like the GnuCOBOL harness input) or one record per line. */
@@ -107,19 +113,20 @@ public class TrantypeJobsConfiguration {
       if (all.indexOf('\n') >= 0) {
         return all.lines().toList();
       }
+      if (all.length() % lrecl != 0) {
+        throw new IllegalArgumentException(
+            file
+                + ": incomplete trailing record (length "
+                + all.length()
+                + ", LRECL "
+                + lrecl
+                + ")");
+      }
       List<String> out = new ArrayList<>();
       for (int i = 0; i < all.length(); i += lrecl) {
         out.add(all.substring(i, Math.min(all.length(), i + lrecl)));
       }
       return out;
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  static List<String> readLines(Path file) {
-    try {
-      return Files.readAllLines(file, StandardCharsets.US_ASCII);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

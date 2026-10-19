@@ -39,6 +39,8 @@ class TranTypeConsistencyCheckTest {
     types.remove(0);
     types.set(0, types.get(0).replace("Payment", "Paymant"));
     types.add("55" + " ".repeat(58));
+    types.add(types.get(1));
+    store.categories.put("010010", new CategoryRow("01", 10, "y".repeat(51), "0000"));
     TranTypeConsistencyCheck.Report r = check.check(types, null);
     assertThat(r.findings())
         .contains(
@@ -48,7 +50,9 @@ class TranTypeConsistencyCheckTest {
             "CATEGORY 010009 BLANK DESCRIPTION",
             "TRANTYPE 01 MISSING IN EXTRACT",
             "TRANTYPE 02 DIFFERS",
-            "TRANTYPE 55 NOT IN DATABASE");
+            "TRANTYPE 55 NOT IN DATABASE",
+            "TRANTYPE 03 DUPLICATE IN EXTRACT",
+            "CATEGORY 010010 DESCRIPTION LONGER THAN PIC X(50)");
     assertThat(r.returnCode()).isEqualTo(4);
   }
 }

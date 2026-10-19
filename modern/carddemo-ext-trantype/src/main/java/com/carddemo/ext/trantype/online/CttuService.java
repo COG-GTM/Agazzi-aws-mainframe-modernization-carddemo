@@ -293,7 +293,7 @@ public class CttuService {
       } catch (TrantypeSqlException e) {
         inputError = true;
         typeError = true;
-        s.mode = Mode.DETAILS_NOT_FOUND;
+        s.mode = Mode.NOT_FETCHED;
         setMsgIfOff(
             "Error accessing: TRANSACTION_TYPE table. SQLCODE:"
                 + ScreenSupport.sqlcode(e.sqlcode())
@@ -361,9 +361,10 @@ public class CttuService {
                 ? "Please delete associated child records first:"
                 : "Delete failed with message:";
         err = prefix + "SQLCODE :" + ScreenSupport.sqlcode(e.sqlcode()) + ":" + e.getMessage();
-        if (e.sqlcode() != TrantypeSqlException.CHILD_ROWS_EXIST) {
-          s.mode = Mode.DELETE_FAILED;
-        }
+        s.mode =
+            e.sqlcode() == TrantypeSqlException.CHILD_ROWS_EXIST
+                ? Mode.SHOW_DETAILS
+                : Mode.DELETE_FAILED;
       }
     }
 

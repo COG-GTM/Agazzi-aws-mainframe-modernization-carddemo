@@ -56,6 +56,8 @@ class TrantypeJobsConfigurationTest {
         c,
         new ChunkContext(new StepContext(se)));
     assertThat(c.getExitStatus().getExitDescription()).isEqualTo("RC=0004");
+    assertThat(c.getExitStatus().getExitCode())
+        .isEqualTo(TrantypeJobsConfiguration.COMPLETED_WITH_WARNINGS);
     assertThat(Files.readAllLines(out)).first().isEqualTo("OPEN FILE OK");
     StepExecution missing =
         step(new JobParametersBuilder().addString("INPFILE", "/nope").toJobParameters());
@@ -65,13 +67,15 @@ class TrantypeJobsConfigurationTest {
         c2,
         new ChunkContext(new StepContext(missing)));
     assertThat(c2.getExitStatus().getExitDescription()).isEqualTo("RC=0012");
+    assertThat(c2.getExitStatus().getExitCode()).isEqualTo("FAILED");
   }
 
   @Test
   void consistencyTaskletComparesExtracts() throws Exception {
     InMemoryTransactionTypeStore store = InMemoryTransactionTypeStore.seeded();
     TranTypeConsistencyCheck check = new TranTypeConsistencyCheck(store);
-    Path tt = Files.write(dir.resolve("TRANTYPE"), check.expectedTypeExtract());
+    Path tt =
+        Files.writeString(dir.resolve("TRANTYPE"), String.join("", check.expectedTypeExtract()));
     Path tc = Files.write(dir.resolve("TRANCATG"), List.of());
     Path out = dir.resolve("SYSOUT");
     StepExecution se =
@@ -89,5 +93,6 @@ class TrantypeJobsConfigurationTest {
     StepContribution c2 = new StepContribution(none);
     TrantypeJobsConfiguration.consistency(check, c2, new ChunkContext(new StepContext(none)));
     assertThat(c2.getExitStatus().getExitDescription()).isEqualTo("RC=0000");
+    assertThat(c2.getExitStatus().getExitCode()).isEqualTo("COMPLETED");
   }
 }

@@ -107,6 +107,18 @@ class CttuServiceTest {
   }
 
   @Test
+  void childRowsFailureAllowsDeleteRetry() {
+    key(Action.ENTER, "05", null);
+    key(Action.PF4, "05", null);
+    key(Action.PF4, "05", null);
+    assertThat(state.mode()).isEqualTo(Mode.SHOW_DETAILS);
+    store.categories.remove("050001");
+    key(Action.PF4, "05", null);
+    ScreenResponse<CotrtupScreen.Output> r = key(Action.PF4, "05", null);
+    assertThat(texts(r)).contains(CttuService.DELETE_SUCCESS);
+  }
+
+  @Test
   void pf3ReturnsToCallerList() {
     state.enteredFrom(CtliService.TRANID, CtliService.PGM);
     service.firstSend(state, "U");

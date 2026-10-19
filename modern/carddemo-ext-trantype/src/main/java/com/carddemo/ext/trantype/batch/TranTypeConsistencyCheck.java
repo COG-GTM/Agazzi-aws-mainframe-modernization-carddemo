@@ -83,6 +83,13 @@ public class TranTypeConsistencyCheck {
         findings.add(
             "CATEGORY " + c.type() + String.format("%04d", c.category()) + " BLANK DESCRIPTION");
       }
+      if (c.description() != null && c.description().length() > Pic.DESC_LEN) {
+        findings.add(
+            "CATEGORY "
+                + c.type()
+                + String.format("%04d", c.category())
+                + " DESCRIPTION LONGER THAN PIC X(50)");
+      }
     }
     if (typeExtract != null) {
       compare(
@@ -107,6 +114,13 @@ public class TranTypeConsistencyCheck {
       String file, List<String> expected, List<String> actual, int keyLen, List<String> out) {
     Map<String, String> db = index(expected, keyLen);
     Map<String, String> vsam = index(actual, keyLen);
+    Set<String> seen = new java.util.HashSet<>();
+    for (String r : actual) {
+      String k = Pic.pad(r, 60).substring(0, keyLen);
+      if (!seen.add(k)) {
+        out.add(file + " " + k + " DUPLICATE IN EXTRACT");
+      }
+    }
     Set<String> keys = new TreeSet<>(db.keySet());
     keys.addAll(vsam.keySet());
     for (String k : keys) {
