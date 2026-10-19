@@ -1,0 +1,3 @@
+# Output runtime di launch.sh (una cartella per run): non versionati.
+*
+!.gitignore
