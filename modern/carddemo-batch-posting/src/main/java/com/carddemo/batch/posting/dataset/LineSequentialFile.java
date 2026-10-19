@@ -9,8 +9,11 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Fixed-length records stored one per line (the format of {@code app/data/ASCII} and of the golden
@@ -61,6 +64,46 @@ public final class LineSequentialFile {
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
+    }
+  }
+
+  /**
+   * Replaces several files as one unit: every file is first staged as {@code <name>.tmp}; only when
+   * all are staged are they moved into place (atomic rename), so a failed write publishes nothing
+   * and leaves the previous versions intact.
+   */
+  public static void replaceAll(Map<Path, List<String>> files) {
+    Map<Path, Path> staged = new LinkedHashMap<>();
+    try {
+      for (Map.Entry<Path, List<String>> f : files.entrySet()) {
+        Path tmp = f.getKey().resolveSibling(f.getKey().getFileName() + ".tmp");
+        staged.put(tmp, f.getKey());
+        write(tmp, f.getValue());
+      }
+    } catch (RuntimeException e) {
+      staged.keySet().forEach(LineSequentialFile::deleteQuietly);
+      throw e;
+    }
+    try {
+      for (Map.Entry<Path, Path> s : staged.entrySet()) {
+        Files.move(
+            s.getKey(),
+            s.getValue(),
+            StandardCopyOption.REPLACE_EXISTING,
+            StandardCopyOption.ATOMIC_MOVE);
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private static void deleteQuietly(Path p) {
+    try {
+      if (Files.isRegularFile(p)) {
+        Files.delete(p);
+      }
+    } catch (IOException e) {
+      // best effort cleanup of a staged file
     }
   }
 

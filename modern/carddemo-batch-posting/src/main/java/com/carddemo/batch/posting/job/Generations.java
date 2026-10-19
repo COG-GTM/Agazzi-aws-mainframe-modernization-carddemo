@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -20,6 +22,8 @@ public final class Generations {
   public static final String TRANSACT_BKUP = "AWS.M2.CARDDEMO.TRANSACT.BKUP";
   public static final String SYSTRAN = "AWS.M2.CARDDEMO.SYSTRAN";
   public static final String TRANSACT_COMBINED = "AWS.M2.CARDDEMO.TRANSACT.COMBINED";
+
+  private static final Logger LOG = LoggerFactory.getLogger(Generations.class);
 
   private Generations() {}
 
@@ -62,7 +66,15 @@ public final class Generations {
           @Override
           public void afterCompletion(int status) {
             if (status == STATUS_COMMITTED) {
-              store.commit(generation);
+              try {
+                store.commit(generation);
+              } catch (RuntimeException e) {
+                LOG.error(
+                    "{} NOT CATALOGED after the database commit: recover the pending generation",
+                    generation.dsn(),
+                    e);
+                throw e;
+              }
             } else {
               store.discard(generation);
             }

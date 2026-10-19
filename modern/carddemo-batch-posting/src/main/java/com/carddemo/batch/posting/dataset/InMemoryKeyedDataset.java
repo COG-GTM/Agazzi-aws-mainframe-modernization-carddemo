@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -112,8 +113,20 @@ public final class InMemoryKeyedDataset<R> implements KeyedDataset<R> {
   /** Writes the cluster back (in key sequence) if it was modified. */
   public void flush() {
     if (dirty && file != null) {
-      LineSequentialFile.write(file, data().values().stream().map(codec::encodeLine).toList());
+      LineSequentialFile.replaceAll(Map.of(file, encodedRecords()));
       dirty = false;
     }
+  }
+
+  Path file() {
+    return file;
+  }
+
+  List<String> encodedRecords() {
+    return data().values().stream().map(codec::encodeLine).toList();
+  }
+
+  void markClean() {
+    dirty = false;
   }
 }

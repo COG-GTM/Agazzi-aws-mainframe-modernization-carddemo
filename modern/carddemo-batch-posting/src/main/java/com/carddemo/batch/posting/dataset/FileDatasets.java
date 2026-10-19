@@ -13,7 +13,9 @@ import com.carddemo.copybook.CoreCodecs;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * File storage: every cluster is {@code <dir>/<DSNAME>.dat} (names as in the golden {@code
@@ -111,12 +113,23 @@ public final class FileDatasets implements PostingDatasets {
   }
 
   @Override
+  /** Publishes every modified cluster and the upgraded AIX together, or none of them. */
   public void flush() {
-    boolean upgradeAix = transactions.isDirty();
-    all.forEach(InMemoryKeyedDataset::flush);
+    Map<Path, List<String>> outputs = new LinkedHashMap<>();
+    List<InMemoryKeyedDataset<?>> dirty = new ArrayList<>();
+    for (InMemoryKeyedDataset<?> ds : all) {
+      if (ds.isDirty()) {
+        outputs.put(ds.file(), ds.encodedRecords());
+        dirty.add(ds);
+      }
+    }
     Path aix = dir.resolve(TRANSACT_AIX_FILE);
-    if (upgradeAix && Files.exists(aix)) {
-      LineSequentialFile.write(aix, TransactionUtilities.alternateIndex(transactions.records()));
+    if (transactions.isDirty() && Files.exists(aix)) {
+      outputs.put(aix, TransactionUtilities.alternateIndex(transactions.records()));
+    }
+    if (!outputs.isEmpty()) {
+      LineSequentialFile.replaceAll(outputs);
+      dirty.forEach(InMemoryKeyedDataset::markClean);
     }
   }
 }

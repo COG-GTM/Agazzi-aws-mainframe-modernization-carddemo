@@ -96,6 +96,26 @@ class FileDatasetsTest {
   }
 
   @Test
+  void failedAixUpgradePublishesNoMasterFile() throws Exception {
+    Golden.copy(Golden.seed("acctdata.txt"), dir, FileDatasets.ACCTDATA);
+    Files.writeString(dir.resolve("TRANSACT.dat"), "");
+    Files.writeString(dir.resolve(FileDatasets.TRANSACT_AIX_FILE), "");
+    Files.createDirectory(dir.resolve(FileDatasets.TRANSACT_AIX_FILE + ".tmp"));
+    byte[] accounts = Files.readAllBytes(dir.resolve("ACCTDATA.dat"));
+    FileDatasets ds = new FileDatasets(dir);
+    ds.transactions()
+        .write(
+            CoreCodecs.TRANSACTION.decodeLine(
+                Golden.expected(Golden.batch("COMBTRAN"), "TRANSACT", 350).get(0)));
+    ds.accounts().clear();
+    assertThatThrownBy(ds::flush).isInstanceOf(java.io.UncheckedIOException.class);
+    assertThat(Files.readString(dir.resolve("TRANSACT.dat"))).isEmpty();
+    assertThat(Files.readAllBytes(dir.resolve("ACCTDATA.dat"))).isEqualTo(accounts);
+    assertThat(Files.exists(dir.resolve("TRANSACT.dat.tmp"))).isFalse();
+    assertThat(Files.exists(dir.resolve("ACCTDATA.dat.tmp"))).isFalse();
+  }
+
+  @Test
   void clearEmptiesAndMarksDirty() {
     Golden.copy(Golden.seed("acctdata.txt"), dir, FileDatasets.ACCTDATA);
     InMemoryKeyedDataset<AccountRecord> ds =
