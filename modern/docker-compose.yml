@@ -1,0 +1,43 @@
+# Local stack: PostgreSQL 16 + LocalStack SQS + carddemo-app (profile local = Flyway V1-V3 + seed V2).
+# Credentials below are local-only demo values, never used outside this compose file.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: carddemo
+      POSTGRES_USER: carddemo
+      POSTGRES_PASSWORD: carddemo
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carddemo -d carddemo"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  localstack:
+    image: localstack/localstack:3.8
+    environment:
+      SERVICES: sqs
+    ports: ["4566:4566"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4566/_localstack/health | grep -q '\"sqs\": \"\\(available\\|running\\)\"'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build:
+      context: .
+      args:
+        MAVEN_MIRROR_URL: ${MAVEN_MIRROR_URL:-}
+    image: carddemo-app:local
+    depends_on:
+      postgres: {condition: service_healthy}
+      localstack: {condition: service_healthy}
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      CARDDEMO_DB_URL: jdbc:postgresql://postgres:5432/carddemo
+      CARDDEMO_DB_USER: carddemo
+      CARDDEMO_DB_PASSWORD: carddemo
+      CARDDEMO_SQS_ENDPOINT: http://localstack:4566
+    ports: ["8080:8080"]

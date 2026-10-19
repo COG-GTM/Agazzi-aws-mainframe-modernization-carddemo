@@ -1,0 +1,6 @@
+# ADR-005 — Strategia golden master
+
+- **Stato**: accettato
+- **Decisione**: i COBOL batch originali sono la fonte di verità, eseguiti con **GnuCOBOL 3.1.2** (`tools/golden/run-cobol.sh <JOB>`) su copie nel harness (mai modifiche ad `app/`: TAB di `CUSTREC.cpy`, `RECORD KEY` COMP di CBEXPORT/CBIMPORT, walk dei control block z/OS di CBSTM03A, stub `CEE3ABD`/`COBDATFT`/`MVSWAIT`/`JCLDRV`). Timestamp deterministici con `faketime` e `business_timestamp` del `job.yaml`. Golden in `carddemo-parity/src/test/resources/golden/batch/<JOB>/{job.yaml,expected/}`; catturati in Fase 0: POSTTRAN, INTCALC, COMBTRAN, TRANREPT, CREASTMT, READACCT. Riesecuzione = zero diff (`--verify`, `GoldenHarnessReproducibilityTest`).
+- **Confronto**: per campo secondo il layout copybook (`RecordComparator`; i numerici si confrontano per valore perché GnuCOBOL scrive il segno positivo con cifra semplice dove i sample z/OS usano l'overpunch `{`), delta DB per PK (`DbSnapshot`), scenari YAML online (`OnlineScenarioRunner`). Deviazioni volute solo in `PARITY_EXCEPTIONS.md`.
+- **Limiti**: ordinamenti EBCDIC vs ASCII (marcare il golden), programmi CICS non eseguibili (golden online = scenari di caratterizzazione derivati dai paragrafi COBOL).

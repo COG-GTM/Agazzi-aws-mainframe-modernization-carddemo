@@ -1,0 +1,132 @@
+# Ownership of every legacy artifact under app/ (plan §0.1, §3.2).
+# Each file under app/ (except .gitkeep) must match exactly ONE workstream.
+# Checked by tools/inventory/check_ownership.py (CI) and OwnershipCoverageTest.
+# Patterns are glob paths relative to the repository root (`**` = any depth).
+workstreams:
+  1a-copybook:
+    legacy:
+      - app/cpy/CV*.cpy
+      - app/cpy/CUSTREC.cpy
+      - app/cpy/CSUSR01Y.cpy
+      - app/cpy/COCOM01Y.cpy
+      - app/cpy/COTTL01Y.cpy
+      - app/cpy/CSMSG0[12]Y.cpy
+      - app/cpy/CSSETATY.cpy
+      - app/cpy/CSSTRPFY.cpy
+      - app/cpy/UNUSED1Y.cpy
+  1b-datamigration:
+    legacy:
+      - app/data/ASCII/*
+      - app/data/EBCDIC/*
+      - app/catlg/LISTCAT.txt
+  1c-platform:
+    legacy:
+      - app/asm/*
+      - app/maclib/*
+      - app/cbl/CSUTLDTC.cbl
+      - app/cpy/CSDAT01Y.cpy
+      - app/cpy/CODATECN.cpy
+      - app/cpy/CSUTLDWY.cpy
+      - app/cpy/CSUTLDPY.cpy
+  b1-posting:
+    legacy:
+      - app/cbl/CBTRN01C.cbl
+      - app/cbl/CBTRN02C.cbl
+      - app/jcl/POSTTRAN.jcl
+      - app/jcl/DALYREJS.jcl
+      - app/jcl/TRANBKP.jcl
+      - app/jcl/COMBTRAN.jcl
+      - app/jcl/TRANIDX.jcl
+  b2-interest:
+    legacy:
+      - app/cbl/CBACT04C.cbl
+      - app/jcl/INTCALC.jcl
+      - app/jcl/TCATBALF.jcl
+      - app/jcl/PRTCATBL.jcl
+      - app/jcl/DISCGRP.jcl
+  b3-reports:
+    legacy:
+      - app/cbl/CBTRN03C.cbl
+      - app/cbl/CBSTM03A.CBL
+      - app/cbl/CBSTM03B.CBL
+      - app/cpy/COSTM01.CPY
+      - app/jcl/TRANREPT.jcl
+      - app/jcl/CREASTMT.JCL
+      - app/jcl/TXT2PDF1.JCL
+      - app/proc/*
+      - app/ctl/REPROCT.ctl
+  b4-datalifecycle:
+    legacy:
+      - app/cbl/CBACT0[123]C.cbl
+      - app/cbl/CBCUS01C.cbl
+      - app/cbl/CBEXPORT.cbl
+      - app/cbl/CBIMPORT.cbl
+      - app/jcl/ACCTFILE.jcl
+      - app/jcl/CARDFILE.jcl
+      - app/jcl/XREFFILE.jcl
+      - app/jcl/CUSTFILE.jcl
+      - app/jcl/TRANFILE.jcl
+      - app/jcl/TRANTYPE.jcl
+      - app/jcl/TRANCATG.jcl
+      - app/jcl/DUSRSECJ.jcl
+      - app/jcl/DEFCUST.jcl
+      - app/jcl/REPTFILE.jcl
+      - app/jcl/ESDSRRDS.jcl
+      - app/jcl/DEFGDG[BD].jcl
+      - app/jcl/READ*.jcl
+      - app/jcl/CBEXPORT.jcl
+      - app/jcl/CBIMPORT.jcl
+  b5-orchestration:
+    legacy:
+      - app/scheduler/*
+      - app/cbl/COBSWAIT.cbl
+      - app/jcl/CLOSEFIL.jcl
+      - app/jcl/OPENFIL.jcl
+      - app/jcl/WAITSTEP.jcl
+      - app/jcl/INTRDRJ[12].JCL
+      - app/jcl/FTPJCL.JCL
+      - app/jcl/CBADMCDJ.jcl
+  o1-auth:
+    legacy:
+      - app/csd/*
+      - app/cbl/COSGN00C.cbl
+      - app/cbl/COMEN01C.cbl
+      - app/cbl/COADM01C.cbl
+      - app/cpy/COMEN02Y.cpy
+      - app/cpy/COADM02Y.cpy
+      - app/bms/CO{SGN00,MEN01,ADM01}.bms
+      - app/cpy-bms/CO{SGN00,MEN01,ADM01}.CPY
+  o2-account:
+    legacy:
+      - app/cbl/COACT{VW,UP}C.cbl
+      - app/cpy/CSLKPCDY.cpy
+      - app/bms/COACT{VW,UP}.bms
+      - app/cpy-bms/COACT{VW,UP}.CPY
+  o3-card:
+    legacy:
+      - app/cbl/COCRD{LI,SL,UP}C.cbl
+      - app/bms/COCRD{LI,SL,UP}.bms
+      - app/cpy-bms/COCRD{LI,SL,UP}.CPY
+  o4-transaction:
+    legacy:
+      - app/cbl/COTRN0[012]C.cbl
+      - app/cbl/COBIL00C.cbl
+      - app/cbl/CORPT00C.cbl
+      - app/bms/CO{TRN00,TRN01,TRN02,BIL00,RPT00}.bms
+      - app/cpy-bms/CO{TRN00,TRN01,TRN02,BIL00,RPT00}.CPY
+  o5-useradmin:
+    legacy:
+      - app/cbl/COUSR0[0-3]C.cbl
+      - app/bms/COUSR0[0-3].bms
+      - app/cpy-bms/COUSR0[0-3].CPY
+  o6-frontend:
+    legacy: []   # consumes openapi.yaml + BMS layouts (owned by O1–O5), no legacy file of its own
+  x1-authorization:
+    legacy:
+      - app/app-authorization-ims-db2-mq/**
+  x2-trantype:
+    legacy:
+      - app/app-transaction-type-db2/**
+  x3-mqinquiry:
+    legacy:
+      - app/app-vsam-mq/**

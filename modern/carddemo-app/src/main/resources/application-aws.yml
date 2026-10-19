@@ -1,0 +1,11 @@
+# AWS: credentials from the environment/IAM role, no seed (data loaded by 1B datamigration).
+spring:
+  datasource:
+    url: ${CARDDEMO_DB_URL}
+    username: ${CARDDEMO_DB_USER}
+    password: ${CARDDEMO_DB_PASSWORD}
+carddemo:
+  messaging:
+    type: sqs
+    sqs:
+      region: ${AWS_REGION:us-east-1}

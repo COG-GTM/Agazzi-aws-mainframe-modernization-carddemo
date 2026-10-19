@@ -1,0 +1,281 @@
+{
+  "base": "migration/phase-1-4",
+  "contracts": "contracts-v1",
+  "workstreams": [
+    {
+      "id": "1a-copybook",
+      "title": "Copybook \u2192 record Java (codec completo)",
+      "module": "carddemo-copybook",
+      "paths": [
+        "modern/carddemo-copybook/**",
+        "modern/carddemo-parity/src/test/resources/golden/1a-copybook/**"
+      ],
+      "flyway_range": null,
+      "branch": "migration/1a-copybook",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/1a-copybook.md",
+      "legacy_files": 22,
+      "legacy_loc": 693
+    },
+    {
+      "id": "1b-datamigration",
+      "title": "Schema relazionale e migrazione dati",
+      "module": "carddemo-datamigration",
+      "paths": [
+        "modern/carddemo-datamigration/**",
+        "modern/carddemo-parity/src/test/resources/golden/1b-datamigration/**"
+      ],
+      "flyway_range": "V100\u2013V199",
+      "branch": "migration/1b-datamigration",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/1b-datamigration.md",
+      "legacy_files": 23,
+      "legacy_loc": 4611
+    },
+    {
+      "id": "1c-platform",
+      "title": "Utility Assembler e date \u2192 Java",
+      "module": "carddemo-platform",
+      "paths": [
+        "modern/carddemo-platform/**",
+        "modern/carddemo-parity/src/test/resources/golden/1c-platform/**"
+      ],
+      "flyway_range": null,
+      "branch": "migration/1c-platform",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/1c-platform.md",
+      "legacy_files": 9,
+      "legacy_loc": 888
+    },
+    {
+      "id": "b1-posting",
+      "title": "Posting giornaliero transazioni",
+      "module": "carddemo-batch-posting",
+      "paths": [
+        "modern/carddemo-batch-posting/**",
+        "modern/carddemo-parity/src/test/resources/golden/b1-posting/**"
+      ],
+      "flyway_range": "V200\u2013V299",
+      "branch": "migration/b1-posting",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/b1-posting.md",
+      "legacy_files": 7,
+      "legacy_loc": 1483
+    },
+    {
+      "id": "b2-interest",
+      "title": "Interessi e saldi per categoria",
+      "module": "carddemo-batch-interest",
+      "paths": [
+        "modern/carddemo-batch-interest/**",
+        "modern/carddemo-parity/src/test/resources/golden/b2-interest/**"
+      ],
+      "flyway_range": "V300\u2013V399",
+      "branch": "migration/b2-interest",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/b2-interest.md",
+      "legacy_files": 5,
+      "legacy_loc": 892
+    },
+    {
+      "id": "b3-reports",
+      "title": "Report e statement",
+      "module": "carddemo-batch-reports",
+      "paths": [
+        "modern/carddemo-batch-reports/**",
+        "modern/carddemo-parity/src/test/resources/golden/b3-reports/**"
+      ],
+      "flyway_range": "V400\u2013V499",
+      "branch": "migration/b3-reports",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/b3-reports.md",
+      "legacy_files": 10,
+      "legacy_loc": 2192
+    },
+    {
+      "id": "b4-datalifecycle",
+      "title": "Data lifecycle: caricamento, export/import, utility",
+      "module": "carddemo-batch-datalifecycle",
+      "paths": [
+        "modern/carddemo-batch-datalifecycle/**",
+        "modern/carddemo-parity/src/test/resources/golden/b4-datalifecycle/**"
+      ],
+      "flyway_range": "V500\u2013V599",
+      "branch": "migration/b4-datalifecycle",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/b4-datalifecycle.md",
+      "legacy_files": 25,
+      "legacy_loc": 3405
+    },
+    {
+      "id": "b5-orchestration",
+      "title": "Orchestrazione batch e scheduler",
+      "module": "carddemo-batch-orchestration",
+      "paths": [
+        "modern/carddemo-batch-orchestration/**",
+        "modern/carddemo-parity/src/test/resources/golden/b5-orchestration/**"
+      ],
+      "flyway_range": "V600\u2013V699",
+      "branch": "migration/b5-orchestration",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/b5-orchestration.md",
+      "legacy_files": 10,
+      "legacy_loc": 1042
+    },
+    {
+      "id": "o1-auth",
+      "title": "Sign-on, menu, sicurezza",
+      "module": "carddemo-online-auth",
+      "paths": [
+        "modern/carddemo-online-auth/**",
+        "modern/carddemo-parity/src/test/resources/golden/o1-auth/**",
+        "modern/carddemo-parity/src/test/resources/golden/online/CC00/**",
+        "modern/carddemo-parity/src/test/resources/golden/online/CM00/**",
+        "modern/carddemo-parity/src/test/resources/golden/online/CA00/**",
+        "modern/carddemo-parity/src/test/java/com/carddemo/parity/online/CC00SignOnScenariosIT.java"
+      ],
+      "flyway_range": "V1000\u2013V1099",
+      "branch": "migration/o1-auth",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o1-auth.md",
+      "legacy_files": 12,
+      "legacy_loc": 2740
+    },
+    {
+      "id": "o2-account",
+      "title": "Conto: visualizzazione e aggiornamento",
+      "module": "carddemo-online-account",
+      "paths": [
+        "modern/carddemo-online-account/**",
+        "modern/carddemo-parity/src/test/resources/golden/o2-account/**"
+      ],
+      "flyway_range": "V1100\u2013V1199",
+      "branch": "migration/o2-account",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o2-account.md",
+      "legacy_files": 7,
+      "legacy_loc": 8517
+    },
+    {
+      "id": "o3-card",
+      "title": "Carte: lista, dettaglio, aggiornamento",
+      "module": "carddemo-online-card",
+      "paths": [
+        "modern/carddemo-online-card/**",
+        "modern/carddemo-parity/src/test/resources/golden/o3-card/**"
+      ],
+      "flyway_range": "V1200\u2013V1299",
+      "branch": "migration/o3-card",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o3-card.md",
+      "legacy_files": 9,
+      "legacy_loc": 5563
+    },
+    {
+      "id": "o4-transaction",
+      "title": "Transazioni, pagamenti, report",
+      "module": "carddemo-online-transaction",
+      "paths": [
+        "modern/carddemo-online-transaction/**",
+        "modern/carddemo-parity/src/test/resources/golden/o4-transaction/**"
+      ],
+      "flyway_range": "V1300\u2013V1399",
+      "branch": "migration/o4-transaction",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o4-transaction.md",
+      "legacy_files": 15,
+      "legacy_loc": 6085
+    },
+    {
+      "id": "o5-useradmin",
+      "title": "Amministrazione utenti",
+      "module": "carddemo-online-useradmin",
+      "paths": [
+        "modern/carddemo-online-useradmin/**",
+        "modern/carddemo-parity/src/test/resources/golden/o5-useradmin/**"
+      ],
+      "flyway_range": "V1400\u2013V1499",
+      "branch": "migration/o5-useradmin",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o5-useradmin.md",
+      "legacy_files": 12,
+      "legacy_loc": 3924
+    },
+    {
+      "id": "o6-frontend",
+      "title": "Frontend SPA (opzionale)",
+      "module": "frontend",
+      "paths": [
+        "modern/frontend/**"
+      ],
+      "flyway_range": null,
+      "branch": "migration/o6-frontend",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/o6-frontend.md",
+      "legacy_files": 0,
+      "legacy_loc": 0
+    },
+    {
+      "id": "x1-authorization",
+      "title": "Estensione autorizzazioni IMS/DB2/MQ",
+      "module": "carddemo-ext-authorization",
+      "paths": [
+        "modern/carddemo-ext-authorization/**",
+        "modern/carddemo-parity/src/test/resources/golden/x1-authorization/**"
+      ],
+      "flyway_range": "V2000\u2013V2099",
+      "branch": "migration/x1-authorization",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/x1-authorization.md",
+      "legacy_files": 40,
+      "legacy_loc": 7610
+    },
+    {
+      "id": "x2-trantype",
+      "title": "Estensione tipi transazione DB2",
+      "module": "carddemo-ext-trantype",
+      "paths": [
+        "modern/carddemo-ext-trantype/**",
+        "modern/carddemo-parity/src/test/resources/golden/x2-trantype/**"
+      ],
+      "flyway_range": "V2100\u2013V2199",
+      "branch": "migration/x2-trantype",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/x2-trantype.md",
+      "legacy_files": 27,
+      "legacy_loc": 6154
+    },
+    {
+      "id": "x3-mqinquiry",
+      "title": "Estensione inquiry via MQ",
+      "module": "carddemo-ext-mqinquiry",
+      "paths": [
+        "modern/carddemo-ext-mqinquiry/**",
+        "modern/carddemo-parity/src/test/resources/golden/x3-mqinquiry/**"
+      ],
+      "flyway_range": "V2200\u2013V2299",
+      "branch": "migration/x3-mqinquiry",
+      "base": "migration/phase-1-4",
+      "pr_target": "migration/phase-1-4",
+      "prompt_file": "modern/docs/workstreams/x3-mqinquiry.md",
+      "legacy_files": 4,
+      "legacy_loc": 1329
+    }
+  ]
+}

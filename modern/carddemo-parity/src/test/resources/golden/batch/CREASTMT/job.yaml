@@ -1,0 +1,27 @@
+# Golden master for app/jcl/CREASTMT.JCL (SORT/OUTREC + REPRO + CBSTM03A/CBSTM03B) — owner b3-reports.
+job: CREASTMT
+jcl: app/jcl/CREASTMT.JCL
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y, input: "golden:COMBTRAN/expected/TRANSACT.dat"}
+  TRXFLSEQ: {org: ps, lrecl: 350, layout: COSTM01}
+  TRXFL: {org: ksds, lrecl: 350, key: [0, 32], layout: COSTM01}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "golden:INTCALC/expected/ACCTDATA.dat"}
+  CUSTDATA: {org: ksds, lrecl: 500, key: [0, 9], layout: CVCUS01Y, input: "seed:custdata.txt"}
+  STMTPS: {org: ps, lrecl: 80, init_empty: true}
+  STMTHTML: {org: ps, lrecl: 100, init_empty: true}
+steps:
+  - name: STEP010
+    kind: sort
+    sortin: TRANSACT
+    sortout: TRXFLSEQ
+    fields: [[263, 16, A], [1, 16, A]]
+    outrec: [[1, 263, 16], [17, 1, 262], [279, 279, 50]]
+  - {name: STEP020, kind: repro, infile: TRXFLSEQ, outfile: TRXFL}
+  - name: STEP040
+    program: CBSTM03A
+    calls: [CBSTM03B]
+    dd: {TRNXFILE: TRXFL, XREFFILE: CARDXREF, ACCTFILE: ACCTDATA, CUSTFILE: CUSTDATA,
+         STMTFILE: STMTPS, HTMLFILE: STMTHTML}
+outputs: [STMTPS, STMTHTML]

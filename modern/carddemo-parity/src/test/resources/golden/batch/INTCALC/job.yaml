@@ -1,0 +1,18 @@
+# Golden master for app/jcl/INTCALC.jcl (STEP15 PGM=CBACT04C,PARM='2022071800') — owner b2-interest.
+# Chained after POSTTRAN, as in the legacy daily cycle (scripts/run_full_batch.sh).
+job: INTCALC
+jcl: app/jcl/INTCALC.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TCATBALF: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y, input: "golden:POSTTRAN/expected/TCATBALF.dat"}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], aix: [[25, 11]], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "golden:POSTTRAN/expected/ACCTDATA.dat"}
+  DISCGRP: {org: ksds, lrecl: 50, key: [0, 16], layout: CVTRA02Y, input: "seed:discgrp.txt"}
+  SYSTRAN: {org: ps, lrecl: 350, layout: CVTRA05Y, init_empty: true}
+steps:
+  - name: STEP15
+    program: CBACT04C
+    parm: "2022071800"
+    dd: {TCATBALF: TCATBALF, XREFFILE: CARDXREF, XREFFIL1: CARDXREF, ACCTFILE: ACCTDATA,
+         DISCGRP: DISCGRP, TRANSACT: SYSTRAN}
+outputs: [ACCTDATA, SYSTRAN]
