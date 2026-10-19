@@ -1,0 +1,3 @@
+com.carddemo.app.messaging.SqsMessagingAutoConfiguration
+com.carddemo.app.fallback.Fase0FallbackPortsAutoConfiguration
+com.carddemo.app.config.Fase0SecurityAutoConfiguration

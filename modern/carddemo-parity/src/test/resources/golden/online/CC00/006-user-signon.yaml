@@ -1,0 +1,13 @@
+# COSGN00C: user type 'U' -> XCTL COMEN01C (main menu).
+id: CC00-006
+title: sign-on utente -> menu principale
+tranid: CC00
+screen: COSGN00
+status: pending-o1
+steps:
+  - action: ENTER
+    fields: {USERID: "USER0001", PASSWD: "PASSWORD"}
+    expect:
+      nextScreen: COMEN01
+      fieldErrors: []
+      dbDelta: none

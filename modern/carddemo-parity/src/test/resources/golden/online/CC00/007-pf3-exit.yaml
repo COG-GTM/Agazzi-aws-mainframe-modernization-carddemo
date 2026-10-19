@@ -1,0 +1,13 @@
+# COSGN00C DFHPF3 -> CCDA-MSG-THANK-YOU, SEND-PLAIN-TEXT and RETURN (end of conversation).
+id: CC00-007
+title: PF3 esce con messaggio di saluto
+tranid: CC00
+screen: COSGN00
+status: pending-o1
+steps:
+  - action: PF3
+    fields: {}
+    expect:
+      nextScreen: null
+      message: "Thank you for using CardDemo application..."
+      dbDelta: none

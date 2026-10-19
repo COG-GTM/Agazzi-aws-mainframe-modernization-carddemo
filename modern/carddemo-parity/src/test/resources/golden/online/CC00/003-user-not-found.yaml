@@ -1,0 +1,15 @@
+# COSGN00C READ-USER-SEC-FILE: RESP NOTFND (13) -> 'User not found. Try again ...'.
+id: CC00-003
+title: utente inesistente
+tranid: CC00
+screen: COSGN00
+status: pending-o1
+steps:
+  - action: ENTER
+    fields: {USERID: "NOBODY01", PASSWD: "PASSWORD"}
+    expect:
+      screen: COSGN00
+      nextScreen: null
+      message: "User not found. Try again ..."
+      fieldErrors: [USERID]
+      dbDelta: none

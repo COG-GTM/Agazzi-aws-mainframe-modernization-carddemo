@@ -1,0 +1,15 @@
+# COSGN00C PROCESS-ENTER-KEY: USERID = SPACES -> 'Please enter User ID ...', cursor on USERID.
+id: CC00-001
+title: ENTER con User ID vuoto
+tranid: CC00
+screen: COSGN00
+status: pending-o1
+steps:
+  - action: ENTER
+    fields: {USERID: "", PASSWD: "PASSWORD"}
+    expect:
+      screen: COSGN00
+      nextScreen: null
+      message: "Please enter User ID ..."
+      fieldErrors: [USERID]
+      dbDelta: none
