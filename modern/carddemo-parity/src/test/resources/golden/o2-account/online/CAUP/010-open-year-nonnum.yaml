@@ -1,0 +1,19 @@
+# COACTUPC EDIT-YEAR-CCYY not numeric
+id: CAUP-010
+title: 'errore: Open Date must be 4 digit number.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNYEAR: 20AB
+  expect:
+    message: Open Date must be 4 digit number.
+    fieldErrors:
+    - OPNYEAR
+    dbDelta: none

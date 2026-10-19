@@ -1,0 +1,22 @@
+# COACTUPC 1260 line
+id: CAUP-047
+title: 'errore: Phone Number 2: Line number code must be A 4 digit number.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH2C: '12'
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: 'Phone Number 2: Line number code must be A 4 digit number.'
+    fieldErrors:
+    - ACSPH2C
+    dbDelta: none

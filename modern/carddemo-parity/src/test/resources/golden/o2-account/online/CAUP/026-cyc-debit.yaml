@@ -1,0 +1,19 @@
+# COACTUPC Current Cycle Debit
+id: CAUP-026
+title: 'errore: Current Cycle Debit Limit must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACRCYDB: ''
+  expect:
+    message: Current Cycle Debit Limit must be supplied.
+    fieldErrors:
+    - ACRCYDB
+    dbDelta: none

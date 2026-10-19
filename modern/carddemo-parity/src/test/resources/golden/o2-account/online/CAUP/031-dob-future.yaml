@@ -1,0 +1,19 @@
+# COACTUPC EDIT-DATE-OF-BIRTH
+id: CAUP-031
+title: 'errore: Date of Birth:cannot be in the future'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    DOBYEAR: '2023'
+  expect:
+    message: Date of Birth:cannot be in the future
+    fieldErrors:
+    - DOBYEAR
+    dbDelta: none

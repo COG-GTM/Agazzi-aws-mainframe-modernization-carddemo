@@ -1,0 +1,19 @@
+# COACTUPC EDIT-MONTH blank
+id: CAUP-012
+title: 'errore: Open Date : Month must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNMON: ''
+  expect:
+    message: 'Open Date : Month must be supplied.'
+    fieldErrors:
+    - OPNMON
+    dbDelta: none

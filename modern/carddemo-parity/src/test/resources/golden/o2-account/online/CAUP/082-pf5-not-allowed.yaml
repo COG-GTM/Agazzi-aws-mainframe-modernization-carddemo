@@ -1,0 +1,16 @@
+# PFK-INVALID: PF5 only valid in ACUP-CHANGES-OK-NOT-CONFIRMED.
+id: CAUP-082
+title: PF5 senza conferma trattato come ENTER
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: PF5
+  fields: {}
+  expect:
+    message: No change detected with respect to values fetched.
+    dbDelta: none

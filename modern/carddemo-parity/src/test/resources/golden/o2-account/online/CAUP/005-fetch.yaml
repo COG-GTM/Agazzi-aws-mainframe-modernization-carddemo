@@ -1,0 +1,27 @@
+# 9000-READ-ACCT ok -> ACUP-SHOW-DETAILS, PROMPT-FOR-CHANGES, 3202 old values.
+id: CAUP-005
+title: lettura conto
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+  expect:
+    message: Update account details presented above.
+    fieldErrors: []
+    dbDelta: none
+    data:
+      ACSTTUS: Y
+      ACRDLIM: +      2,020.00
+      OPNYEAR: '2014'
+      OPNMON: '11'
+      OPNDAY: '20'
+      ACSTNUM: '000000001'
+      ACTSSN1: '020'
+      ACSTFCO: '274'
+      ACSPH1A: '908'
+      ACSFNAM: Immanuel
+      ACSCITY: Altenwerthshire

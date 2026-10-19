@@ -1,0 +1,22 @@
+# COACTUPC 1215-EDIT-MANDATORY
+id: CAUP-037
+title: 'errore: Address Line 1 must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSADL1: ''
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: Address Line 1 must be supplied.
+    fieldErrors:
+    - ACSADL1
+    dbDelta: none

@@ -1,0 +1,22 @@
+# COACTUPC 1260 area list
+id: CAUP-045
+title: 'errore: Phone Number 1: Not valid North America general purpose area code'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH1A: '200'
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: 'Phone Number 1: Not valid North America general purpose area code'
+    fieldErrors:
+    - ACSPH1A
+    dbDelta: none

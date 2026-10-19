@@ -1,0 +1,22 @@
+# COACTUPC 1260 area zero
+id: CAUP-044
+title: 'errore: Phone Number 1: Area code cannot be zero'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH1A: '000'
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: 'Phone Number 1: Area code cannot be zero'
+    fieldErrors:
+    - ACSPH1A
+    dbDelta: none

@@ -1,0 +1,13 @@
+# COACTVWC 2210-EDIT-ACCOUNT: not an 11-digit number (literal has a double space).
+id: CAVW-004
+title: numero conto non numerico
+tranid: CAVW
+screen: COACTVW
+steps:
+  - action: ENTER
+    fields: {}
+  - action: ENTER
+    fields: {ACCTSID: "12AB"}
+    expect:
+      message: "Account Filter must  be a non-zero 11 digit number"
+      fieldErrors: [ACCTSID]

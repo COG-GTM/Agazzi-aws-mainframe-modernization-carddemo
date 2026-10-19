@@ -1,0 +1,22 @@
+# COACTUPC 1245 EFT
+id: CAUP-048
+title: 'errore: EFT Account Id must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSEFTC: ''
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: EFT Account Id must be supplied.
+    fieldErrors:
+    - ACSEFTC
+    dbDelta: none

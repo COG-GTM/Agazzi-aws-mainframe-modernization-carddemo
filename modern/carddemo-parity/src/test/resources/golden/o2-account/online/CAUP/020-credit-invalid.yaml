@@ -1,0 +1,19 @@
+# COACTUPC 1250-EDIT-SIGNED-9V2 TEST-NUMVAL-C
+id: CAUP-020
+title: 'errore: Credit Limit is not valid'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACRDLIM: 12A
+  expect:
+    message: Credit Limit is not valid
+    fieldErrors:
+    - ACRDLIM
+    dbDelta: none
