@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Launches one Spring Batch job by its JCL name (CONVENTIONS: job name = JCL name), on the target
 # where the cutover runs. Exit codes: 0 COMPLETED, 1 other status, 3 = job not registered in the
-# deployed app yet (Spring Batch "No job found with name"), 124 = CARDDEMO_JOB_TIMEOUT (default 4 h).
+# deployed app yet ("No job found with name", or not launched CARDDEMO_JOB_START_GRACE=300 s
+# after startup), 124 = CARDDEMO_JOB_TIMEOUT (default 4 h).
 #   run-job.sh POSTTRAN [key=value ...]
 # Modes (CARDDEMO_JOB_MODE):
 #   local (default) java -jar $CARDDEMO_APP_JAR --spring.batch.job.name=<JOB> run.date=... [params]
@@ -25,6 +26,14 @@ case "${CARDDEMO_JOB_MODE:-local}" in
     while kill -0 "$pid" 2>/dev/null; do
       status=$(grep -o "Job: \[[^]]*name=$job\][^$]*status: \[[A-Z_]*\]" "$log" | grep -o "status: \[[A-Z_]*\]" | tail -1 || true)
       [[ -n "$status" ]] && break
+      # Started but never launched: unregistered (Spring Batch normally fails fast with "No job
+      # found"; this bounds the case where no runner exists). Launched jobs only hit the timeout.
+      if [[ -z "${started:-}" ]] && grep -q "Started .* in [0-9.]* seconds" "$log"; then started=$SECONDS; fi
+      if [[ -n "${started:-}" ]] && ! grep -q "Job: \[.*name=$job\]\] launched" "$log" \
+         && (( SECONDS - started > ${CARDDEMO_JOB_START_GRACE:-300} )); then
+        kill "$pid"; wait "$pid" 2>/dev/null || true; tail -20 "$log"
+        echo "run-job: $job not launched ${CARDDEMO_JOB_START_GRACE:-300}s after startup: not registered" >&2; exit 3
+      fi
       if (( SECONDS > deadline )); then
         kill "$pid"; wait "$pid" 2>/dev/null || true; tail -20 "$log"
         echo "run-job: $job TIMEOUT after ${CARDDEMO_JOB_TIMEOUT:-14400}s (CARDDEMO_JOB_TIMEOUT)" >&2; exit 124
