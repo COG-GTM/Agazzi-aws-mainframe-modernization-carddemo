@@ -61,6 +61,7 @@
     <!-- Test tags: `parity` runs with -Pparity, `it` with -Pit, `pending-o1` (online goldens
          waiting for O1) is always excluded until O1 merges. -->
     <surefire.excludedGroups>parity,it,pending-o1</surefire.excludedGroups>
+    <failsafe.excludedGroups>pending-o1</failsafe.excludedGroups>
     <skipITs>true</skipITs>
     <modern.root>${maven.multiModuleProjectDirectory}</modern.root>
   </properties>
@@ -237,6 +238,7 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <configuration>
             <skipITs>${skipITs}</skipITs>
+            <excludedGroups>${failsafe.excludedGroups}</excludedGroups>
             <systemPropertyVariables>
               <modern.root>${modern.root}</modern.root>
             </systemPropertyVariables>

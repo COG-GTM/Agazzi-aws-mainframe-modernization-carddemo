@@ -1,0 +1,14 @@
+# COSGN00C WHEN OTHER -> CCDA-MSG-INVALID-KEY, map re-sent.
+id: CC00-008
+title: tasto non valido
+tranid: CC00
+screen: COSGN00
+status: pending-o1
+steps:
+  - action: PF5
+    fields: {}
+    expect:
+      screen: COSGN00
+      nextScreen: null
+      message: "Invalid key pressed. Please see below..."
+      dbDelta: none

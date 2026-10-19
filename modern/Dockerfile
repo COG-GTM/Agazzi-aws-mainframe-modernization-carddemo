@@ -12,7 +12,7 @@ RUN if [ -n "$MAVEN_MIRROR_URL" ]; then mkdir -p /root/.m2 && printf '<settings>
 FROM eclipse-temurin:21-jre
 RUN groupadd --system carddemo && useradd --system --gid carddemo carddemo
 WORKDIR /app
-COPY --from=build /src/carddemo-app/target/carddemo-app.jar app.jar
+COPY --from=build /src/carddemo-app/target/carddemo-app-exec.jar app.jar
 USER carddemo
 EXPOSE 8080
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/app.jar"]
