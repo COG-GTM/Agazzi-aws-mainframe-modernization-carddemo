@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class CardConversation {
 
   /** Session attribute of the shared COCOM01Y context. */
-  public static final String CONTEXT_ATTRIBUTE = ConversationContext.class.getName();
+  public static final String CONTEXT_ATTRIBUTE = ConversationContext.SESSION_ATTRIBUTE;
 
   static final String LIST_STATE = "o3-card.COCRDLIC";
   static final String UPDATE_STATE = "o3-card.COCRDUPC";

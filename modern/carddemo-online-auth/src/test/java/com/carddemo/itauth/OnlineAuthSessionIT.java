@@ -46,15 +46,16 @@ class OnlineAuthSessionIT {
   @Autowired JdbcTemplate jdbc;
   private final ObjectMapper json = new ObjectMapper();
   private final HttpClient http = HttpClient.newHttpClient();
+  private static final String CSRF = "it-csrf-token";
 
   private HttpResponse<String> call(String method, String map, String body, String cookie)
       throws Exception {
     HttpRequest.Builder b =
         HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/api/v1/screens/" + map))
             .header("Accept", "application/json");
-    if (cookie != null) {
-      b.header("Cookie", cookie);
-    }
+    // Double-submit CSRF (O1 CookieCsrfTokenRepository): cookie and header carry the same token.
+    String csrf = "XSRF-TOKEN=" + CSRF;
+    b.header("Cookie", cookie == null ? csrf : cookie + "; " + csrf).header("X-XSRF-TOKEN", CSRF);
     if (body == null) {
       b.GET();
     } else {
@@ -73,7 +74,11 @@ class OnlineAuthSessionIT {
                 + "\",\"PASSWD\":\"PASSWORD\"}}",
             null);
     assertThat(r.statusCode()).isEqualTo(200);
-    String setCookie = r.headers().firstValue("Set-Cookie").orElseThrow();
+    String setCookie =
+        r.headers().allValues("Set-Cookie").stream()
+            .filter(c -> !c.startsWith("XSRF-TOKEN="))
+            .findFirst()
+            .orElseThrow();
     assertThat(setCookie).contains("HttpOnly").contains("SameSite=Strict");
     return setCookie.substring(0, setCookie.indexOf(';'));
   }

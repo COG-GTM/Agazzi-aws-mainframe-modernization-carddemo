@@ -1,11 +1,35 @@
-# AWS: credentials from the environment/IAM role, no seed (data loaded by 1B datamigration).
+# AWS (ECS behind ALB): no secret in the repo. DB credentials come from the environment, which ECS
+# fills from AWS Secrets Manager (task definition "secrets"), or directly from Secrets Manager by
+# also activating profile aws-sm. Data is loaded by 1B datamigration, so no seed here.
 spring:
   datasource:
+    # Production URL must enforce TLS to RDS, e.g. jdbc:postgresql://host:5432/carddemo?sslmode=verify-full
     url: ${CARDDEMO_DB_URL}
     username: ${CARDDEMO_DB_USER}
     password: ${CARDDEMO_DB_PASSWORD}
 carddemo:
   messaging:
-    type: sqs
+    type: ${CARDDEMO_MESSAGING_TYPE:sqs}
     sqs:
       region: ${AWS_REGION:us-east-1}
+  security:
+    headers:
+      hsts-max-age: 365d
+      hsts-include-sub-domains: true
+server:
+  # Honour X-Forwarded-Proto/For from the ALB: request.isSecure() drives HSTS, remoteAddr the audit.
+  forward-headers-strategy: native
+  shutdown: graceful
+  servlet:
+    session:
+      cookie:
+        # __Host- prefix: Secure, Path=/, no Domain (ASVS 3.4.4).
+        name: __Host-CARDDEMO_SESSION
+        secure: true
+        path: /
+management:
+  endpoints:
+    web:
+      exposure:
+        # maintenance: CLOSEFIL/OPENFIL of the cutover runbook (authenticated, write ADMIN-only)
+        include: health,maintenance

@@ -6,11 +6,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Where VSAM clusters are read from: job parameter {@code source=files} (default, {@code <DD>.dat}
- * in the catalog) or {@code source=db} (V1 tables unloaded by {@link JdbcDatasets}).
+ * in the catalog) or {@code source=db} (V1 tables unloaded by {@link JdbcDatasets}). Without {@code
+ * source}, the {@code storage} parameter of B1/B2 and {@code fullBatchCycle} decides, so the
+ * reports of a {@code storage=db} cycle read the tables POSTTRAN/INTCALC/COMBTRAN just updated.
  */
 public final class DatasetSource {
 
   public static final String SOURCE = "source";
+  public static final String STORAGE = "storage";
 
   private final DatasetCatalog catalog;
   private final JdbcDatasets jdbc;
@@ -21,7 +24,8 @@ public final class DatasetSource {
   }
 
   public static DatasetSource from(JobParameters params, JdbcTemplate jdbc) {
-    boolean db = "db".equalsIgnoreCase(params.getString(SOURCE, "files"));
+    boolean db =
+        "db".equalsIgnoreCase(params.getString(SOURCE, params.getString(STORAGE, "files")));
     if (db && jdbc == null) {
       throw new IllegalStateException("source=db requires a DataSource");
     }

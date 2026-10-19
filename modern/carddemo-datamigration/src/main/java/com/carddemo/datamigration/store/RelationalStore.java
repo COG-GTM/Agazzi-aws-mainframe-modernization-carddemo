@@ -19,11 +19,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /** JDBC access to the V1 tables: idempotent upsert by primary key and ordered unload. */
 public class RelationalStore implements KeyLookup {
+
+  private static final Pattern SQL_IDENTIFIER = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 
   private final JdbcTemplate jdbc;
 
@@ -92,18 +95,17 @@ public class RelationalStore implements KeyLookup {
   /** Re-aligns identity sequences after explicit surrogate inserts. */
   public void syncIdentity(Dataset ds) {
     if (ds.organization() == Organization.PS || ds.organization() == Organization.ESDS) {
-      String col = ds.surrogateColumn();
+      String table = identifier(ds.table());
+      String col = identifier(ds.surrogateColumn());
       jdbc.queryForObject(
-          "SELECT setval(pg_get_serial_sequence('"
-              + ds.table()
-              + "', '"
-              + col
-              + "'), COALESCE((SELECT MAX("
+          "SELECT setval(pg_get_serial_sequence(?, ?), COALESCE((SELECT MAX("
               + col
               + ") FROM "
-              + ds.table()
+              + table
               + "), 0) + 1, false)",
-          Long.class);
+          Long.class,
+          table,
+          col);
     }
   }
 
@@ -253,5 +255,13 @@ public class RelationalStore implements KeyLookup {
     } else {
       ps.setString(i, (String) v);
     }
+  }
+
+  /** Catalogue identifiers only: table and column names cannot be bound as JDBC parameters. */
+  static String identifier(String name) {
+    if (name == null || !SQL_IDENTIFIER.matcher(name).matches()) {
+      throw new IllegalArgumentException("not an SQL identifier: " + name);
+    }
+    return name;
   }
 }

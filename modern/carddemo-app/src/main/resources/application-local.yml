@@ -4,7 +4,7 @@ spring:
     locations: classpath:db/migration,classpath:db/seed
 carddemo:
   messaging:
-    type: sqs
+    type: ${CARDDEMO_MESSAGING_TYPE:sqs}
     sqs:
       endpoint: ${CARDDEMO_SQS_ENDPOINT:http://localhost:4566}
       region: us-east-1

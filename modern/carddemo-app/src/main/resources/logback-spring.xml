@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fase 5C: JSON logs in AWS (CloudWatch), readable lines elsewhere. The audit trail is logger
+     "carddemo.audit" (SLF4J key/value pairs written by carddemo-security). -->
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+  <springProfile name="aws">
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder class="ch.qos.logback.classic.encoder.JsonEncoder"/>
+    </appender>
+    <logger name="carddemo.audit" level="INFO"/>
+    <root level="INFO">
+      <appender-ref ref="JSON"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="!aws">
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} AUDIT %kvp%n</pattern>
+      </encoder>
+    </appender>
+    <logger name="carddemo.audit" level="INFO" additivity="false">
+      <appender-ref ref="AUDIT"/>
+    </logger>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+</configuration>

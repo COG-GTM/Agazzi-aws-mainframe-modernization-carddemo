@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 public class UseradminSession {
 
-  public static final String CONTEXT_ATTRIBUTE = ConversationContext.class.getName();
+  public static final String CONTEXT_ATTRIBUTE = ConversationContext.SESSION_ATTRIBUTE;
   public static final String STATE_ATTRIBUTE = UseradminState.class.getName();
 
   private final UserStore users;

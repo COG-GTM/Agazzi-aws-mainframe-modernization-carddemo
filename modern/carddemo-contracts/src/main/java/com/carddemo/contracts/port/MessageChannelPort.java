@@ -19,6 +19,18 @@ public interface MessageChannelPort {
   /** MQGET with wait interval. */
   Optional<ChannelMessage> receive(String channel, Duration wait);
 
+  /**
+   * Like {@link #receive(String, Duration)}, but the message stays in flight until {@link
+   * #acknowledge(String, ChannelMessage)} (SQS: deleted on ack, redelivered after the visibility
+   * timeout). Default: auto-acknowledging {@code receive} (contracts-v1.1).
+   */
+  default Optional<ChannelMessage> receiveUnacknowledged(String channel, Duration wait) {
+    return receive(channel, wait);
+  }
+
+  /** Confirms a message from {@link #receiveUnacknowledged}; no-op for auto-ack adapters. */
+  default void acknowledge(String channel, ChannelMessage message) {}
+
   /** Request/reply (MQPUT on request queue + MQGET by correlation id on the reply queue). */
   default Optional<ChannelMessage> request(
       String requestChannel, String replyChannel, String payload, Duration timeout) {

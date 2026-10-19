@@ -74,5 +74,26 @@ class ScreenSupportTest {
     ScreenSupport.firstSend(req, resp, ScreenId.CORPT00, p);
     assertThat(resp.getHeader(ScreenSupport.REPORT_HEADER)).isEqualTo("42");
     assertThat(resp.getHeader("Location")).isEqualTo("/api/v1/jobs/42");
+    assertThat(req.getAttribute(ScreenSupport.REPORT_HEADER)).isEqualTo(42L);
+    var body =
+        Corpt00Body.of(
+            new com.carddemo.contracts.screen.ScreenResponse<>(
+                ScreenId.CORPT00, null, java.util.List.of(), null, java.util.List.of(), null),
+            req);
+    assertThat(body.reportExecutionId()).isEqualTo(42L);
+  }
+
+  @Test
+  void reportExecutionIdIsInTheBody() throws Exception {
+    var json = new com.fasterxml.jackson.databind.ObjectMapper();
+    var body =
+        new Corpt00Body(
+            new com.carddemo.contracts.screen.ScreenResponse<>(
+                ScreenId.CORPT00, null, java.util.List.of(), null, java.util.List.of(), null),
+            7L);
+    var tree = json.readTree(json.writeValueAsString(body));
+    assertThat(tree.get("reportExecutionId").asLong()).isEqualTo(7L);
+    assertThat(tree.get("screen").asText()).isEqualTo("CORPT00");
+    assertThat(tree.has("response")).isFalse();
   }
 }

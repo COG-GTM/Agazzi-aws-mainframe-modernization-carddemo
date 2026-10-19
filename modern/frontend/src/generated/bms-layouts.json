@@ -3124,7 +3124,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3180,7 +3181,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3249,7 +3251,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3318,7 +3321,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3387,7 +3391,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3456,7 +3461,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -3525,7 +3531,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -4121,7 +4128,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12486,7 +12494,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12546,7 +12555,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12606,7 +12616,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12666,7 +12677,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12726,7 +12738,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12786,7 +12799,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,
@@ -12846,7 +12860,8 @@
        "PROT"
       ],
       "color": "DEFAULT",
-      "hilight": "UNDERLINE"
+      "hilight": "UNDERLINE",
+      "runtimeInput": true
      },
      {
       "name": null,

@@ -32,4 +32,15 @@ public interface PostingDatasets {
 
   /** Makes the updates durable (end of a successful step). */
   void flush();
+
+  /**
+   * End of a chunk of input records: pushes pending updates to the store and drops cached state, so
+   * the cost per record stays constant (Fase 5A, finding 5B F3). Commit stays at {@link #flush()}.
+   */
+  default void checkpoint() {}
+
+  /** Commit hook run by {@link #checkpoint()} (JPA storage only; file datasets ignore it). */
+  default PostingDatasets commitOnCheckpoint(Runnable commit) {
+    return this;
+  }
 }

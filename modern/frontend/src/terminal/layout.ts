@@ -13,6 +13,8 @@ export interface BmsField {
   hilight?: string;
   initial?: string;
   justify?: string[];
+  /** contracts-v1.1 x-runtime-input: PROT in BMS, unprotected by the program at runtime. */
+  runtimeInput?: boolean;
 }
 
 export interface BmsMap {
@@ -35,7 +37,7 @@ export function layoutOf(id: ScreenIdName): BmsMap {
 }
 
 /** DFHBMSCA attribute semantics (ATTRB=). */
-export const isInput = (f: BmsField) => f.attrb.includes('UNPROT');
+export const isInput = (f: BmsField) => f.attrb.includes('UNPROT') || f.runtimeInput === true;
 export const isDark = (f: BmsField) => f.attrb.includes('DRK');
 export const isBright = (f: BmsField) => f.attrb.includes('BRT');
 export const isNumeric = (f: BmsField) => f.attrb.includes('NUM');

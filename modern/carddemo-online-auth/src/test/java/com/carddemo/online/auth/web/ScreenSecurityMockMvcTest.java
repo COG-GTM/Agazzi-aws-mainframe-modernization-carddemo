@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,6 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 /** Spring Security + session behaviour of the O1 resources (ADR-002, plan Fase 3). */
 @SpringBootTest(classes = AuthTestApplication.class)
@@ -35,6 +38,7 @@ class ScreenSecurityMockMvcTest {
 
   @Autowired MockMvc mvc;
   @Autowired ObjectMapper json;
+  @Autowired WebApplicationContext context;
   @Autowired UserCredentialService credentials;
   @MockBean AppUserRepository users;
 
@@ -83,7 +87,7 @@ class ScreenSecurityMockMvcTest {
   void signOnCreatesSessionWithContextAndMenuFlow() throws Exception {
     MockHttpSession s = signOn("user0001");
     assertThat(s).isNotNull();
-    assertThat((String) s.getAttribute(ConversationStore.ATTRIBUTE)).contains("\"USER0001\"");
+    assertThat(s.getAttribute(ConversationStore.ATTRIBUTE)).asString().contains("USER0001");
     mvc.perform(get("/api/v1/screens/comen01").session(s))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.OPTN001").value("01. Account View"))
@@ -97,7 +101,7 @@ class ScreenSecurityMockMvcTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.nextScreen").value("COTRN00"))
         .andExpect(jsonPath("$.context.fromTransactionId").value("CM00"));
-    assertThat((String) s.getAttribute(ConversationStore.ATTRIBUTE)).contains("COTRN00C");
+    assertThat(s.getAttribute(ConversationStore.ATTRIBUTE)).asString().contains("COTRN00C");
   }
 
   @Test
@@ -200,15 +204,14 @@ class ScreenSecurityMockMvcTest {
     // a tampered COMMAREA claiming another user/admin type is ignored
     s.setAttribute(
         ConversationStore.ATTRIBUTE,
-        json.writeValueAsString(
-            com.carddemo.contracts.screen.ConversationContext.signedOn(
-                    "ADMIN001", com.carddemo.contracts.screen.ConversationContext.UserType.ADMIN)
-                .reenter()));
+        com.carddemo.contracts.screen.ConversationContext.signedOn(
+                "ADMIN001", com.carddemo.contracts.screen.ConversationContext.UserType.ADMIN)
+            .reenter());
     mvc.perform(get("/api/v1/screens/comen01").session(s))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.context.userId").value("USER0001"))
         .andExpect(jsonPath("$.context.userType").value("USER"));
-    s.setAttribute(ConversationStore.ATTRIBUTE, "not json");
+    s.setAttribute(ConversationStore.ATTRIBUTE, "legacy JSON payload");
     mvc.perform(get("/api/v1/screens/comen01").session(s))
         .andExpect(jsonPath("$.context.userId").value("USER0001"));
     mvc.perform(get("/api/v1/screens/coadm01").session(s)).andExpect(status().isForbidden());
@@ -241,6 +244,29 @@ class ScreenSecurityMockMvcTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(body("ENTER", "{\"USERID\":\"USER0001\",\"PASSWD\":\"PASSWORD\"}")))
         .andExpect(status().isUnsupportedMediaType());
+  }
+
+  @Test
+  void cookieSessionPostsRequireTheCsrfTokenBasicClientsDoNot() throws Exception {
+    MockHttpSession s = signOn("USER0001");
+    MockMvc raw = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    raw.perform(
+            post("/api/v1/screens/comen01")
+                .session(s)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body("ENTER", "{\"OPTION\":\"1\"}")))
+        .andExpect(status().isForbidden());
+    raw.perform(
+            post("/api/v1/screens/cosgn00")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body("ENTER", "{\"USERID\":\"USER0001\",\"PASSWD\":\"PASSWORD\"}")))
+        .andExpect(status().isForbidden());
+    raw.perform(
+            post("/api/v1/screens/comen01")
+                .with(httpBasic("user0001", "password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body("ENTER", "{\"OPTION\":\"10\"}")))
+        .andExpect(status().isOk());
   }
 
   @Test

@@ -10,7 +10,7 @@
   </parent>
   <artifactId>carddemo-contracts</artifactId>
   <name>carddemo-contracts</name>
-  <description>Frozen contracts-v1: DTOs, ports, OpenAPI</description>
+  <description>Frozen contracts-v1.1 (additive over contracts-v1): DTOs, ports, OpenAPI</description>
 
   <dependencies>
     <dependency>
@@ -20,6 +20,11 @@
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

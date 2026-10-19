@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /** Slice of the app for module tests: O1 beans only, no database (app_user is mocked). */
 @SpringBootApplication(
@@ -26,5 +29,13 @@ public class AuthTestApplication {
   @Bean
   BusinessClock businessClock() {
     return new FixedBusinessClock(BUSINESS_TIME);
+  }
+
+  /** Module tests act as the SPA, which echoes the XSRF-TOKEN cookie (CSRF tested separately). */
+  @Bean
+  MockMvcBuilderCustomizer csrfTokenLikeTheSpa() {
+    return b ->
+        b.defaultRequest(
+            MockMvcRequestBuilders.get("/").with(SecurityMockMvcRequestPostProcessors.csrf()));
   }
 }

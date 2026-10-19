@@ -1,0 +1,15 @@
+# COPAUS0C PROCESS-ENTER-KEY: ACCTIDI = SPACES -> 'Please enter Acct Id...', cursor on ACCTID.
+id: CPVS-001
+title: ENTER con Acct Id vuoto
+tranid: CPVS
+screen: COPAU00
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {ACCTID: ""}
+    expect:
+      screen: COPAU00
+      nextScreen: null
+      message: "Please enter Acct Id..."
+      fieldErrors: [ACCTID]
+      dbDelta: none

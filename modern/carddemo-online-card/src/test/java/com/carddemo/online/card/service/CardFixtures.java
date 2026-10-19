@@ -49,6 +49,30 @@ public final class CardFixtures {
                   .limit(max)
                   .toList();
             });
+    when(browser.readNext(nullable(String.class), anyInt(), nullable(Long.class)))
+        .thenAnswer(
+            a -> {
+              String k = a.getArgument(0);
+              int max = a.getArgument(1);
+              Long acct = a.getArgument(2);
+              return (k == null ? file : file.tailMap(k, true))
+                  .values().stream()
+                      .filter(c -> acct == null || c.getCardAcctId().equals(acct))
+                      .limit(max)
+                      .toList();
+            });
+    when(browser.readPrev(anyString(), anyInt(), nullable(Long.class)))
+        .thenAnswer(
+            a -> {
+              String k = a.getArgument(0);
+              int max = a.getArgument(1);
+              Long acct = a.getArgument(2);
+              return file.headMap(k, true).values().stream()
+                  .filter(c -> acct == null || c.getCardAcctId().equals(acct))
+                  .sorted(Comparator.comparing(Card::getCardNum).reversed())
+                  .limit(max)
+                  .toList();
+            });
     when(repo.findById(anyString())).thenAnswer(a -> Optional.ofNullable(copy(a.getArgument(0))));
     when(repo.saveAndFlush(any(Card.class))).thenAnswer(a -> put(a.getArgument(0)));
   }

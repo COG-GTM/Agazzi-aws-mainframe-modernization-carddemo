@@ -81,6 +81,7 @@ final class ScreenSupport {
     ConversationStore.save(session, result.response().context(), result.extension());
     if (result.reportExecutionId() != null) {
       session.setAttribute(ConversationStore.REPORT_ATTRIBUTE, result.reportExecutionId());
+      request.setAttribute(REPORT_HEADER, result.reportExecutionId());
       response.setHeader(REPORT_HEADER, String.valueOf(result.reportExecutionId()));
       response.setHeader("Location", "/api/v1/jobs/" + result.reportExecutionId());
     }

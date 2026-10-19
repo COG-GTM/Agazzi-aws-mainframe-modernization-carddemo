@@ -18,6 +18,8 @@ import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CardXrefRepository;
 import com.carddemo.domain.repository.DisclosureGroupRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -27,12 +29,15 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * INTCALC STEP15 = CBACT04C. Reads TCATBALF in key order, applies the disclosure-group rate per
  * category (fallback to {@code DEFAULT}), writes one SYSTRAN record per non-zero rate and rewrites
  * each account with the accumulated interest. The whole step is one transaction: a restart re-runs
- * it from the beginning on unchanged data.
+ * it from the beginning on unchanged data. Changes are flushed to the database and the persistence
+ * context is cleared every {@link #CHUNK_ACCOUNTS} accounts (Fase 5A, finding 5B F3), so the cost
+ * per record stays constant on large TCATBALF files.
  */
 @Component
 public class IntcalcTasklet implements Tasklet {
@@ -48,6 +53,15 @@ public class IntcalcTasklet implements Tasklet {
       Comparator.comparing((TranCatBalance t) -> t.getId().trancatAcctId())
           .thenComparing(t -> t.getId().trancatTypeCd())
           .thenComparing(t -> t.getId().trancatCd());
+
+  /** Accounts per flush/clear chunk. */
+  static final int CHUNK_ACCOUNTS = 500;
+
+  private int chunkAccounts = CHUNK_ACCOUNTS;
+
+  @PersistenceContext private EntityManager em;
+  private PlatformTransactionManager chunkTx;
+  private ChunkTransaction chunks;
 
   private final TranCatBalanceRepository balances;
   private final AccountRepository accounts;
@@ -74,20 +88,58 @@ public class IntcalcTasklet implements Tasklet {
     this.sysout = sysout;
   }
 
+  /**
+   * The step then runs without a transaction and every {@link #CHUNK_ACCOUNTS} accounts are
+   * committed (finding 5B F3).
+   */
+  public IntcalcTasklet chunkTransactions(PlatformTransactionManager tm) {
+    this.chunkTx = tm;
+    return this;
+  }
+
+  /** Test hook: accounts per committed chunk. */
+  IntcalcTasklet chunkAccounts(int accounts) {
+    this.chunkAccounts = accounts;
+    return this;
+  }
+
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
+    // SYSTRAN(+1) is opened before the first chunk: it is bound to the step transaction (catalogued
+    // at step end), not to the first chunk commit.
+    try (GenerationWriter systran = GenerationWriter.open(generations, SYSTRAN)) {
+      if (chunkTx == null) {
+        return calculate(contribution, chunkContext, systran);
+      }
+      chunks = new ChunkTransaction(chunkTx);
+      try {
+        RepeatStatus status = calculate(contribution, chunkContext, systran);
+        chunks.commit();
+        return status;
+      } catch (RuntimeException e) {
+        chunks.rollback();
+        throw e;
+      } finally {
+        chunks = null;
+      }
+    }
+  }
+
+  private RepeatStatus calculate(
+      StepContribution contribution, ChunkContext chunkContext, GenerationWriter systran) {
     String parmDate =
         pad(
             chunkContext.getStepContext().getStepExecution().getJobParameters().getString(PARM),
             10);
     sysout.display("START OF EXECUTION OF PROGRAM CBACT04C");
     List<TranCatBalance> records = balances.findAll().stream().sorted(KEY_ORDER).toList();
-    try (GenerationWriter systran = GenerationWriter.open(generations, SYSTRAN)) {
+    {
       Long lastAcct = null;
       Account account = null;
       CardXref xref = null;
       BigDecimal totalInt = BigDecimal.ZERO.setScale(2);
       int suffix = 0;
+      int accountsInChunk = 0;
       for (TranCatBalance tcat : records) {
         contribution.incrementReadCount();
         long acctId = tcat.getId().trancatAcctId();
@@ -96,6 +148,10 @@ public class IntcalcTasklet implements Tasklet {
           if (account != null) {
             updateAccount(account, totalInt);
             contribution.incrementWriteCount(1);
+            if (++accountsInChunk == chunkAccounts) {
+              flushChunk();
+              accountsInChunk = 0;
+            }
           }
           totalInt = BigDecimal.ZERO.setScale(2);
           lastAcct = acctId;
@@ -122,6 +178,16 @@ public class IntcalcTasklet implements Tasklet {
     }
     sysout.display("END OF EXECUTION OF PROGRAM CBACT04C");
     return RepeatStatus.FINISHED;
+  }
+
+  private void flushChunk() {
+    if (em != null) {
+      em.flush();
+      if (chunks != null) {
+        chunks.run();
+      }
+      em.clear();
+    }
   }
 
   private static TranCatBalanceRecord toRecord(TranCatBalance t) {

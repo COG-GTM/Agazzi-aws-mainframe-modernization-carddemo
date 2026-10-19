@@ -10,6 +10,7 @@ import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.batch.core.Job;
@@ -17,6 +18,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,9 +49,11 @@ public class PostingJobsConfiguration {
       ObjectProvider<TranCatBalanceRepository> tranCatBalances,
       ObjectProvider<TransactionRepository> transactions,
       ObjectProvider<CustomerRepository> customers,
-      ObjectProvider<CardRepository> cards) {
+      ObjectProvider<CardRepository> cards,
+      ObjectProvider<EntityManager> entityManager) {
     return new PostingDatasetsFactory(
-        dailyTransactions, cardXref, accounts, tranCatBalances, transactions, customers, cards);
+            dailyTransactions, cardXref, accounts, tranCatBalances, transactions, customers, cards)
+        .withEntityManager(entityManager);
   }
 
   @Bean
@@ -74,9 +78,9 @@ public class PostingJobsConfiguration {
         .start(
             step(
                 "STEP15",
-                new PostingTasklets.PosttranStep15(datasets, generations, clock),
+                new PostingTasklets.PosttranStep15(datasets, generations, clock, tx),
                 repo,
-                tx))
+                new ResourcelessTransactionManager()))
         .build();
   }
 
@@ -120,7 +124,12 @@ public class PostingJobsConfiguration {
     return new JobBuilder(COMBTRAN, repo)
         .listener(new MaxConditionCodeListener())
         .start(step("STEP05R", new PostingTasklets.CombtranStep05r(generations), repo, tx))
-        .next(step("STEP10", new PostingTasklets.CombtranStep10(datasets, generations), repo, tx))
+        .next(
+            step(
+                "STEP10",
+                new PostingTasklets.CombtranStep10(datasets, generations, tx),
+                repo,
+                new ResourcelessTransactionManager()))
         .build();
   }
 

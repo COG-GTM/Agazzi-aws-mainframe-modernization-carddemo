@@ -22,11 +22,10 @@ public class TrantypeConversations {
 
   @SuppressWarnings("unchecked")
   <T> T get(HttpServletRequest request, String key, Supplier<T> factory) {
-    Principal user = request.getUserPrincipal();
-    boolean cookieSession =
-        request.getRequestedSessionId() != null && request.isRequestedSessionIdValid();
-    if (user != null && !cookieSession) {
-      return (T) byUser.computeIfAbsent(key + ":" + user.getName(), k -> factory.get());
+    if (perUser(request)) {
+      return (T)
+          byUser.computeIfAbsent(
+              key + ":" + request.getUserPrincipal().getName(), k -> factory.get());
     }
     HttpSession session = request.getSession(true);
     Object s = session.getAttribute(key);
@@ -35,5 +34,22 @@ public class TrantypeConversations {
       session.setAttribute(key, s);
     }
     return (T) s;
+  }
+
+  /**
+   * Writes the state back after the screen mutated it: Spring Session JDBC persists only attributes
+   * passed to {@code setAttribute} (save mode {@code on_set_attribute}), not in-place changes.
+   */
+  void save(HttpServletRequest request, String key, Object state) {
+    if (!perUser(request)) {
+      request.getSession(true).setAttribute(key, state);
+    }
+  }
+
+  private static boolean perUser(HttpServletRequest request) {
+    Principal user = request.getUserPrincipal();
+    boolean cookieSession =
+        request.getRequestedSessionId() != null && request.isRequestedSessionIdValid();
+    return user != null && !cookieSession;
   }
 }

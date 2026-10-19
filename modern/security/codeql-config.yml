@@ -1,0 +1,6 @@
+name: carddemo-codeql
+# Scan only the Java 21 modernisation; the COBOL sources under app/ are not Java.
+paths:
+  - modern
+paths-ignore:
+  - "**/target/**"

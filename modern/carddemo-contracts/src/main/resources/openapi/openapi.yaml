@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: CardDemo online API
-  version: contracts-v1
+  version: contracts-v1.1
   description: |
     One resource per BMS map (plan §3.3, Fase 3). GET = first send (PGM-CONTEXT ENTER),
     POST = terminal input (action = AID key + unprotected map fields). Every response is a
@@ -999,6 +999,13 @@ components:
       properties:
         ACCTSID: { type: string, maxLength: 11, description: 'row 6 col 44' }
         CARDSID: { type: string, maxLength: 16, description: 'row 7 col 44' }
+        CRDSEL1: { type: string, maxLength: 1, description: 'row 11 col 12', x-runtime-input: true }
+        CRDSEL2: { type: string, maxLength: 1, description: 'row 12 col 12', x-runtime-input: true }
+        CRDSEL3: { type: string, maxLength: 1, description: 'row 13 col 12', x-runtime-input: true }
+        CRDSEL4: { type: string, maxLength: 1, description: 'row 14 col 12', x-runtime-input: true }
+        CRDSEL5: { type: string, maxLength: 1, description: 'row 15 col 12', x-runtime-input: true }
+        CRDSEL6: { type: string, maxLength: 1, description: 'row 16 col 12', x-runtime-input: true }
+        CRDSEL7: { type: string, maxLength: 1, description: 'row 17 col 12', x-runtime-input: true }
     CocrdliOutput:
       type: object
       properties:
@@ -1105,6 +1112,7 @@ components:
     CocrdupInput:
       type: object
       properties:
+        ACCTSID: { type: string, maxLength: 11, description: 'row 7 col 45', x-runtime-input: true }
         CARDSID: { type: string, maxLength: 16, description: 'row 8 col 45' }
         CRDNAME: { type: string, maxLength: 50, description: 'row 11 col 25' }
         CRDSTCD: { type: string, maxLength: 1, description: 'row 13 col 25' }
@@ -1238,6 +1246,7 @@ components:
         nextScreen: { type: string, description: 'XCTL target mapset, null = same screen' }
         fieldErrors: { type: array, items: { $ref: '#/components/schemas/FieldError' } }
         context: { $ref: '#/components/schemas/ConversationContext' }
+        reportExecutionId: { type: integer, format: int64, nullable: true, description: 'TRANREPT execution submitted by CR00 (ReportJobLauncherPort), null when no report was submitted; also in the X-CardDemo-Report-Execution-Id header and Location' }
     Cosgn00Input:
       type: object
       properties:
@@ -1814,12 +1823,19 @@ components:
       properties:
         TRTYPE: { type: string, maxLength: 2, description: 'row 6 col 44' }
         TRDESC: { type: string, maxLength: 50, description: 'row 8 col 25' }
+        TRTSEL1: { type: string, maxLength: 1, description: 'row 12 col 6', x-runtime-input: true }
         TRTYPD1: { type: string, maxLength: 50, description: 'row 12 col 25' }
+        TRTSEL2: { type: string, maxLength: 1, description: 'row 13 col 6', x-runtime-input: true }
         TRTYPD2: { type: string, maxLength: 50, description: 'row 13 col 25' }
+        TRTSEL3: { type: string, maxLength: 1, description: 'row 14 col 6', x-runtime-input: true }
         TRTYPD3: { type: string, maxLength: 50, description: 'row 14 col 25' }
+        TRTSEL4: { type: string, maxLength: 1, description: 'row 15 col 6', x-runtime-input: true }
         TRTYPD4: { type: string, maxLength: 50, description: 'row 15 col 25' }
+        TRTSEL5: { type: string, maxLength: 1, description: 'row 16 col 6', x-runtime-input: true }
         TRTYPD5: { type: string, maxLength: 50, description: 'row 16 col 25' }
+        TRTSEL6: { type: string, maxLength: 1, description: 'row 17 col 6', x-runtime-input: true }
         TRTYPD6: { type: string, maxLength: 50, description: 'row 17 col 25' }
+        TRTSEL7: { type: string, maxLength: 1, description: 'row 18 col 6', x-runtime-input: true }
         TRTYPD7: { type: string, maxLength: 50, description: 'row 18 col 25' }
     CotrtliOutput:
       type: object

@@ -10,6 +10,7 @@ import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.ObjectProvider;
 
 /** Opens the datasets of a step on the storage selected by the job parameters. */
@@ -22,6 +23,7 @@ public class PostingDatasetsFactory {
   private final ObjectProvider<TransactionRepository> transactions;
   private final ObjectProvider<CustomerRepository> customers;
   private final ObjectProvider<CardRepository> cards;
+  private ObjectProvider<EntityManager> entityManager;
 
   public PostingDatasetsFactory(
       ObjectProvider<DailyTransactionRepository> dailyTransactions,
@@ -40,6 +42,12 @@ public class PostingDatasetsFactory {
     this.cards = cards;
   }
 
+  /** Shared (transaction-bound) EntityManager used for per-chunk flush/clear. */
+  public PostingDatasetsFactory withEntityManager(ObjectProvider<EntityManager> em) {
+    this.entityManager = em;
+    return this;
+  }
+
   public PostingDatasets open(PostingJobParameters p) {
     if (p.fileStorage()) {
       if (p.datasetDir() == null) {
@@ -47,14 +55,16 @@ public class PostingDatasetsFactory {
       }
       return new FileDatasets(p.datasetDir(), p.dalytran());
     }
-    return new JpaDatasets(
-        dailyTransactions.getObject(),
-        cardXref.getObject(),
-        accounts.getObject(),
-        tranCatBalances.getObject(),
-        transactions.getObject(),
-        customers.getObject(),
-        cards.getObject(),
-        p.dalytran());
+    JpaDatasets jpa =
+        new JpaDatasets(
+            dailyTransactions.getObject(),
+            cardXref.getObject(),
+            accounts.getObject(),
+            tranCatBalances.getObject(),
+            transactions.getObject(),
+            customers.getObject(),
+            cards.getObject(),
+            p.dalytran());
+    return entityManager == null ? jpa : jpa.withEntityManager(entityManager.getIfAvailable());
   }
 }

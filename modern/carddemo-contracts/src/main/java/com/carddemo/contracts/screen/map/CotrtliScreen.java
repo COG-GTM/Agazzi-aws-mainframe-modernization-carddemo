@@ -19,20 +19,51 @@ public final class CotrtliScreen {
           String trtype,
       @JsonProperty("TRDESC") @ScreenField(row = 8, column = 25, length = 50, input = true)
           String trdesc,
+      @JsonProperty("TRTSEL1") @ScreenField(row = 12, column = 6, length = 1, input = true)
+          String trtsel1,
       @JsonProperty("TRTYPD1") @ScreenField(row = 12, column = 25, length = 50, input = true)
           String trtypd1,
+      @JsonProperty("TRTSEL2") @ScreenField(row = 13, column = 6, length = 1, input = true)
+          String trtsel2,
       @JsonProperty("TRTYPD2") @ScreenField(row = 13, column = 25, length = 50, input = true)
           String trtypd2,
+      @JsonProperty("TRTSEL3") @ScreenField(row = 14, column = 6, length = 1, input = true)
+          String trtsel3,
       @JsonProperty("TRTYPD3") @ScreenField(row = 14, column = 25, length = 50, input = true)
           String trtypd3,
+      @JsonProperty("TRTSEL4") @ScreenField(row = 15, column = 6, length = 1, input = true)
+          String trtsel4,
       @JsonProperty("TRTYPD4") @ScreenField(row = 15, column = 25, length = 50, input = true)
           String trtypd4,
+      @JsonProperty("TRTSEL5") @ScreenField(row = 16, column = 6, length = 1, input = true)
+          String trtsel5,
       @JsonProperty("TRTYPD5") @ScreenField(row = 16, column = 25, length = 50, input = true)
           String trtypd5,
+      @JsonProperty("TRTSEL6") @ScreenField(row = 17, column = 6, length = 1, input = true)
+          String trtsel6,
       @JsonProperty("TRTYPD6") @ScreenField(row = 17, column = 25, length = 50, input = true)
           String trtypd6,
+      @JsonProperty("TRTSEL7") @ScreenField(row = 18, column = 6, length = 1, input = true)
+          String trtsel7,
       @JsonProperty("TRTYPD7") @ScreenField(row = 18, column = 25, length = 50, input = true)
-          String trtypd7) {}
+          String trtypd7) {
+
+    /** contracts-v1 constructor (without the runtime-unprotected fields). */
+    public Input(
+        String trtype,
+        String trdesc,
+        String trtypd1,
+        String trtypd2,
+        String trtypd3,
+        String trtypd4,
+        String trtypd5,
+        String trtypd6,
+        String trtypd7) {
+      this(
+          trtype, trdesc, null, trtypd1, null, trtypd2, null, trtypd3, null, trtypd4, null, trtypd5,
+          null, trtypd6, null, trtypd7);
+    }
+  }
 
   /** All named fields of the map (map ...O fields). */
   public record Output(
@@ -47,31 +78,38 @@ public final class CotrtliScreen {
           String trtype,
       @JsonProperty("TRDESC") @ScreenField(row = 8, column = 25, length = 50, input = true)
           String trdesc,
-      @JsonProperty("TRTSEL1") @ScreenField(row = 12, column = 6, length = 1) String trtsel1,
+      @JsonProperty("TRTSEL1") @ScreenField(row = 12, column = 6, length = 1, input = true)
+          String trtsel1,
       @JsonProperty("TRTTYP1") @ScreenField(row = 12, column = 17, length = 2) String trttyp1,
       @JsonProperty("TRTYPD1") @ScreenField(row = 12, column = 25, length = 50, input = true)
           String trtypd1,
-      @JsonProperty("TRTSEL2") @ScreenField(row = 13, column = 6, length = 1) String trtsel2,
+      @JsonProperty("TRTSEL2") @ScreenField(row = 13, column = 6, length = 1, input = true)
+          String trtsel2,
       @JsonProperty("TRTTYP2") @ScreenField(row = 13, column = 17, length = 2) String trttyp2,
       @JsonProperty("TRTYPD2") @ScreenField(row = 13, column = 25, length = 50, input = true)
           String trtypd2,
-      @JsonProperty("TRTSEL3") @ScreenField(row = 14, column = 6, length = 1) String trtsel3,
+      @JsonProperty("TRTSEL3") @ScreenField(row = 14, column = 6, length = 1, input = true)
+          String trtsel3,
       @JsonProperty("TRTTYP3") @ScreenField(row = 14, column = 17, length = 2) String trttyp3,
       @JsonProperty("TRTYPD3") @ScreenField(row = 14, column = 25, length = 50, input = true)
           String trtypd3,
-      @JsonProperty("TRTSEL4") @ScreenField(row = 15, column = 6, length = 1) String trtsel4,
+      @JsonProperty("TRTSEL4") @ScreenField(row = 15, column = 6, length = 1, input = true)
+          String trtsel4,
       @JsonProperty("TRTTYP4") @ScreenField(row = 15, column = 17, length = 2) String trttyp4,
       @JsonProperty("TRTYPD4") @ScreenField(row = 15, column = 25, length = 50, input = true)
           String trtypd4,
-      @JsonProperty("TRTSEL5") @ScreenField(row = 16, column = 6, length = 1) String trtsel5,
+      @JsonProperty("TRTSEL5") @ScreenField(row = 16, column = 6, length = 1, input = true)
+          String trtsel5,
       @JsonProperty("TRTTYP5") @ScreenField(row = 16, column = 17, length = 2) String trttyp5,
       @JsonProperty("TRTYPD5") @ScreenField(row = 16, column = 25, length = 50, input = true)
           String trtypd5,
-      @JsonProperty("TRTSEL6") @ScreenField(row = 17, column = 6, length = 1) String trtsel6,
+      @JsonProperty("TRTSEL6") @ScreenField(row = 17, column = 6, length = 1, input = true)
+          String trtsel6,
       @JsonProperty("TRTTYP6") @ScreenField(row = 17, column = 17, length = 2) String trttyp6,
       @JsonProperty("TRTYPD6") @ScreenField(row = 17, column = 25, length = 50, input = true)
           String trtypd6,
-      @JsonProperty("TRTSEL7") @ScreenField(row = 18, column = 6, length = 1) String trtsel7,
+      @JsonProperty("TRTSEL7") @ScreenField(row = 18, column = 6, length = 1, input = true)
+          String trtsel7,
       @JsonProperty("TRTTYP7") @ScreenField(row = 18, column = 17, length = 2) String trttyp7,
       @JsonProperty("TRTYPD7") @ScreenField(row = 18, column = 25, length = 50, input = true)
           String trtypd7,

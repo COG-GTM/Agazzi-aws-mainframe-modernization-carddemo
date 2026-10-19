@@ -90,6 +90,17 @@ public class CardListService {
       }
       return cardFlag != Filter.VALID || c.getCardNum().equals(cardFilter);
     }
+
+    /**
+     * Account whose cards are the only ones {@link #include} can accept (owned account of a USER,
+     * else a valid account filter): browse it through the account index instead of all of CARDDAT.
+     */
+    Long accountPath() {
+      if (owned.isPresent()) {
+        return owned.get();
+      }
+      return acctFlag == Filter.VALID ? acctFilter : null;
+    }
   }
 
   /**
@@ -248,7 +259,8 @@ public class CardListService {
     boolean skipCursor = false;
     boolean done = false;
     while (!done) {
-      List<Card> chunk = browser.readNext(cursor, BROWSE_CHUNK + (skipCursor ? 1 : 0));
+      List<Card> chunk =
+          browser.readNext(cursor, BROWSE_CHUNK + (skipCursor ? 1 : 0), r.accountPath());
       if (skipCursor && !chunk.isEmpty() && chunk.get(0).getCardNum().equals(cursor)) {
         chunk = chunk.subList(1, chunk.size());
       }
@@ -311,7 +323,7 @@ public class CardListService {
     String cursor = oldFirst;
     boolean done = false;
     while (!done) {
-      List<Card> chunk = browser.readPrev(cursor, BROWSE_CHUNK);
+      List<Card> chunk = browser.readPrev(cursor, BROWSE_CHUNK, r.accountPath());
       if (counter == MAX_SCREEN_LINES + 1 && !chunk.isEmpty()) {
         counter--;
       }

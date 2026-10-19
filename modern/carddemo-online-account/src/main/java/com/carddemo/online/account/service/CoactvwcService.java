@@ -43,7 +43,8 @@ public class CoactvwcService {
       "Account Filter must  be a non-zero 11 digit number";
 
   /** Program COMMAREA kept between pseudo-conversational turns (CA-CALL-CONTEXT is unused). */
-  public record State(ConversationContext contextAtReturn, String lastAcctsid) {}
+  public record State(ConversationContext contextAtReturn, String lastAcctsid)
+      implements java.io.Serializable {}
 
   private enum Filter {
     BLANK,
