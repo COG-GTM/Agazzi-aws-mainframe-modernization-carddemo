@@ -231,6 +231,14 @@ public class CoactupcService {
 
   /** 1100-RECEIVE-MAP. */
   private static void receive(Task t, CoactupScreen.Input input) {
+    if (t.action == ChangeAction.CHANGES_OK_NOT_CONFIRMED
+        && t.nw != null
+        && t.nw.get("ACCTSID") != null) {
+      // 3310-PROTECT-ALL-ATTRS: while F5 is pending every field is protected, so the terminal
+      // cannot send changes; the validated values are kept as they are.
+      t.ccAcctId = t.nw.get("ACCTSID");
+      return;
+    }
     Map<String, String> in = ScreenFields.toMap(input);
     String acct = in.get("ACCTSID");
     t.ccAcctId = blankOrStar(acct) ? null : CobolText.pad(acct, 11);

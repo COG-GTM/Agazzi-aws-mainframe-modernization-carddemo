@@ -1,25 +1,28 @@
 package com.carddemo.online.account.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.carddemo.domain.entity.Customer;
+import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.online.account.service.AccountUpdateWriter;
 import com.carddemo.online.account.testapp.AccountTestApplication;
 import com.carddemo.online.account.testapp.AccountTestApplication.RewriteHook;
 import com.carddemo.online.account.testapp.Screens;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /** CAUP end-to-end through the screen resource: commit, conflicts, @Version, failures, authz. */
 @SpringBootTest(
@@ -35,6 +38,8 @@ class CoactupFlowTest {
   @Autowired RewriteHook hook;
   @Autowired PlatformTransactionManager txm;
   @Autowired AccountUpdateWriter writer;
+  @Autowired CustomerRepository customers;
+  @Autowired javax.sql.DataSource dataSource;
 
   @AfterEach
   void resetHook() {
@@ -115,18 +120,55 @@ class CoactupFlowTest {
   }
 
   @Test
-  void optimisticLockDuringRewriteRollsBackBothRecords() throws Exception {
+  void readUpdateLocksBothRowsUntilRewrite() throws Exception {
     Screens t = validated("USER0001", "704");
-    int before = fico();
-    TransactionTemplate other = new TransactionTemplate(txm);
-    other.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    List<String> blocked = new java.util.concurrent.CopyOnWriteArrayList<>();
     hook.action =
-        id ->
-            other.executeWithoutResult(
-                s -> jdbc.update("update customer set version = version + 1 where cust_id = 1"));
-    JsonNode r = t.send("PF5");
-    assertThat(Screens.messages(r)).contains("Record changed by some one else. Please review");
-    assertThat(fico()).isEqualTo(before);
+        id -> {
+          // a second terminal on its own connection, outside the CAUP unit of work
+          try (java.sql.Connection other = dataSource.getConnection();
+              java.sql.Statement st = other.createStatement()) {
+            st.execute("SET LOCK_TIMEOUT 100");
+            for (String table : new String[] {"customer", "account"}) {
+              String key = "customer".equals(table) ? "cust_id" : "acct_id";
+              try {
+                st.executeUpdate(
+                    "update " + table + " set version = version where " + key + " = 1");
+              } catch (java.sql.SQLException e) {
+                blocked.add(table);
+              }
+            }
+            st.execute("SET LOCK_TIMEOUT 10000");
+          } catch (java.sql.SQLException e) {
+            throw new IllegalStateException(e);
+          }
+        };
+    assertThat(Screens.messages(t.send("PF5"))).contains("Changes committed to database");
+    assertThat(blocked).containsExactly("customer", "account");
+    assertThat(fico()).isEqualTo(704);
+  }
+
+  @Test
+  void staleCopyElsewhereFailsOnVersion() throws Exception {
+    Customer stale = customers.findById(1).orElseThrow();
+    Screens t = validated("USER0001", "707");
+    assertThat(Screens.messages(t.send("PF5"))).contains("Changes committed to database");
+    stale.setCustFicoCreditScore(300);
+    assertThatThrownBy(() -> customers.save(stale))
+        .isInstanceOf(ObjectOptimisticLockingFailureException.class);
+    assertThat(fico()).isEqualTo(707);
+  }
+
+  @Test
+  void fieldsAreProtectedWhileConfirmationIsPending() throws Exception {
+    Screens t = validated("USER0001", "706");
+    JsonNode r = t.send("PF5", "ACSTFCO", "999", "ACSFNAM", "Mallory");
+    assertThat(Screens.messages(r)).contains("Changes committed to database");
+    assertThat(fico()).isEqualTo(706);
+    assertThat(
+            jdbc.queryForObject(
+                "select cust_first_name from customer where cust_id=1", String.class))
+        .startsWith("Immanuel");
   }
 
   @Test

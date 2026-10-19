@@ -5,6 +5,8 @@ import com.carddemo.domain.entity.Customer;
 import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.online.account.support.CobolText;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
@@ -14,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 9600-WRITE-PROCESSING: READ UPDATE of ACCTDAT and CUSTDAT, 9700 compare with the fetched values,
- * REWRITE of both records in one unit of work (SYNCPOINT ROLLBACK on failure). Concurrent writers
- * are detected by {@code @Version} at flush time.
+ * REWRITE of both records in one unit of work (SYNCPOINT ROLLBACK on failure). READ UPDATE is a
+ * {@code PESSIMISTIC_WRITE} row lock held on both rows until commit, so nothing can slip in between
+ * the 9700 compare and the REWRITEs; writers holding a stale copy elsewhere fail on
+ * {@code @Version}.
  */
 @Component
 public class AccountUpdateWriter {
@@ -37,11 +41,14 @@ public class AccountUpdateWriter {
   private final AccountRepository accounts;
   private final CustomerRepository customers;
   private final ObjectProvider<BeforeRewrite> hooks;
+  private final EntityManager em;
 
   public AccountUpdateWriter(
       AccountRepository accounts,
       CustomerRepository customers,
-      ObjectProvider<BeforeRewrite> hooks) {
+      ObjectProvider<BeforeRewrite> hooks,
+      EntityManager em) {
+    this.em = em;
     this.accounts = accounts;
     this.customers = customers;
     this.hooks = hooks;
@@ -54,11 +61,13 @@ public class AccountUpdateWriter {
       AccountSnapshot old,
       Map<String, String> nw,
       Map<String, BigDecimal> amounts) {
-    Optional<Account> acct = accounts.findById(acctId);
+    Optional<Account> acct =
+        Optional.ofNullable(em.find(Account.class, acctId, LockModeType.PESSIMISTIC_WRITE));
     if (acct.isEmpty()) {
       return Result.COULD_NOT_LOCK_ACCT;
     }
-    Optional<Customer> cust = customers.findById(custId);
+    Optional<Customer> cust =
+        Optional.ofNullable(em.find(Customer.class, custId, LockModeType.PESSIMISTIC_WRITE));
     if (cust.isEmpty()) {
       return Result.COULD_NOT_LOCK_CUST;
     }
