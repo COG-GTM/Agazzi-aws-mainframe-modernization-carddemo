@@ -108,6 +108,8 @@ class OnlineAuthSessionIT {
 
     assertThat(call("GET", "coadm01", null, cookie).statusCode()).isEqualTo(403);
 
+    // back on the menu (COACTVWC PF3 = XCTL COMEN01C with PGM-CONTEXT ENTER -> first send)
+    assertThat(call("GET", "comen01", null, cookie).statusCode()).isEqualTo(200);
     var pf3 = call("POST", "comen01", "{\"action\":\"PF3\",\"fields\":{}}", cookie);
     assertThat(json.readTree(pf3.body()).get("nextScreen").asText()).isEqualTo("COSGN00");
     assertThat(
