@@ -1,0 +1,28 @@
+# Golden master for app/jcl/TRANREPT.jcl (REPROC + SORT + CBTRN03C) — owner b3-reports.
+# The SYMNAMES/DATEPARM window is a run parameter: the golden uses 2022-07-01..2022-07-31
+# so that the transactions posted by POSTTRAN/INTCALC (proc date 2022-07-18) are reported.
+job: TRANREPT
+jcl: app/jcl/TRANREPT.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y, input: "golden:COMBTRAN/expected/TRANSACT.dat"}
+  TRANBKUP: {org: ps, lrecl: 350, layout: CVTRA05Y}
+  TRANDALY: {org: ps, lrecl: 350, layout: CVTRA05Y}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "seed:cardxref.txt"}
+  TRANTYPE: {org: ksds, lrecl: 60, key: [0, 2], layout: CVTRA03Y, input: "seed:trantype.txt"}
+  TRANCATG: {org: ksds, lrecl: 60, key: [0, 6], layout: CVTRA04Y, input: "seed:trancatg.txt"}
+  DATEPARM: {org: ps, lrecl: 80, input: "input/DATEPARM.txt"}
+  TRANREPT: {org: ps, lrecl: 133, layout: CVTRA07Y, init_empty: true}
+steps:
+  - {name: STEP05R-REPROC, kind: repro, infile: TRANSACT, outfile: TRANBKUP}
+  - name: STEP05R-SORT
+    kind: sort
+    sortin: TRANBKUP
+    sortout: TRANDALY
+    fields: [[263, 16, A]]
+    include: [[305, 10, GE, "2022-07-01"], [305, 10, LE, "2022-07-31"]]
+  - name: STEP10R
+    program: CBTRN03C
+    dd: {TRANFILE: TRANDALY, CARDXREF: CARDXREF, TRANTYPE: TRANTYPE, TRANCATG: TRANCATG,
+         DATEPARM: DATEPARM, TRANREPT: TRANREPT}
+outputs: [TRANDALY, TRANREPT]

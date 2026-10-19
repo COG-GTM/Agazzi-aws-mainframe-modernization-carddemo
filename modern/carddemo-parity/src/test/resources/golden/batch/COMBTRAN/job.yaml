@@ -1,0 +1,14 @@
+# Golden master for app/jcl/COMBTRAN.jcl (SORT + IDCAMS REPRO) — owner b1-posting.
+# Merges the posted transactions (POSTTRAN) with the interest transactions (INTCALC).
+job: COMBTRAN
+jcl: app/jcl/COMBTRAN.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TRANBKUP: {org: ps, lrecl: 350, layout: CVTRA05Y, input: "golden:POSTTRAN/expected/TRANSACT.dat"}
+  SYSTRAN: {org: ps, lrecl: 350, layout: CVTRA05Y, input: "golden:INTCALC/expected/SYSTRAN.dat"}
+  COMBINED: {org: ps, lrecl: 350, layout: CVTRA05Y}
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y}
+steps:
+  - {name: STEP05R, kind: sort, sortin: [TRANBKUP, SYSTRAN], sortout: COMBINED, fields: [[1, 16, A]]}
+  - {name: STEP10, kind: repro, infile: COMBINED, outfile: TRANSACT}
+outputs: [COMBINED, TRANSACT]
