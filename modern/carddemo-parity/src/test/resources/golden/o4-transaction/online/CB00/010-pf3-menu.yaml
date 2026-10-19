@@ -1,0 +1,18 @@
+# COBIL00 PF3 -> menu
+id: CB00-010
+title: PF3 -> menu
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01

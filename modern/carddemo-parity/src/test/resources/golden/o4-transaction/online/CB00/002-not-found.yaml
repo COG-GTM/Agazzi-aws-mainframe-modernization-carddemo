@@ -1,0 +1,21 @@
+# COBIL00 conto inesistente
+id: CB00-002
+title: conto inesistente
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: 00000000099
+  expect:
+    message: Account ID NOT found...
+    fieldErrors:
+    - ACTIDIN

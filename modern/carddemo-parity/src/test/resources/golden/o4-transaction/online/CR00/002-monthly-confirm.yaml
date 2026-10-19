@@ -1,0 +1,21 @@
+# CORPT00 mensile senza conferma
+id: CR00-002
+title: mensile senza conferma
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    MONTHLY: X
+  expect:
+    message: Please confirm to print the Monthly report...
+    fieldErrors:
+    - CONFIRM

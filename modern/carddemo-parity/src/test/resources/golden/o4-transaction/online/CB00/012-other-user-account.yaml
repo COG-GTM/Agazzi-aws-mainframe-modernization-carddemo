@@ -1,0 +1,23 @@
+# COBIL00 USER0002 paga il conto 1 (nessun controllo di proprieta nel COBOL)
+id: CB00-012
+title: USER0002 paga il conto 1 (nessun controllo di proprieta nel COBOL)
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0002
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: '00000000001'
+    CONFIRM: Y
+  expect:
+    message: Payment successful.  Your Transaction ID is 0000000000000001.
+    db:
+    - sql: SELECT CAST(acct_curr_bal AS VARCHAR) FROM account WHERE acct_id=1
+      expect: '0.00'

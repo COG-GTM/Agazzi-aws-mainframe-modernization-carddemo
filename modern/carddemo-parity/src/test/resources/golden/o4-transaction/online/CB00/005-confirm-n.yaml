@@ -1,0 +1,26 @@
+# COBIL00 N pulisce lo schermo
+id: CB00-005
+title: N pulisce lo schermo
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: '00000000001'
+    CONFIRM: N
+  expect:
+    message: null
+    fields:
+      ACTIDIN: ''
+      CURBAL: ''
+    db:
+    - sql: SELECT CAST(acct_curr_bal AS VARCHAR) FROM account WHERE acct_id=1
+      expect: '194.00'
