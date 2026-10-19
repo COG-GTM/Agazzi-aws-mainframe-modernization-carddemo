@@ -4,4 +4,4 @@
 # golden/batch/<JOB>/expected, verified byte for byte by B5GoldenParityTest.
 job: fullBatchCycle
 script: scripts/run_full_batch.sh
-steps: [CLOSEFIL, POSTTRAN, INTCALC, COMBTRAN, TRANREPT, CREASTMT, OPENFIL]
+steps: [CLOSEFIL, POSTTRAN, INTCALC, TRANBKP, COMBTRAN, TRANREPT, CREASTMT, OPENFIL]

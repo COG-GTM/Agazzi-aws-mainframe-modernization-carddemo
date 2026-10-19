@@ -53,7 +53,8 @@ class OrchestrationPostgresIT extends BatchTestBase {
     assertThat(restarted.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(maintenance.closedFiles()).isEmpty();
     assertThat(RunLog.runs())
-        .containsExactly("POSTTRAN", "INTCALC", "COMBTRAN", "COMBTRAN", "TRANREPT", "CREASTMT");
+        .containsExactly(
+            "POSTTRAN", "INTCALC", "TRANBKP", "COMBTRAN", "COMBTRAN", "TRANREPT", "CREASTMT");
   }
 
   @Test

@@ -47,12 +47,22 @@ public class OrchestrationProperties {
     return transfer;
   }
 
-  /** {@code fullBatchCycle}: jobs launched in order, by name, through the JobRegistry. */
+  /**
+   * {@code fullBatchCycle}: jobs launched in order, by name, through the JobRegistry. TRANBKP
+   * before COMBTRAN as in {@code scripts/run_full_batch.sh}: COMBTRAN reads TRANSACT.BKUP(0).
+   */
   public static class FullCycle {
     private List<String> jobs =
         new ArrayList<>(
             List.of(
-                "CLOSEFIL", "POSTTRAN", "INTCALC", "COMBTRAN", "TRANREPT", "CREASTMT", "OPENFIL"));
+                "CLOSEFIL",
+                "POSTTRAN",
+                "INTCALC",
+                "TRANBKP",
+                "COMBTRAN",
+                "TRANREPT",
+                "CREASTMT",
+                "OPENFIL"));
 
     public List<String> getJobs() {
       return jobs;

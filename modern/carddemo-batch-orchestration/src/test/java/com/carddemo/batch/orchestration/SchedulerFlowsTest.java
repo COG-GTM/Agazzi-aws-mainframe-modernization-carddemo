@@ -90,10 +90,17 @@ class SchedulerFlowsTest extends BatchTestBase {
     JobExecution e = run("fullBatchCycle");
     assertThat(e.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(RunLog.runs())
-        .containsExactly("POSTTRAN", "INTCALC", "COMBTRAN", "TRANREPT", "CREASTMT");
+        .containsExactly("POSTTRAN", "INTCALC", "TRANBKP", "COMBTRAN", "TRANREPT", "CREASTMT");
     assertThat(stepNames(e))
         .containsExactly(
-            "CLOSEFIL", "POSTTRAN", "INTCALC", "COMBTRAN", "TRANREPT", "CREASTMT", "OPENFIL");
+            "CLOSEFIL",
+            "POSTTRAN",
+            "INTCALC",
+            "TRANBKP",
+            "COMBTRAN",
+            "TRANREPT",
+            "CREASTMT",
+            "OPENFIL");
     assertThat(JclReturnCodes.of(e)).isZero();
   }
 
@@ -111,9 +118,10 @@ class SchedulerFlowsTest extends BatchTestBase {
     JobExecution restart = run("fullBatchCycle", p);
     assertThat(restart.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(stepNames(restart))
-        .containsExactly("INTCALC", "COMBTRAN", "TRANREPT", "CREASTMT", "OPENFIL");
+        .containsExactly("INTCALC", "TRANBKP", "COMBTRAN", "TRANREPT", "CREASTMT", "OPENFIL");
     assertThat(RunLog.runs())
-        .containsExactly("POSTTRAN", "INTCALC", "INTCALC", "COMBTRAN", "TRANREPT", "CREASTMT");
+        .containsExactly(
+            "POSTTRAN", "INTCALC", "INTCALC", "TRANBKP", "COMBTRAN", "TRANREPT", "CREASTMT");
     long intcalcInstances =
         explorer.getJobInstances("INTCALC", 0, 100).stream()
             .filter(i -> explorer.getJobExecutions(i).size() == 2)

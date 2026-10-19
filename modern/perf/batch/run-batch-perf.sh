@@ -124,7 +124,7 @@ for JOB in $JOBS; do
   fi
   EXTRA_ARGS=""
   # TRANREPT: date range as job parameters (replaces SYMNAMES/DATEPARM of TRANREPT.jcl).
-  [[ "$JOB" == "TRANREPT" ]] && EXTRA_ARGS="startDate=${TRANREPT_START:-2022-01-01} endDate=${TRANREPT_END:-2022-12-31}"
+  [[ "$JOB" == "TRANREPT" || "$JOB" == "fullBatchCycle" ]] && EXTRA_ARGS="startDate=${TRANREPT_START:-2022-01-01} endDate=${TRANREPT_END:-2022-12-31}"
   log "run $JOB (storage=$STORAGE, input $DSN=$NREC)"
   T0=$(now_ms)
   set +e
