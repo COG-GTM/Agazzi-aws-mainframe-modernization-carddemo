@@ -1,0 +1,14 @@
+# Activate together with "aws" (SPRING_PROFILES_ACTIVE=aws,aws-sm) to read the DB credentials
+# straight from AWS Secrets Manager via Spring Cloud AWS (requires carddemo-security on the
+# classpath). The secret is the RDS-managed JSON {"username": ..., "password": ...}; the IAM task
+# role needs secretsmanager:GetSecretValue on it. Startup fails if the secret cannot be read.
+spring:
+  config:
+    import: aws-secretsmanager:${CARDDEMO_DB_SECRET_ID}?prefix=carddemo.db.
+  cloud:
+    aws:
+      secretsmanager:
+        enabled: true
+  datasource:
+    username: ${carddemo.db.username}
+    password: ${carddemo.db.password}

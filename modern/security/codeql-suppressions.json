@@ -1,0 +1,17 @@
+[
+  {
+    "rule": "java/spring-disabled-csrf-protection",
+    "path": "modern/carddemo-app/src/main/java/com/carddemo/app/config/Fase0SecurityAutoConfiguration.java",
+    "reason": "Fase 0 fallback chain (HTTP Basic, no session cookie => no ambient credential for CSRF). @ConditionalOnMissingBean: replaced by the O1 session-based chain, which must enable CSRF (ASVS-L2.md 4.2.2). File is outside the 5C perimeter."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/carddemo-parity/src/test/java/com/carddemo/parity/batch/GoldenHarnessReproducibilityTest.java",
+    "reason": "Test-only code, never shipped: runs the golden harness script from the checked-out repo in CI."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/security/src/test/java/com/carddemo/security/TlsProfileIT.java",
+    "reason": "Test-only code, never shipped: invokes openssl from PATH to generate a throw-away self-signed certificate."
+  }
+]

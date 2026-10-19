@@ -11,18 +11,46 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
+  # carddemo-security ships Spring Cloud AWS Secrets Manager; the client is only built in aws-sm.
+  cloud:
+    aws:
+      secretsmanager:
+        enabled: false
   batch:
     job:
       enabled: false
     jdbc:
       initialize-schema: never
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+    whitelabel:
+      enabled: false
+  servlet:
+    session:
+      # ASVS 3.3.2: idle timeout; ADR-002 server-side session, cookie never readable by JS.
+      timeout: ${CARDDEMO_SESSION_TIMEOUT:15m}
+      tracking-modes: cookie
+      cookie:
+        name: CARDDEMO_SESSION
+        http-only: true
+        same-site: strict
+        # true in profile aws (TLS terminated at the ALB); plain-HTTP local runs need false.
+        secure: ${CARDDEMO_COOKIE_SECURE:false}
 management:
+  info:
+    env:
+      enabled: false
   endpoints:
     web:
       exposure:
         include: health,info
   endpoint:
     health:
+      show-details: never
       probes:
         enabled: true
 carddemo:

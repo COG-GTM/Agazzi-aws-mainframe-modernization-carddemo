@@ -1,0 +1,15 @@
+# gitleaks config for modern-security.yml (full-history scan). Extends the default rule set.
+title = "carddemo gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented false positives"
+paths = [
+  # Commit 4b9ec0ea committed Maven surefire XML reports of the old carddemo-java prototype. The two
+  # generic-api-key hits are Spring Boot's "Using generated security password: <uuid>" startup line:
+  # a random per-run in-memory password of a test JVM, not a credential of any system. target/ is
+  # gitignored now; generated build output is never a place for real secrets.
+  '''(^|/)target/surefire-reports/''',
+]

@@ -1,0 +1,191 @@
+# Fase 5C security gates for the Java 21 modernisation (modern/). Suppressions and their
+# justification live in modern/security/ (see modern/docs/security/README.md).
+name: modern-security
+
+on:
+  pull_request:
+    branches: [main, "migration/**"]
+  push:
+    branches: [main, "migration/**"]
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modern-security-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: -Xmx3g
+
+jobs:
+  dependency-check:
+    name: OWASP Dependency-Check (fail CVSS >= 7)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: modern
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      # The database is saved even if a later step fails, so the next run only fetches the delta.
+      - name: Restore NVD database
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.dependency-check-data
+          key: nvd-feed-${{ github.run_id }}
+          restore-keys: nvd-feed-
+      - name: Install reactor (no tests)
+        run: ./mvnw -B -q install -DskipTests -Djacoco.skip=true -Dcheckstyle.skip -Dspotless.check.skip=true
+      # Unauthenticated NVD API access is throttled to failure (~50k/410k records in 15 min), so the
+      # NVD JSON feeds come from the mirror published by the Dependency-Check project.
+      - name: Update NVD database
+        timeout-minutes: 60
+        run: >
+          ./mvnw -B -N org.owasp:dependency-check-maven:12.1.0:update-only
+          -DdataDirectory=$HOME/.dependency-check-data
+          -DnvdDatafeedUrl=https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/
+      - name: Save NVD database
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.dependency-check-data
+          key: nvd-feed-${{ github.run_id }}
+      - name: Dependency-Check (parent reactor)
+        run: >
+          ./mvnw -B org.owasp:dependency-check-maven:12.1.0:aggregate
+          -DfailBuildOnCVSS=7
+          -DsuppressionFiles=${{ github.workspace }}/modern/security/dependency-check-suppressions.xml
+          -DautoUpdate=false
+          -DdataDirectory=$HOME/.dependency-check-data
+          -DossindexAnalyzerEnabled=false -DretireJsAnalyzerEnabled=false
+          -DnodeAnalyzerEnabled=false -DnodeAuditAnalyzerEnabled=false
+          -DassemblyAnalyzerEnabled=false
+          -Dformats=HTML,JSON,SARIF -DoutputDirectory=target/dependency-check
+      - name: Dependency-Check (carddemo-security)
+        run: >
+          ./mvnw -B -f security/pom.xml org.owasp:dependency-check-maven:12.1.0:check
+          -DfailBuildOnCVSS=7 -DautoUpdate=false
+          -DsuppressionFiles=${{ github.workspace }}/modern/security/dependency-check-suppressions.xml
+          -DdataDirectory=$HOME/.dependency-check-data
+          -DossindexAnalyzerEnabled=false -DretireJsAnalyzerEnabled=false
+          -DnodeAnalyzerEnabled=false -DnodeAuditAnalyzerEnabled=false
+          -DassemblyAnalyzerEnabled=false
+          -Dformats=HTML,JSON -DoutputDirectory=target/dependency-check
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: |
+            modern/target/dependency-check/
+            modern/security/target/dependency-check/
+          if-no-files-found: ignore
+
+  codeql:
+    name: SAST (CodeQL java-kotlin, security-extended)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          build-mode: manual
+          queries: security-extended
+          config-file: ./modern/security/codeql-config.yml
+      - name: Build modern/ (reactor + carddemo-security)
+        working-directory: modern
+        run: |
+          ./mvnw -B -q install -DskipTests -Djacoco.skip=true -Dcheckstyle.skip -Dspotless.check.skip=true
+          ./mvnw -B -q -f security/pom.xml test-compile -Dcheckstyle.skip -Dspotless.check.skip=true
+      - uses: github/codeql-action/analyze@v3
+        id: analyze
+        with:
+          category: /language:java-kotlin
+          output: codeql-results
+      - name: Fail on error/warning-level security alerts
+        run: |
+          python3 - <<'PY'
+          import glob, json, sys
+          # Reviewed findings: exact rule + file, each with its reason.
+          accepted = {(a["rule"], a["path"]): a["reason"]
+                      for a in json.load(open("modern/security/codeql-suppressions.json"))}
+          bad = []
+          for f in glob.glob("codeql-results/*.sarif"):
+              for run in json.load(open(f))["runs"]:
+                  rules = {r["id"]: r for r in run["tool"]["driver"].get("rules", [])}
+                  for res in run.get("results", []):
+                      if res.get("suppressions"):
+                          continue
+                      level = res.get("level") or rules.get(res["ruleId"], {}).get(
+                          "defaultConfiguration", {}).get("level", "warning")
+                      if level in ("error", "warning"):
+                          loc = res["locations"][0]["physicalLocation"]
+                          uri = loc["artifactLocation"]["uri"]
+                          if (res["ruleId"], uri) in accepted:
+                              print(f'accepted {res["ruleId"]} {uri}: {accepted[(res["ruleId"], uri)]}')
+                              continue
+                          bad.append(f'{res["ruleId"]} {loc["artifactLocation"]["uri"]}:{loc.get("region", {}).get("startLine")}')
+          print("\n".join(bad) or "CodeQL: no error/warning security alerts")
+          sys.exit(1 if bad else 0)
+          PY
+
+  gitleaks:
+    name: Secret scanning (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks 8.21.2 (checksum verified)
+        run: |
+          v=8.21.2
+          curl -sSfL -o gl.tgz https://github.com/gitleaks/gitleaks/releases/download/v$v/gitleaks_${v}_linux_x64.tar.gz
+          echo "5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba  gl.tgz" | sha256sum -c -
+          tar -xzf gl.tgz gitleaks && rm gl.tgz
+      - name: gitleaks git
+        run: ./gitleaks git --no-banner --redact --verbose --config modern/security/gitleaks.toml --report-format sarif --report-path gitleaks.sarif .
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks.sarif
+          if-no-files-found: ignore
+
+  trivy:
+    name: Container image scan (Trivy HIGH/CRITICAL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t carddemo-app:${{ github.sha }} -f modern/Dockerfile modern
+      - name: Trivy image scan
+        run: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          -v "$PWD/modern/security:/cfg:ro" -v "$HOME/.cache/trivy:/root/.cache/trivy"
+          mirror.gcr.io/aquasec/trivy:0.58.1 image
+          --db-repository mirror.gcr.io/aquasec/trivy-db:2
+          --java-db-repository mirror.gcr.io/aquasec/trivy-java-db:1
+          --scanners vuln,secret,misconfig --image-config-scanners misconfig,secret
+          --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+          --ignorefile /cfg/trivyignore
+          carddemo-app:${{ github.sha }}
