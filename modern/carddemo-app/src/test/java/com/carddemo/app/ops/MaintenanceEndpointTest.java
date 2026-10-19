@@ -35,14 +35,14 @@ class MaintenanceEndpointTest {
     MaintenanceEndpoint endpoint = new MaintenanceEndpoint(files);
     assertThat(endpoint.state()).containsEntry("closedFiles", List.of());
 
-    assertThat(endpoint.closedFiles(List.of("CARDDAT", "ACCTDAT")))
+    assertThat(endpoint.closedFiles("CARDDAT, acctdat"))
         .containsEntry("closedFiles", List.of("ACCTDAT", "CARDDAT"))
         .containsEntry("inMaintenance", true);
-    assertThat(endpoint.closedFiles(List.of("ACCTDAT")))
-        .containsEntry("closedFiles", List.of("ACCTDAT"));
-    assertThat(endpoint.closedFiles(null))
+    assertThat(endpoint.closedFiles("ACCTDAT")).containsEntry("closedFiles", List.of("ACCTDAT"));
+    assertThat(endpoint.closedFiles(""))
         .containsEntry("closedFiles", List.of())
         .containsEntry("inMaintenance", false);
+    assertThat(endpoint.closedFiles(null)).containsEntry("closedFiles", List.of());
     assertThat(files.closed).isEmpty();
   }
 }

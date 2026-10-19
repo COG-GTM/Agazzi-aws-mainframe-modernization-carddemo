@@ -95,7 +95,7 @@ nessun fix aperto; prova rollback 14.10 OK; comunicazioni T-0 inviate.
 | 0.8 | 23:35 | DM | **Riconciliazione** (gate) | `tools/cutover/cutover.sh reconcile --db-url "$DB_URL" --source-root /data/T-0 --format ebcdic --out reports/T-0/reconciliation` → deve stampare `RECONCILIATION OK` | 10 min |
 | 0.9 | 23:45 | CM+BO | **Go/no-go switch** | firma su `reports/T-0/reconciliation/reconciliation.md` | 10 min |
 | 0.10 | 23:55 | PLT | Switch DNS/API Gateway: ALB `prod` in servizio, pagina di manutenzione rimossa | `terraform -chdir=deploy/terraform apply -var-file=env/prod.tfvars -var maintenance_page=false`; Route 53: `carddemo.<dominio>` → `alb_dns_name` (TTL abbassato a 60 s a T-1) | 15 min |
-| 0.11 | 00:10 | PLT | Apertura servizi Java (OPENFIL lato Java) | `POST /actuator/maintenance` (B5) con `closedFiles=[]` oppure `aws ecs update-service --cluster carddemo-prod --service carddemo-prod-app --desired-count 2` | 5 min |
+| 0.11 | 00:10 | PLT | Apertura servizi Java (OPENFIL lato Java) | `POST /actuator/maintenance` (B5, ruolo ADMIN) con body `{"closedFiles":""}` oppure `aws ecs update-service --cluster carddemo-prod --service carddemo-prod-app --desired-count 2` | 5 min |
 | 0.12 | 00:15 | QA | **Smoke test** con scrittura | `tools/cutover/smoke_test.py --base-url https://carddemo.<dominio> --strict --allow-write --posttran --report reports/T-0/smoke.json` (con `CARDDEMO_JOB_MODE=ecs`) | 10 min |
 | 0.13 | 00:25 | QA | Storno della transazione di prova (TDESC `SMOKE TEST CUTOVER`, importo -1.00) e verifica saldo | CT02 con importo opposto, poi `smoke_test.py` read-only | 10 min |
 | 0.14 | 00:35 | PLT | Abilita gli schedule EventBridge del batch Java (3A) | pipeline 3A | 10 min |
@@ -113,7 +113,7 @@ Dettagli e contratto CLI: [cutover/rollback.md](cutover/rollback.md).
 | # | Owner | Passo | Comando | Tempo |
 |---|---|---|---|---|
 | R.1 | CM+BO | Decisione (criteri rollback.md §1) | — | 15 min |
-| R.2 | PLT | Stop traffico Java: pagina manutenzione, CLOSEFIL lato Java | `terraform ... -var maintenance_page=true`; `POST /actuator/maintenance` closedFiles=ALL | 10 min |
+| R.2 | PLT | Stop traffico Java: pagina manutenzione, CLOSEFIL lato Java | `terraform ... -var maintenance_page=true`; `POST /actuator/maintenance` (ruolo ADMIN) con body `{"closedFiles":"ACCTDAT,CARDAIX,CARDDAT,CCXREF,CUSTDAT,CXACAIX,TRANSACT,USRSEC"}` | 10 min |
 | R.3a | MFO | *Prima di qualsiasi scrittura Java* (no-go T-0): riapre CICS sui VSAM invariati | submit `app/jcl/OPENFIL.jcl`, release Control-M | 10 min |
 | R.3b | DM | *Dopo scritture Java*: export PostgreSQL → VSAM | `tools/cutover/rollback/relational-to-vsam.sh --out /data/rollback/$(date +%F) --base-url https://carddemo.<dominio>` | 30 min |
 | R.4 | MFO | Upload binario dei file, submit `ROLLBACK.jcl` generato (DELETE/DEFINE/REPRO dei KSDS + rebuild AIX) | `sha256sum -c SHA256SUMS`, poi submit | 30 min |
