@@ -256,13 +256,37 @@ class PostingJobsTest {
     assertThat(step(failed, "STEP10").getExecutionContext().getInt("returnCode")).isEqualTo(12);
 
     Files.delete(dir.resolve("TRANSACT.dat"));
+    Generations.writeNew(generations, Generations.TRANSACT_COMBINED, List.of());
     JobExecution restarted = launcher.run(combtran, p);
     assertThat(restarted.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(restarted.getStepExecutions())
         .extracting(StepExecution::getStepName)
         .containsExactly("STEP10");
-    assertThat(generations.list(Generations.TRANSACT_COMBINED)).hasSize(before + 1);
+    assertThat(generations.list(Generations.TRANSACT_COMBINED)).hasSize(before + 2);
     assertThat(file("TRANSACT", 350)).hasSize(combined.size());
+  }
+
+  @Test
+  void tranbkpAbendsWhenTheTransactionMasterIsMissing() throws Exception {
+    int backups = generations.list(Generations.TRANSACT_BKUP).size();
+    JobExecution e = launcher.run(tranbkp, params().toJobParameters());
+    assertThat(e.getStatus()).isEqualTo(BatchStatus.FAILED);
+    assertThat(e.getExitStatus().getExitCode()).isEqualTo("ABEND-RC0012");
+    assertThat(e.getStepExecutions())
+        .extracting(StepExecution::getStepName)
+        .containsExactly("STEP05R");
+    assertThat(generations.list(Generations.TRANSACT_BKUP)).hasSize(backups);
+    assertThat(Files.exists(dir.resolve("TRANSACT.dat"))).isFalse();
+  }
+
+  @Test
+  void alternateIndexIsUpgradedByLaterPostings() throws Exception {
+    JobExecution idx = launcher.run(tranidx, params().toJobParameters());
+    assertThat(idx.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    assertThat(Files.readAllLines(dir.resolve(PostingTasklets.AIX_FILE))).isEmpty();
+    edgeInputs();
+    launcher.run(posttran, params().toJobParameters());
+    assertThat(Files.readAllLines(dir.resolve(PostingTasklets.AIX_FILE))).hasSize(5).isSorted();
   }
 
   @Test

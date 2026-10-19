@@ -44,4 +44,19 @@ class BatchUtilitiesGoldenParityTest {
     assertThat(List.of("CBTRN01C " + rc)).isEqualTo(Golden.returnCodes(golden));
     assertThat(Golden.rtrim(sysout.lines())).isEqualTo(Golden.sysout(golden));
   }
+
+  @Test
+  void cbtrn01cOnEmptyInputMatchesGolden() throws Exception {
+    Path edge = Golden.b1("POSTTRAN-EDGE").resolve("input");
+    java.nio.file.Files.writeString(tmp.resolve("DALYTRAN.dat"), "");
+    Golden.copy(edge.resolve("cardxref.txt"), tmp, FileDatasets.CARDXREF);
+    Golden.copy(edge.resolve("acctdata.txt"), tmp, FileDatasets.ACCTDATA);
+    Golden.copy(Golden.seed("custdata.txt"), tmp, FileDatasets.CUSTDATA);
+    Golden.copy(Golden.seed("carddata.txt"), tmp, FileDatasets.CARDDATA);
+    Sysout sysout = new Sysout(Cbtrn01cVerifier.PROGRAM);
+    int rc = new Cbtrn01cVerifier().run(new FileDatasets(tmp), sysout);
+    Path golden = Golden.b1("CBTRN01C-EMPTY");
+    assertThat(List.of("CBTRN01C " + rc)).isEqualTo(Golden.returnCodes(golden));
+    assertThat(Golden.rtrim(sysout.lines())).isEqualTo(Golden.sysout(golden));
+  }
 }

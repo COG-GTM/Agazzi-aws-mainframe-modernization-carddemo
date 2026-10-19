@@ -1,5 +1,6 @@
 package com.carddemo.batch.posting.dataset;
 
+import com.carddemo.batch.posting.idcams.TransactionUtilities;
 import com.carddemo.contracts.port.RecordCodec;
 import com.carddemo.contracts.record.AccountRecord;
 import com.carddemo.contracts.record.CardRecord;
@@ -9,6 +10,7 @@ import com.carddemo.contracts.record.DailyTransactionRecord;
 import com.carddemo.contracts.record.TranCatBalanceRecord;
 import com.carddemo.contracts.record.TransactionRecord;
 import com.carddemo.copybook.CoreCodecs;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ public final class FileDatasets implements PostingDatasets {
   public static final String TRANSACT = "TRANSACT";
   public static final String CUSTDATA = "CUSTDATA";
   public static final String CARDDATA = "CARDDATA";
+
+  /** TRANIDX alternate index (KEYS(26 304) NONUNIQUEKEY UPGRADE) as a line-sequential file. */
+  public static final String TRANSACT_AIX_FILE = "TRANSACT.AIX.dat";
 
   private final Path dir;
   private final Path dailyTransactionFile;
@@ -107,6 +112,11 @@ public final class FileDatasets implements PostingDatasets {
 
   @Override
   public void flush() {
+    boolean upgradeAix = transactions.isDirty();
     all.forEach(InMemoryKeyedDataset::flush);
+    Path aix = dir.resolve(TRANSACT_AIX_FILE);
+    if (upgradeAix && Files.exists(aix)) {
+      LineSequentialFile.write(aix, TransactionUtilities.alternateIndex(transactions.records()));
+    }
   }
 }

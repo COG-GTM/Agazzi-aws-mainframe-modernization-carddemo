@@ -7,7 +7,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 TOOLS="$HERE/../../../../../../tools/golden"
-JOBS=(POSTTRAN POSTTRAN-EDGE POSTTRAN-EMPTY CBTRN01C TRANBKP)
+JOBS=(POSTTRAN POSTTRAN-EDGE POSTTRAN-EMPTY CBTRN01C CBTRN01C-EMPTY TRANBKP)
 run() {
   python3 - "../b1-posting/$1" "${@:2}" <<PY
 import sys

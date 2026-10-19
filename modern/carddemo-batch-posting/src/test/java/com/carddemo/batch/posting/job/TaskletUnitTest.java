@@ -59,6 +59,47 @@ class TaskletUnitTest {
   }
 
   @Test
+  void jobExitStatusIsTheHighestStepConditionCode() {
+    JobExecution job = MetaDataInstanceFactory.createJobExecution();
+    job.setStatus(org.springframework.batch.core.BatchStatus.COMPLETED);
+    job.createStepExecution("STEP20").getExecutionContext().putInt(ReturnCodes.RC_KEY, 12);
+    job.createStepExecution("STEP30").getExecutionContext().putInt(ReturnCodes.RC_KEY, 0);
+    job.setExitStatus(org.springframework.batch.core.ExitStatus.COMPLETED);
+    new MaxConditionCodeListener().afterJob(job);
+    assertThat(job.getExitStatus().getExitCode()).isEqualTo("RC0012");
+    assertThat(ReturnCodes.processExitCode(job.getExitStatus().getExitCode())).isEqualTo(12);
+  }
+
+  @Test
+  void generationIsCatalogedOnlyWhenTheTransactionCommits() {
+    FileSystemGenerationStore store = new FileSystemGenerationStore(dir);
+    org.springframework.transaction.support.TransactionSynchronizationManager.initSynchronization();
+    try {
+      Generations.commitWithTransaction(store, store.allocate("ROLLBACK"));
+      Generations.commitWithTransaction(store, store.allocate("COMMIT"));
+      var syncs =
+          org.springframework.transaction.support.TransactionSynchronizationManager
+              .getSynchronizations();
+      syncs
+          .get(0)
+          .afterCompletion(
+              org.springframework.transaction.support.TransactionSynchronization
+                  .STATUS_ROLLED_BACK);
+      syncs
+          .get(1)
+          .afterCompletion(
+              org.springframework.transaction.support.TransactionSynchronization.STATUS_COMMITTED);
+    } finally {
+      org.springframework.transaction.support.TransactionSynchronizationManager
+          .clearSynchronization();
+    }
+    assertThat(store.list("ROLLBACK")).isEmpty();
+    assertThat(store.list("COMMIT")).hasSize(1);
+    Generations.commitWithTransaction(store, store.allocate("NOTX"));
+    assertThat(store.list("NOTX")).hasSize(1);
+  }
+
+  @Test
   void defaultStorageIsDatabase() {
     PostingJobParameters p = PostingJobParameters.from(new JobParameters());
     assertThat(p.fileStorage()).isFalse();

@@ -4,7 +4,6 @@ import com.carddemo.batch.posting.dataset.Keys;
 import com.carddemo.batch.posting.dataset.PostingDatasets;
 import com.carddemo.batch.posting.support.Sysout;
 import com.carddemo.contracts.record.CardXrefRecord;
-import com.carddemo.contracts.record.DailyTransactionRecord;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -27,19 +26,20 @@ public final class Cbtrn01cVerifier {
     ds.accounts().open();
     ds.transactions().open();
     String last = " ".repeat(350);
-    int n = 0;
     for (String raw : daily) {
       last = raw;
       sysout.display(raw);
-      verify(ds, ds.decodeDailyTransaction(raw, ++n), sysout);
+      verify(ds, raw, sysout);
     }
-    verify(ds, ds.decodeDailyTransaction(last, n + 1), sysout);
+    verify(ds, last, sysout);
     sysout.display("END OF EXECUTION OF PROGRAM " + PROGRAM);
     return 0;
   }
 
-  private void verify(PostingDatasets ds, DailyTransactionRecord tran, Sysout sysout) {
-    String card = Keys.pic(tran.dalytranCardNum(), 16);
+  /** Only DALYTRAN-ID (1:16) and DALYTRAN-CARD-NUM (263:16) are used: no numeric decoding. */
+  private void verify(PostingDatasets ds, String raw, Sysout sysout) {
+    String rec = Keys.pic(raw, 350);
+    String card = rec.substring(262, 278);
     Optional<CardXrefRecord> xref = ds.cardXref().read(card);
     if (xref.isEmpty()) {
       sysout.display("INVALID CARD NUMBER FOR XREF");
@@ -47,7 +47,7 @@ public final class Cbtrn01cVerifier {
           "CARD NUMBER "
               + card
               + " COULD NOT BE VERIFIED. SKIPPING TRANSACTION ID-"
-              + Keys.pic(tran.dalytranId(), 16));
+              + rec.substring(0, 16));
       return;
     }
     CardXrefRecord x = xref.get();

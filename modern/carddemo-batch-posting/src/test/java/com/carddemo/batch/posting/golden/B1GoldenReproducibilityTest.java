@@ -19,7 +19,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 class B1GoldenReproducibilityTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"POSTTRAN", "POSTTRAN-EDGE", "POSTTRAN-EMPTY", "CBTRN01C", "TRANBKP"})
+  @ValueSource(
+      strings = {
+        "POSTTRAN",
+        "POSTTRAN-EDGE",
+        "POSTTRAN-EMPTY",
+        "CBTRN01C",
+        "CBTRN01C-EMPTY",
+        "TRANBKP"
+      })
   void rerunGivesZeroDiff(String job) throws Exception {
     boolean hasCobc = onPath("cobc") && onPath("faketime");
     if ("true".equalsIgnoreCase(System.getenv("CARDDEMO_REQUIRE_COBOL"))) {

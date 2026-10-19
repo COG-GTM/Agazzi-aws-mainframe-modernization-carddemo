@@ -4,6 +4,7 @@ import com.carddemo.batch.posting.cbtrn01c.Cbtrn01cVerifier;
 import com.carddemo.batch.posting.cbtrn02c.Cbtrn02cPoster;
 import com.carddemo.batch.posting.cbtrn02c.PostingResult;
 import com.carddemo.batch.posting.dataset.DuplicateKeyException;
+import com.carddemo.batch.posting.dataset.FileDatasets;
 import com.carddemo.batch.posting.dataset.LineSequentialFile;
 import com.carddemo.batch.posting.dataset.PostingDatasets;
 import com.carddemo.batch.posting.idcams.TransactionUtilities;
@@ -26,12 +27,16 @@ import java.util.List;
 import java.util.Locale;
 import javax.sql.DataSource;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.ObjectProvider;
 
 /** Tasklets of the B1 JCL steps (one class per {@code EXEC}). */
 final class PostingTasklets {
 
   private static final int LRECL_TRAN = 350;
+
+  /** Job-context key: generation of TRANSACT.COMBINED(+1) cataloged by COMBTRAN STEP05R. */
+  static final String COMBINED_GENERATION = "combinedGeneration";
 
   private PostingTasklets() {}
 
@@ -60,7 +65,7 @@ final class PostingTasklets {
           LineSequentialFile.write(out, rejects);
         }
         ds.flush();
-        generations.commit(rejs);
+        Generations.commitWithTransaction(generations, rejs);
         step.getExecutionContext().putInt("processed", result.processed());
         step.getExecutionContext().putInt("rejected", result.rejected());
         step.getExecutionContext().putString("dalyrejs", rejs.dsn());
@@ -132,6 +137,12 @@ final class PostingTasklets {
 
     @Override
     protected int run(PostingJobParameters params, Sysout sysout, StepExecution step) {
+      if (params.fileStorage()
+          && !java.nio.file.Files.exists(
+              params.datasetDir().resolve(FileDatasets.TRANSACT + ".dat"))) {
+        sysout.display("IDC3012I ENTRY AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS NOT FOUND");
+        throw new CobolAbendException(12, "TRANSACT.VSAM.KSDS NOT FOUND", "35");
+      }
       List<TransactionRecord> recs = datasets.open(params).transactions().records();
       Generation g =
           Generations.writeNew(
@@ -226,6 +237,7 @@ final class PostingTasklets {
               sorted.size(),
               g.dsn()));
       step.getExecutionContext().putString("combined", g.dsn());
+      step.getJobExecution().getExecutionContext().putInt(COMBINED_GENERATION, g.number());
       step.setWriteCount(sorted.size());
       return 0;
     }
@@ -244,8 +256,15 @@ final class PostingTasklets {
 
     @Override
     protected int run(PostingJobParameters params, Sysout sysout, StepExecution step) {
+      ExecutionContext job = step.getJobExecution().getExecutionContext();
       List<String> combined =
-          Generations.readCurrent(generations, Generations.TRANSACT_COMBINED, null, LRECL_TRAN);
+          job.containsKey(COMBINED_GENERATION)
+              ? Generations.read(
+                  generations,
+                  new Generation(Generations.TRANSACT_COMBINED, job.getInt(COMBINED_GENERATION)),
+                  LRECL_TRAN)
+              : Generations.readCurrent(
+                  generations, Generations.TRANSACT_COMBINED, null, LRECL_TRAN);
       PostingDatasets ds = datasets.open(params);
       ds.transactions().open();
       int n = 0;
@@ -267,7 +286,7 @@ final class PostingTasklets {
     }
   }
 
-  static final String AIX_FILE = "TRANSACT.AIX.dat";
+  static final String AIX_FILE = FileDatasets.TRANSACT_AIX_FILE;
 
   /** TRANIDX STEP20: DEFINE ALTERNATEINDEX KEYS(26 304) NONUNIQUEKEY UPGRADE. */
   static final class TranidxStep20 extends JclStepTasklet {
