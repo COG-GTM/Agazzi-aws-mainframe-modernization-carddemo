@@ -238,6 +238,13 @@ public final class CopybookParser {
     return new Entry(level, name, pic, usage, occurs, minOccurs, dependingOn, redefines, values);
   }
 
+  private static LayoutNode target(List<LayoutNode> kids, Draft c) {
+    return kids.stream()
+        .filter(k -> k.name().equals(c.entry.redefines()))
+        .findFirst()
+        .orElseThrow();
+  }
+
   private static String literal(String token) {
     return token.startsWith("'") || token.startsWith("\"") ? token : upper(token);
   }
@@ -381,8 +388,18 @@ public final class CopybookParser {
       LayoutNode child = resolve(c, start, usage);
       kids.add(child);
       int childEnd = start + child.totalLength();
-      // the next item starts after the longest view of the REDEFINES family
-      pos = c.entry.redefines() == null ? childEnd : Math.max(pos, childEnd);
+      if (c.entry.redefines() != null && childEnd > start + target(kids, c).totalLength()) {
+        // IBM/GnuCOBOL: below level 01 a redefinition may not be larger than the redefined item
+        throw new IllegalArgumentException(
+            c.entry.name()
+                + " ("
+                + child.totalLength()
+                + " bytes) is larger than "
+                + c.entry.redefines());
+      }
+      if (c.entry.redefines() == null) {
+        pos = childEnd;
+      }
       end = Math.max(end, Math.max(pos, childEnd));
     }
     return new LayoutNode(

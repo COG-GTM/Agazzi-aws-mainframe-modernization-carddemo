@@ -133,15 +133,18 @@ class CopybookParserTest {
   }
 
   @Test
-  void longerRedefinitionPushesTheNextItem() {
-    RecordLayout l =
-        CopybookParser.parse(
-                "T",
-                cb("01 R.", "   05 A PIC X(2).", "   05 B REDEFINES A PIC X(4).", "   05 C PIC X."))
-            .get(0);
-    assertThat(node(l, "B").offset()).isZero();
-    assertThat(node(l, "C").offset()).isEqualTo(4);
-    assertThat(l.length()).isEqualTo(5);
+  void longerRedefinitionIsRejected() {
+    assertThatThrownBy(
+            () ->
+                CopybookParser.parse(
+                    "T",
+                    cb(
+                        "01 R.",
+                        "   05 A PIC X(2).",
+                        "   05 B REDEFINES A PIC X(4).",
+                        "   05 C PIC X.")))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("larger than A");
   }
 
   @Test
@@ -171,10 +174,20 @@ class CopybookParserTest {
                 "T", cb("01 R.", "   05 F PIC X(2).", "      88 F-HIGH VALUE HIGH-VALUES."))
             .get(0);
     byte[] ff = {(byte) 0xFF, (byte) 0xFF};
+    byte[] df = {(byte) 0xDF, (byte) 0xDF};
+    byte[] x9f = {(byte) 0x9F, (byte) 0x9F};
     for (CodecOptions o : List.of(CodecOptions.ASCII, CodecOptions.EBCDIC)) {
-      Item decoded = LayoutCodec.of(l, Item.class, o).decode(ff);
-      assertThat(l.condition("F-HIGH").test(decoded.code(), 2)).as(o.toString()).isTrue();
+      LayoutCodec<Item> codec = LayoutCodec.of(l, Item.class, o);
+      assertThat(l.condition("F-HIGH").test(codec.decode(ff).code(), 2, o.charset()))
+          .as(o.toString())
+          .isTrue();
     }
+    var ebcdic = LayoutCodec.of(l, Item.class, CodecOptions.EBCDIC);
+    var ascii = LayoutCodec.of(l, Item.class, CodecOptions.ASCII);
+    assertThat(
+            l.condition("F-HIGH").test(ebcdic.decode(df).code(), 2, CodecOptions.EBCDIC.charset()))
+        .isFalse();
+    assertThat(l.condition("F-HIGH").test(ascii.decode(x9f).code(), 2)).isFalse();
     assertThat(l.condition("F-HIGH").test("  ", 2)).isFalse();
   }
 

@@ -1,6 +1,8 @@
 package com.carddemo.copybook.layout;
 
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -37,21 +39,20 @@ public record Condition(String name, List<Range> values) {
    * alphanumerics are compared after padding the literal with spaces to {@code length}, numerics by
    * value.
    */
-  private static final java.util.Set<String> HIGH_VALUES =
-      java.util.Set.of("HIGH-VALUE", "HIGH-VALUES");
-
   public boolean test(Object value, int length) {
+    return test(value, length, StandardCharsets.ISO_8859_1);
+  }
+
+  /**
+   * As {@link #test(Object, int)}, for a value decoded with {@code charset}: figurative constants
+   * ({@code HIGH-VALUES} = X'FF', {@code LOW-VALUES} = X'00') are the decoding of their byte in
+   * that charset (CP037 X'FF' is U+009F).
+   */
+  public boolean test(Object value, int length, Charset charset) {
     for (Range r : values) {
       if (value instanceof String s) {
-        if (r.single() && HIGH_VALUES.contains(r.from())) {
-          // byte X'FF' decodes to U+00FF in ISO-8859-1 and to U+009F in CP037
-          if (s.length() == length && s.chars().allMatch(ch -> ch == 0xFF || ch == 0x9F)) {
-            return true;
-          }
-          continue;
-        }
-        String from = alphanumeric(r.from(), length);
-        String to = alphanumeric(r.to(), length);
+        String from = alphanumeric(r.from(), length, charset);
+        String to = alphanumeric(r.to(), length, charset);
         if (s.compareTo(from) >= 0 && s.compareTo(to) <= 0) {
           return true;
         }
@@ -67,11 +68,16 @@ public record Condition(String name, List<Range> values) {
 
   /** Alphanumeric value of a literal, padded with spaces (or repeated, for figuratives). */
   public static String alphanumeric(String literal, int length) {
+    return alphanumeric(literal, length, StandardCharsets.ISO_8859_1);
+  }
+
+  /** As {@link #alphanumeric(String, int)}, with figurative bytes decoded in {@code charset}. */
+  public static String alphanumeric(String literal, int length, Charset charset) {
     String fill =
         switch (literal) {
           case "SPACE", "SPACES" -> " ";
-          case "LOW-VALUE", "LOW-VALUES" -> "\u0000";
-          case "HIGH-VALUE", "HIGH-VALUES" -> "\u00ff";
+          case "LOW-VALUE", "LOW-VALUES" -> new String(new byte[] {0}, charset);
+          case "HIGH-VALUE", "HIGH-VALUES" -> new String(new byte[] {(byte) 0xFF}, charset);
           case "ZERO", "ZEROS", "ZEROES" -> "0";
           default -> null;
         };
