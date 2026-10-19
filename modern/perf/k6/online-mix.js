@@ -33,7 +33,11 @@ const TXS = MIX.map((m) => m.tx);
 const USER_MIX = MIX.filter((m) => m.tx !== 'CU00');
 const USER_W = USER_MIX.reduce((s, m) => s + m.w, 0);
 const CU00_W = MIX.filter((m) => m.tx === 'CU00').reduce((s, m) => s + m.w, 0);
-const ADMIN_VUS = CU00_W > 0 ? Math.max(1, Math.round((VUS * CU00_W) / (USER_W + CU00_W))) : 0;
+if (USER_W > 0 && CU00_W > 0 && VUS < 2) {
+  throw new Error('MIX has CU00 and user transactions: VUS must be >= 2 (one admin + one user VU)');
+}
+const ADMIN_SHARE = Math.round((VUS * CU00_W) / (USER_W + CU00_W));
+const ADMIN_VUS = CU00_W > 0 ? Math.min(USER_W > 0 ? VUS - 1 : VUS, Math.max(1, ADMIN_SHARE)) : 0;
 const USER_VUS = USER_W > 0 ? VUS - ADMIN_VUS : 0;
 const payments = new Counter('cb00_payments');
 

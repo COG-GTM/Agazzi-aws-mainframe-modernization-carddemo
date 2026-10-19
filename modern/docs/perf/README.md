@@ -77,7 +77,8 @@ Parametri (`-e` o env): `BASE_URL`, `VUS` (200), `RAMP_UP` (1m), `DURATION` (5m)
 Ogni VU fa sign-on CC00 (`POST /api/v1/screens/cosgn00`, cookie di sessione nel cookie jar del VU) e
 poi cicla sul mix: GET = primo SEND della mappa, POST = input terminale `{action, fields}`.
 CCLI pagina con PF8/PF7, CT00 con PF8, CT02 e CB00 completano con `CONFIRM=Y` (scrivono TRANSACT),
-CU00 gira in uno scenario `admin` separato con `VUS·w(CU00)/Σw` VU (default 10 su 200).
+CU00 gira in uno scenario `admin` separato con `VUS·w(CU00)/Σw` VU (default 10 su 200; almeno 1
+admin e 1 user, quindi `VUS>=2` se `MIX` contiene CU00 e altre transazioni).
 Check di business oltre a status 200 + schermata attesa: nessun `fieldErrors` su CAVW/CCLI/CT00/CT01/CT02,
 CT02 → "Transaction added successfully", CB00 → "Payment successful" o "You have nothing to pay"
 (account già saldato; i pagamenti reali sono contati in `cb00_payments`). Thresholds: globali (`http_req_failed`, `checks`, p95/p99) e
