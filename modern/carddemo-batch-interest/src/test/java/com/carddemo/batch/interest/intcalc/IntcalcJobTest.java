@@ -41,6 +41,7 @@ class IntcalcJobTest {
   @Autowired JobExplorer explorer;
   @Autowired GenerationStore generations;
   @Autowired B2JobListener jobListener;
+  @Autowired IntcalcTasklet tasklet;
 
   @Autowired
   @Qualifier("intcalcJob")
@@ -63,6 +64,29 @@ class IntcalcJobTest {
         .addString("run", run + System.nanoTime())
         .addString("SYSOUT", tmp.resolve("SYSOUT.txt").toString(), false)
         .toJobParameters();
+  }
+
+  @Test
+  void manySmallChunksKeepSystranOpenAndMatchTheGolden() throws Exception {
+    db.load(ACCOUNT, groups.input("ACCTDATA"));
+    db.load(CARD_XREF, groups.input("CARDXREF"));
+    db.load(TRAN_CAT_BALANCE, groups.input("TCATBALF"));
+    db.load(DISCLOSURE_GROUP, groups.input("DISCGRP"));
+    int gens = Generations.latest(generations, IntcalcTasklet.SYSTRAN);
+    tasklet.chunkAccounts(2);
+    try {
+      JobExecution run = launcher.run(job, params("chunks"));
+
+      assertThat(run.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    } finally {
+      tasklet.chunkAccounts(IntcalcTasklet.CHUNK_ACCOUNTS);
+    }
+    assertRecords(CoreCodecs.ACCOUNT, groups.expected("ACCTDATA", 300), db.unload(ACCOUNT));
+    assertThat(Generations.latest(generations, IntcalcTasklet.SYSTRAN)).isEqualTo(gens + 1);
+    assertRecords(
+        CoreCodecs.TRANSACTION,
+        groups.expected("SYSTRAN", 350),
+        Generations.current(generations, IntcalcTasklet.SYSTRAN));
   }
 
   @Test

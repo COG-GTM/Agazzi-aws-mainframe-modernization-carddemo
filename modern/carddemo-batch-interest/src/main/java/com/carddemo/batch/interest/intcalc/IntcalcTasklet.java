@@ -57,6 +57,8 @@ public class IntcalcTasklet implements Tasklet {
   /** Accounts per flush/clear chunk. */
   static final int CHUNK_ACCOUNTS = 500;
 
+  private int chunkAccounts = CHUNK_ACCOUNTS;
+
   @PersistenceContext private EntityManager em;
   private PlatformTransactionManager chunkTx;
   private ChunkTransaction chunks;
@@ -95,32 +97,43 @@ public class IntcalcTasklet implements Tasklet {
     return this;
   }
 
+  /** Test hook: accounts per committed chunk. */
+  IntcalcTasklet chunkAccounts(int accounts) {
+    this.chunkAccounts = accounts;
+    return this;
+  }
+
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-    if (chunkTx == null) {
-      return calculate(contribution, chunkContext);
-    }
-    chunks = new ChunkTransaction(chunkTx);
-    try {
-      RepeatStatus status = calculate(contribution, chunkContext);
-      chunks.commit();
-      return status;
-    } catch (RuntimeException e) {
-      chunks.rollback();
-      throw e;
-    } finally {
-      chunks = null;
+    // SYSTRAN(+1) is opened before the first chunk: it is bound to the step transaction (catalogued
+    // at step end), not to the first chunk commit.
+    try (GenerationWriter systran = GenerationWriter.open(generations, SYSTRAN)) {
+      if (chunkTx == null) {
+        return calculate(contribution, chunkContext, systran);
+      }
+      chunks = new ChunkTransaction(chunkTx);
+      try {
+        RepeatStatus status = calculate(contribution, chunkContext, systran);
+        chunks.commit();
+        return status;
+      } catch (RuntimeException e) {
+        chunks.rollback();
+        throw e;
+      } finally {
+        chunks = null;
+      }
     }
   }
 
-  private RepeatStatus calculate(StepContribution contribution, ChunkContext chunkContext) {
+  private RepeatStatus calculate(
+      StepContribution contribution, ChunkContext chunkContext, GenerationWriter systran) {
     String parmDate =
         pad(
             chunkContext.getStepContext().getStepExecution().getJobParameters().getString(PARM),
             10);
     sysout.display("START OF EXECUTION OF PROGRAM CBACT04C");
     List<TranCatBalance> records = balances.findAll().stream().sorted(KEY_ORDER).toList();
-    try (GenerationWriter systran = GenerationWriter.open(generations, SYSTRAN)) {
+    {
       Long lastAcct = null;
       Account account = null;
       CardXref xref = null;
@@ -135,7 +148,7 @@ public class IntcalcTasklet implements Tasklet {
           if (account != null) {
             updateAccount(account, totalInt);
             contribution.incrementWriteCount(1);
-            if (++accountsInChunk == CHUNK_ACCOUNTS) {
+            if (++accountsInChunk == chunkAccounts) {
               flushChunk();
               accountsInChunk = 0;
             }

@@ -117,7 +117,8 @@ for JOB in $JOBS; do
   read -r NREC DSN <<<"$(input_records "$JOB")"
   WORK="$RESULTS/work-$JOB"
   mkdir -p "$WORK"
-  if [[ "$STORAGE" == "file" ]]; then
+  # B3 reports (TRANREPT, CREASTMT) read the sequential datasets of datasetDir in both modes.
+  if [[ "$STORAGE" == "file" || "$JOB" == "TRANREPT" || "$JOB" == "CREASTMT" ]]; then
     cp "$DATA"/datasets/*.dat "$WORK/"
   fi
   log "run $JOB (storage=$STORAGE, input $DSN=$NREC)"
@@ -141,7 +142,8 @@ for JOB in $JOBS; do
   T1=$(now_ms)
   ELAPSED=$((T1 - T0))
   BSTATUS=$(psql -At -c "SELECT status FROM batch_job_execution e JOIN batch_job_instance i ON i.job_instance_id=e.job_instance_id WHERE i.job_name='$JOB' ORDER BY e.job_execution_id DESC LIMIT 1" 2>/dev/null || true)
-  if [[ $RC -eq 0 && "$BSTATUS" == "COMPLETED" ]]; then
+  # RC 4 = JCL warning (e.g. CBTRN02C rejects), still a completed run.
+  if [[ $RC -le 4 && "$BSTATUS" == "COMPLETED" ]]; then
     STATUS=OK
   elif grep -qiE "No job (found|configurations? found)|job.*not (found|registered)|NoSuchJob" "$RESULTS/$JOB.log"; then
     STATUS=NOT_AVAILABLE
