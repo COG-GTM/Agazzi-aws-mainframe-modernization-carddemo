@@ -633,48 +633,44 @@ public final class RecordGenerator {
       String value = items.stream().map(componentNames::get).collect(Collectors.joining(" + "));
       StringBuilder sb = new StringBuilder();
       for (Condition cond : group.conditions()) {
-        sb.append(indent).append("/** 88 ").append(cond.name()).append(" (group). */\n");
-        sb.append(indent)
-            .append("public boolean is")
-            .append(upperCamel(cond.name()))
-            .append("() {\n")
-            .append(indent)
-            .append("  return ")
-            .append(topName)
-            .append(".LAYOUT.condition(")
-            .append(str(cond.name()))
-            .append(").test(")
-            .append(value)
-            .append(", ")
-            .append(group.length())
-            .append(");\n")
-            .append(indent)
-            .append("}\n\n");
+        conditionMethods(cond, " (group)", value, group.length(), true, indent, sb);
       }
       return sb.toString();
+    }
+
+    private void conditionMethods(
+        Condition cond,
+        String kind,
+        String value,
+        int length,
+        boolean alphanumeric,
+        String indent,
+        StringBuilder sb) {
+      String test =
+          topName + ".LAYOUT.condition(" + str(cond.name()) + ").test(" + value + ", " + length;
+      String method = "is" + upperCamel(cond.name());
+      sb.append(indent).append("/** 88 ").append(cond.name()).append(kind).append(". */\n");
+      sb.append(indent).append("public boolean ").append(method).append("() {\n");
+      sb.append(indent).append("  return ").append(test).append(");\n");
+      sb.append(indent).append("}\n\n");
+      if (alphanumeric && cond.charsetSensitive()) {
+        imports.add("java.nio.charset.Charset");
+        sb.append(indent)
+            .append("/** 88 ")
+            .append(cond.name())
+            .append(kind)
+            .append(", for a value decoded with {@code charset}. */\n");
+        sb.append(indent).append("public boolean ").append(method).append("(Charset charset) {\n");
+        sb.append(indent).append("  return ").append(test).append(", charset);\n");
+        sb.append(indent).append("}\n\n");
+      }
     }
 
     private String conditions(LayoutNode c, String indent) {
       StringBuilder sb = new StringBuilder();
       String comp = componentNames.get(c);
       for (Condition cond : c.conditions()) {
-        sb.append(indent).append("/** 88 ").append(cond.name()).append(". */\n");
-        sb.append(indent)
-            .append("public boolean is")
-            .append(upperCamel(cond.name()))
-            .append("() {\n")
-            .append(indent)
-            .append("  return ")
-            .append(topName)
-            .append(".LAYOUT.condition(")
-            .append(str(cond.name()))
-            .append(").test(")
-            .append(comp)
-            .append(", ")
-            .append(c.length())
-            .append(");\n")
-            .append(indent)
-            .append("}\n\n");
+        conditionMethods(cond, "", comp, c.length(), !c.picture().numeric(), indent, sb);
       }
       boolean enumerable =
           !c.picture().numeric() && c.conditions().stream().allMatch(Condition::singleLiteral);

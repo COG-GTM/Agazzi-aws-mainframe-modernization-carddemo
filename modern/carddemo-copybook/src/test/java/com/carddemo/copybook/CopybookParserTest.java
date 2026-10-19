@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.carddemo.contracts.port.RecordCodec;
 import com.carddemo.copybook.codec.CodecOptions;
 import com.carddemo.copybook.codec.LayoutCodec;
+import com.carddemo.copybook.layout.Condition;
 import com.carddemo.copybook.layout.LayoutNode;
 import com.carddemo.copybook.layout.RecordLayout;
 import com.carddemo.copybook.layout.Usage;
@@ -189,6 +190,29 @@ class CopybookParserTest {
         .isFalse();
     assertThat(l.condition("F-HIGH").test(ascii.decode(x9f).code(), 2)).isFalse();
     assertThat(l.condition("F-HIGH").test("  ", 2)).isFalse();
+  }
+
+  @Test
+  void alphanumericRangesUseTheCharsetCollatingSequence() {
+    RecordLayout l =
+        CopybookParser.parse(
+                "T",
+                cb("01 R.", "   05 F PIC X.", "      88 F-ANY VALUE LOW-VALUES THRU HIGH-VALUES."))
+            .get(0);
+    Condition any = l.condition("F-ANY");
+    assertThat(any.charsetSensitive()).isTrue();
+    var ebcdic = LayoutCodec.of(l, Item.class, CodecOptions.EBCDIC);
+    for (int b = 0; b < 256; b++) {
+      String v = ebcdic.decode(new byte[] {(byte) b}).code();
+      assertThat(any.test(v, 1, CodecOptions.EBCDIC.charset())).as("X'%02X'", b).isTrue();
+    }
+    RecordLayout letters =
+        CopybookParser.parse(
+                "T", cb("01 R.", "   05 F PIC X.", "      88 F-AI VALUE 'A' THRU 'I'."))
+            .get(0);
+    // CP037: 'A'..'I' = X'C1'..X'C9'; X'C0' ('{') is outside, 'B' inside
+    assertThat(letters.condition("F-AI").test("B", 1, CodecOptions.EBCDIC.charset())).isTrue();
+    assertThat(letters.condition("F-AI").test("{", 1, CodecOptions.EBCDIC.charset())).isFalse();
   }
 
   @Test

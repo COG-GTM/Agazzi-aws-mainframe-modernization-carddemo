@@ -3,6 +3,7 @@ package com.carddemo.copybook.layout;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +30,11 @@ public record Condition(String name, List<Range> values) {
     }
   }
 
+  /** Whether the outcome on an alphanumeric value depends on the charset (ranges, HIGH-VALUES). */
+  public boolean charsetSensitive() {
+    return values.stream().anyMatch(r -> !r.single() || r.from().startsWith("HIGH-VALUE"));
+  }
+
   /** Whether every entry is a single quoted literal (eligible for an enum). */
   public boolean singleLiteral() {
     return values.size() == 1 && values.get(0).single() && values.get(0).from().startsWith("'");
@@ -40,20 +46,23 @@ public record Condition(String name, List<Range> values) {
    * value.
    */
   public boolean test(Object value, int length) {
+    // a decoded String does not say which charset produced it: ISO-8859-1 (ASCII) semantics
     return test(value, length, StandardCharsets.ISO_8859_1);
   }
 
   /**
    * As {@link #test(Object, int)}, for a value decoded with {@code charset}: figurative constants
    * ({@code HIGH-VALUES} = X'FF', {@code LOW-VALUES} = X'00') are the decoding of their byte in
-   * that charset (CP037 X'FF' is U+009F).
+   * that charset (CP037 X'FF' is U+009F) and ranges use that charset's byte order.
    */
   public boolean test(Object value, int length, Charset charset) {
     for (Range r : values) {
       if (value instanceof String s) {
-        String from = alphanumeric(r.from(), length, charset);
-        String to = alphanumeric(r.to(), length, charset);
-        if (s.compareTo(from) >= 0 && s.compareTo(to) <= 0) {
+        // alphanumeric comparison follows the byte collating sequence of the charset
+        byte[] v = s.getBytes(charset);
+        byte[] from = alphanumeric(r.from(), length, charset).getBytes(charset);
+        byte[] to = alphanumeric(r.to(), length, charset).getBytes(charset);
+        if (Arrays.compareUnsigned(v, from) >= 0 && Arrays.compareUnsigned(v, to) <= 0) {
           return true;
         }
       } else if (value != null) {
