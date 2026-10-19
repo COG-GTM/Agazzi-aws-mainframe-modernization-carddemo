@@ -1,0 +1,22 @@
+# COPAUS1C PROCESS-PF8-KEY: GNP past the oldest child -> 'Already at the last Authorization...'.
+id: CPVD-002
+title: PF8 sull'ultima autorizzazione
+tranid: CPVD
+screen: COPAU00
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {ACCTID: "00000000001"}
+    expect: {screen: COPAU00, message: "", dbDelta: none}
+  - action: PF8
+    fields: {}
+    expect: {screen: COPAU00, message: "", dbDelta: none}
+  - action: ENTER
+    fields: {ACCTID: "00000000001", SEL0002: "S"}
+    expect: {screen: COPAU00, nextScreen: COPAU01, dbDelta: none}
+  - action: PF8
+    fields: {}
+    expect: {screen: COPAU01, message: "Already at the last Authorization...", dbDelta: none}
+  - action: PF2
+    fields: {}
+    expect: {screen: COPAU01, message: "Invalid key pressed. Please see below...", dbDelta: none}
