@@ -2,7 +2,6 @@ package com.carddemo.online.transaction.web;
 
 import com.carddemo.contracts.screen.ScreenId;
 import com.carddemo.contracts.screen.ScreenRequest;
-import com.carddemo.contracts.screen.ScreenResponse;
 import com.carddemo.contracts.screen.map.Corpt00Screen;
 import com.carddemo.online.transaction.service.Corpt00cService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,24 +24,26 @@ public class Corpt00Controller {
   }
 
   @GetMapping
-  public ScreenResponse<Corpt00Screen.Output> get(
-      HttpServletRequest request, HttpServletResponse response) {
-    return ScreenSupport.firstSend(request, response, ScreenId.CORPT00, service::run);
+  public Corpt00Body get(HttpServletRequest request, HttpServletResponse response) {
+    return Corpt00Body.of(
+        ScreenSupport.firstSend(request, response, ScreenId.CORPT00, service::run), request);
   }
 
   @PostMapping
-  public ScreenResponse<Corpt00Screen.Output> post(
+  public Corpt00Body post(
       HttpServletRequest request,
       HttpServletResponse response,
       @RequestBody ScreenRequest<Corpt00Screen.Input> body) {
-    return ScreenSupport.receive(
-        request,
-        response,
-        ScreenId.CORPT00,
-        service::run,
-        Corpt00Screen.Input.class,
-        body.action(),
-        body.fields(),
-        Corpt00cService.NUM_FIELDS);
+    return Corpt00Body.of(
+        ScreenSupport.receive(
+            request,
+            response,
+            ScreenId.CORPT00,
+            service::run,
+            Corpt00Screen.Input.class,
+            body.action(),
+            body.fields(),
+            Corpt00cService.NUM_FIELDS),
+        request);
   }
 }

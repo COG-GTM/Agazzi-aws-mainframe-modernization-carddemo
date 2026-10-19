@@ -17,11 +17,18 @@ export function screenGet(screen, tx) {
   return r;
 }
 
+/** CSRF double-submit (O1 chain): echo the XSRF-TOKEN cookie of the VU jar in X-XSRF-TOKEN. */
+function postHeaders() {
+  const jar = http.cookieJar().cookiesForURL(BASE_URL);
+  const token = jar['XSRF-TOKEN'] && jar['XSRF-TOKEN'][0];
+  return token ? { ...JSON_HEADERS, 'X-XSRF-TOKEN': token } : JSON_HEADERS;
+}
+
 export function screenPost(screen, tx, action, fields) {
   const r = http.post(
     `${BASE_URL}/api/v1/screens/${screen}`,
     JSON.stringify({ action, fields: fields || {} }),
-    { headers: JSON_HEADERS, tags: { tx, screen, name: `POST ${screen} ${action}` } },
+    { headers: postHeaders(), tags: { tx, screen, name: `POST ${screen} ${action}` } },
   );
   okScreen(r, screen);
   return r;
@@ -64,6 +71,7 @@ export function messageMatches(re) {
 /** CC00: sign-on through COSGN00 (public endpoint); establishes the session cookie. */
 export function signOn(userId) {
   http.cookieJar().clear(BASE_URL);
+  screenGet('cosgn00', 'CC00'); // first send of the map: sets the XSRF-TOKEN cookie
   return screenPost('cosgn00', 'CC00', 'ENTER', { USERID: userId, PASSWD: PASSWORD });
 }
 

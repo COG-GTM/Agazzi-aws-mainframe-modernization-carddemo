@@ -37,9 +37,22 @@ function reasonOf(status: number): 'unauthorized' | 'forbidden' | 'invalid' | 'e
   return 'error';
 }
 
+/** XSRF-TOKEN cookie set by the O1 security chain (CSRF double-submit, Fase 5A). */
+export function xsrfToken(cookies: string = typeof document === 'undefined' ? '' : document.cookie): string | undefined {
+  const m = cookies.split(';').map((c) => c.trim()).find((c) => c.startsWith('XSRF-TOKEN='));
+  return m ? decodeURIComponent(m.substring('XSRF-TOKEN='.length)) : undefined;
+}
+
 /** Typed client generated from openapi.yaml; the session cookie (ADR-002) travels with credentials: include. */
 export function createScreenApi(baseUrl = '', fetchImpl: typeof fetch = (...a) => fetch(...a)): ScreenApi {
   const client = createClient<paths>({ baseUrl, credentials: 'include', fetch: fetchImpl });
+  client.use({
+    onRequest({ request }) {
+      const token = xsrfToken();
+      if (request.method !== 'GET' && token) request.headers.set('X-XSRF-TOKEN', token);
+      return request;
+    },
+  });
 
   const wrap = async (p: Promise<{ data?: unknown; error?: unknown; response: Response }>): Promise<ScreenResult> => {
     try {

@@ -39,5 +39,6 @@ services:
       CARDDEMO_DB_URL: jdbc:postgresql://postgres:5432/carddemo
       CARDDEMO_DB_USER: carddemo
       CARDDEMO_DB_PASSWORD: carddemo
+      CARDDEMO_MESSAGING_TYPE: sqs
       CARDDEMO_SQS_ENDPOINT: http://localstack:4566
     ports: ["8080:8080"]

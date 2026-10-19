@@ -1288,7 +1288,7 @@ export interface components {
             context?: components["schemas"]["ConversationContext"];
             /**
              * Format: int64
-             * @description TRANREPT execution submitted by CR00 (ReportJobLauncherPort). Optional: until O4 fills it, the id is only in the X-CardDemo-Report-Execution-Id header and Location
+             * @description TRANREPT execution submitted by CR00 (ReportJobLauncherPort), null when no report was submitted; also in the X-CardDemo-Report-Execution-Id header and Location
              */
             reportExecutionId?: number | null;
         };

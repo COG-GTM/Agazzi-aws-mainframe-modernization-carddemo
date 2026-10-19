@@ -22,10 +22,11 @@ describe("openapi.yaml DTOs vs BMS layouts", () => {
       const runtime = new Set(
         Object.keys(input).filter((n) => input[n]["x-runtime-input"]),
       );
-      const unprot = [
-        ...inputFields(map),
-        ...map.fields.filter((f) => f.name && runtime.has(f.name)),
-      ];
+      // inputFields() already includes them: the SPA renders them editable (O6, Fase 5A).
+      const unprot = inputFields(map);
+      for (const name of runtime) {
+        expect(unprot.some((f) => f.name === name), `${s.id}.${name} editable`).toBe(true);
+      }
       expect(Object.keys(input).sort()).toEqual(
         unprot.map((f) => f.name!).sort(),
       );

@@ -15,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 public final class ConversationSession {
 
   /** Session attribute holding {@code CARDDEMO-COMMAREA}. */
-  public static final String CONTEXT_ATTRIBUTE = ConversationContext.class.getName();
+  public static final String CONTEXT_ATTRIBUTE = ConversationContext.SESSION_ATTRIBUTE;
 
   private ConversationSession() {}
 

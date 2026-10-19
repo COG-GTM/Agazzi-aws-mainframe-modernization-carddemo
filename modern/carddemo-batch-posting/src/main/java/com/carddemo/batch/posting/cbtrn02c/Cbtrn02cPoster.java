@@ -38,6 +38,9 @@ public final class Cbtrn02cPoster {
     this.clock = clock;
   }
 
+  /** Records per flush chunk (Fase 5A, finding 5B F3). */
+  public static final int CHUNK_SIZE = 1000;
+
   /** Runs the program; {@code rejects} receives the encoded 430-byte reject records. */
   public PostingResult run(PostingDatasets ds, Consumer<String> rejects, Sysout sysout) {
     sysout.display("START OF EXECUTION OF PROGRAM " + PROGRAM);
@@ -49,6 +52,9 @@ public final class Cbtrn02cPoster {
     int processed = 0;
     int rejected = 0;
     for (String raw : daily) {
+      if (processed > 0 && processed % CHUNK_SIZE == 0) {
+        ds.checkpoint();
+      }
       processed++;
       DailyTransactionRecord tran = ds.decodeDailyTransaction(raw, processed);
       Validation v = validate(ds, tran);

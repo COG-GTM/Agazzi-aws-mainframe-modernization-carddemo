@@ -9,7 +9,7 @@ spring:
     password: ${CARDDEMO_DB_PASSWORD}
 carddemo:
   messaging:
-    type: sqs
+    type: ${CARDDEMO_MESSAGING_TYPE:sqs}
     sqs:
       region: ${AWS_REGION:us-east-1}
   security:

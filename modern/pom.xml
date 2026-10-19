@@ -39,6 +39,7 @@
     <module>carddemo-ext-authorization</module>
     <module>carddemo-ext-trantype</module>
     <module>carddemo-ext-mqinquiry</module>
+    <module>security</module>
     <module>carddemo-app</module>
     <module>carddemo-parity</module>
   </modules>
@@ -166,6 +167,11 @@
       <dependency>
         <groupId>com.carddemo</groupId>
         <artifactId>carddemo-app</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.carddemo</groupId>
+        <artifactId>carddemo-security</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- Spring Boot BOM (from the parent) already manages: Spring Batch 5, Data JPA, Security 6,

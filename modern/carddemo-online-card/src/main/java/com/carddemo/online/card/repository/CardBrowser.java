@@ -31,4 +31,38 @@ public class CardBrowser {
         .setMaxResults(max)
         .getResultList();
   }
+
+  /**
+   * Account path (CARDAIX alternate index, {@code card_acct_id}): same card-number order as {@link
+   * #readNext(String, int)} restricted to one account, so CCLI with an account filter or a USER
+   * owned account reads only that account's cards (Fase 5A, finding 5B F2).
+   */
+  public List<Card> readNext(String key, int max, Long acctId) {
+    if (acctId == null) {
+      return readNext(key, max);
+    }
+    return em.createQuery(
+            "select c from Card c where c.cardAcctId = :a and c.cardNum >= :k"
+                + " order by c.cardNum asc",
+            Card.class)
+        .setParameter("a", acctId)
+        .setParameter("k", key == null ? "" : key)
+        .setMaxResults(max)
+        .getResultList();
+  }
+
+  /** Account path of {@link #readPrev(String, int)}. */
+  public List<Card> readPrev(String key, int max, Long acctId) {
+    if (acctId == null) {
+      return readPrev(key, max);
+    }
+    return em.createQuery(
+            "select c from Card c where c.cardAcctId = :a and c.cardNum <= :k"
+                + " order by c.cardNum desc",
+            Card.class)
+        .setParameter("a", acctId)
+        .setParameter("k", key == null ? "" : key)
+        .setMaxResults(max)
+        .getResultList();
+  }
 }

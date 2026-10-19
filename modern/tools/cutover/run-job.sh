@@ -19,7 +19,7 @@ case "${CARDDEMO_JOB_MODE:-local}" in
     # the job: watch the log for the job's final status, then stop the JVM and map the status.
     jar="${CARDDEMO_APP_JAR:-$HERE/../../carddemo-app/target/carddemo-app-exec.jar}"
     log="$(mktemp)"; trap 'rm -f "$log"' EXIT
-    java -jar "$jar" --server.port=0 --spring.batch.job.enabled=true \
+    java -jar "$jar" --spring.main.web-application-type=none --spring.batch.job.enabled=true \
       --spring.batch.job.name="$job" "${params[@]}" >"$log" 2>&1 &
     pid=$!
     status="" deadline=$((SECONDS + ${CARDDEMO_JOB_TIMEOUT:-14400}))

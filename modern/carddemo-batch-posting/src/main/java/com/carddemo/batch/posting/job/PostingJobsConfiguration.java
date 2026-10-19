@@ -10,6 +10,7 @@ import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.batch.core.Job;
@@ -47,9 +48,11 @@ public class PostingJobsConfiguration {
       ObjectProvider<TranCatBalanceRepository> tranCatBalances,
       ObjectProvider<TransactionRepository> transactions,
       ObjectProvider<CustomerRepository> customers,
-      ObjectProvider<CardRepository> cards) {
+      ObjectProvider<CardRepository> cards,
+      ObjectProvider<EntityManager> entityManager) {
     return new PostingDatasetsFactory(
-        dailyTransactions, cardXref, accounts, tranCatBalances, transactions, customers, cards);
+            dailyTransactions, cardXref, accounts, tranCatBalances, transactions, customers, cards)
+        .withEntityManager(entityManager);
   }
 
   @Bean

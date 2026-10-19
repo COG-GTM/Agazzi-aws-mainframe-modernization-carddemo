@@ -4,10 +4,20 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parse as parseYaml } from 'yaml';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, '..', '..', '..');
 const out = join(here, '..', 'src', 'generated', 'bms-layouts.json');
+const openapiFile = join(repo, 'modern', 'carddemo-contracts', 'src', 'main', 'resources', 'openapi', 'openapi.yaml');
+
+/** contracts-v1.1 x-runtime-input: PROT in BMS but unprotected by the program at runtime. */
+export function runtimeInputs(mapset) {
+  const schemas = parseYaml(readFileSync(openapiFile, 'utf8')).components.schemas;
+  const input = schemas[`${mapset[0]}${mapset.slice(1).toLowerCase()}Input`];
+  const props = input?.properties ?? {};
+  return new Set(Object.keys(props).filter((n) => props[n]['x-runtime-input']));
+}
 
 export function bmsFiles() {
   const dirs = [join(repo, 'app', 'bms')];
@@ -99,6 +109,8 @@ export function generate() {
   const layouts = {};
   for (const file of bmsFiles()) {
     const parsed = parseBms(readFileSync(file, 'latin1'), relative(repo, file).split('\\').join('/'));
+    const runtime = runtimeInputs(parsed.mapset);
+    for (const m of parsed.maps) for (const f of m.fields) if (f.name && runtime.has(f.name)) f.runtimeInput = true;
     layouts[parsed.mapset] = parsed;
   }
   return layouts;

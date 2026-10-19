@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 public final class ConversationStore {
 
   /** Session attribute holding the {@link ConversationContext} (COCOM01Y). */
-  public static final String CONTEXT_ATTRIBUTE = ConversationContext.class.getName();
+  public static final String CONTEXT_ATTRIBUTE = ConversationContext.SESSION_ATTRIBUTE;
 
   /** Session attribute holding the O4 {@link CommareaExtension}. */
   public static final String EXTENSION_ATTRIBUTE = CommareaExtension.class.getName();

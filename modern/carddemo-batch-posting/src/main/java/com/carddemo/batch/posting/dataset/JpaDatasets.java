@@ -23,6 +23,7 @@ import com.carddemo.domain.repository.CustomerRepository;
 import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import jakarta.persistence.EntityManager;
 import java.nio.file.Path;
 import java.util.List;
 import org.springframework.data.domain.Sort;
@@ -41,6 +42,7 @@ public final class JpaDatasets implements PostingDatasets {
   private final KeyedDataset<TransactionRecord> transactions;
   private final KeyedDataset<CustomerRecord> customers;
   private final KeyedDataset<CardRecord> cards;
+  private EntityManager entityManager;
 
   public JpaDatasets(
       DailyTransactionRepository dailyTransactionRepository,
@@ -173,6 +175,20 @@ public final class JpaDatasets implements PostingDatasets {
   @Override
   public KeyedDataset<CardRecord> cards() {
     return cards;
+  }
+
+  /** Enables {@link #checkpoint()} (flush + clear of the step persistence context). */
+  public JpaDatasets withEntityManager(EntityManager em) {
+    this.entityManager = em;
+    return this;
+  }
+
+  @Override
+  public void checkpoint() {
+    if (entityManager != null && entityManager.isJoinedToTransaction()) {
+      entityManager.flush();
+      entityManager.clear();
+    }
   }
 
   @Override

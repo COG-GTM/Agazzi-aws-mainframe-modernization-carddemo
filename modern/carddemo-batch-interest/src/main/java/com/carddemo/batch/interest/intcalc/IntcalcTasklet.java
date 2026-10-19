@@ -18,6 +18,8 @@ import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CardXrefRepository;
 import com.carddemo.domain.repository.DisclosureGroupRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -32,7 +34,9 @@ import org.springframework.stereotype.Component;
  * INTCALC STEP15 = CBACT04C. Reads TCATBALF in key order, applies the disclosure-group rate per
  * category (fallback to {@code DEFAULT}), writes one SYSTRAN record per non-zero rate and rewrites
  * each account with the accumulated interest. The whole step is one transaction: a restart re-runs
- * it from the beginning on unchanged data.
+ * it from the beginning on unchanged data. Changes are flushed to the database and the persistence
+ * context is cleared every {@link #CHUNK_ACCOUNTS} accounts (Fase 5A, finding 5B F3), so the cost
+ * per record stays constant on large TCATBALF files.
  */
 @Component
 public class IntcalcTasklet implements Tasklet {
@@ -48,6 +52,11 @@ public class IntcalcTasklet implements Tasklet {
       Comparator.comparing((TranCatBalance t) -> t.getId().trancatAcctId())
           .thenComparing(t -> t.getId().trancatTypeCd())
           .thenComparing(t -> t.getId().trancatCd());
+
+  /** Accounts per flush/clear chunk. */
+  static final int CHUNK_ACCOUNTS = 500;
+
+  @PersistenceContext private EntityManager em;
 
   private final TranCatBalanceRepository balances;
   private final AccountRepository accounts;
@@ -88,6 +97,7 @@ public class IntcalcTasklet implements Tasklet {
       CardXref xref = null;
       BigDecimal totalInt = BigDecimal.ZERO.setScale(2);
       int suffix = 0;
+      int accountsInChunk = 0;
       for (TranCatBalance tcat : records) {
         contribution.incrementReadCount();
         long acctId = tcat.getId().trancatAcctId();
@@ -96,6 +106,10 @@ public class IntcalcTasklet implements Tasklet {
           if (account != null) {
             updateAccount(account, totalInt);
             contribution.incrementWriteCount(1);
+            if (++accountsInChunk == CHUNK_ACCOUNTS) {
+              flushChunk();
+              accountsInChunk = 0;
+            }
           }
           totalInt = BigDecimal.ZERO.setScale(2);
           lastAcct = acctId;
@@ -122,6 +136,13 @@ public class IntcalcTasklet implements Tasklet {
     }
     sysout.display("END OF EXECUTION OF PROGRAM CBACT04C");
     return RepeatStatus.FINISHED;
+  }
+
+  private void flushChunk() {
+    if (em != null) {
+      em.flush();
+      em.clear();
+    }
   }
 
   private static TranCatBalanceRecord toRecord(TranCatBalance t) {

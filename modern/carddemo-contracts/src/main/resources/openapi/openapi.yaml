@@ -1246,7 +1246,7 @@ components:
         nextScreen: { type: string, description: 'XCTL target mapset, null = same screen' }
         fieldErrors: { type: array, items: { $ref: '#/components/schemas/FieldError' } }
         context: { $ref: '#/components/schemas/ConversationContext' }
-        reportExecutionId: { type: integer, format: int64, nullable: true, description: 'TRANREPT execution submitted by CR00 (ReportJobLauncherPort). Optional: until O4 fills it, the id is only in the X-CardDemo-Report-Execution-Id header and Location' }
+        reportExecutionId: { type: integer, format: int64, nullable: true, description: 'TRANREPT execution submitted by CR00 (ReportJobLauncherPort), null when no report was submitted; also in the X-CardDemo-Report-Execution-Id header and Location' }
     Cosgn00Input:
       type: object
       properties:
