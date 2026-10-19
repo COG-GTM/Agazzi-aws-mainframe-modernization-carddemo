@@ -1,0 +1,21 @@
+# COBIL00 PF4 pulisce
+id: CB00-009
+title: PF4 pulisce
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: PF4
+  fields:
+    ACTIDIN: '00000000001'
+  expect:
+    message: null
+    fields:
+      ACTIDIN: ''

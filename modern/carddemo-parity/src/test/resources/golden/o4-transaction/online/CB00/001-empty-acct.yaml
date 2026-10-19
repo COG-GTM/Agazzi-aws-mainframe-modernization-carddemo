@@ -1,0 +1,22 @@
+# COBIL00 Acct ID vuoto
+id: CB00-001
+title: Acct ID vuoto
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect:
+    message: null
+- action: ENTER
+  fields:
+    ACTIDIN: ''
+  expect:
+    message: Acct ID can NOT be empty...
+    fieldErrors:
+    - ACTIDIN
