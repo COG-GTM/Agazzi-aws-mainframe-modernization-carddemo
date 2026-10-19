@@ -60,6 +60,15 @@ final class ScreenSupport {
       boolean first) {
     HttpSession session = request.getSession(true);
     ConversationContext ctx = ConversationStore.context(session);
+    java.security.Principal user = request.getUserPrincipal();
+    if (ctx != null
+        && user != null
+        && (ctx.userId() == null || !user.getName().equals(ctx.userId().strip()))) {
+      // COMMAREA signed on by another user: never run with a stale identity
+      session.removeAttribute(ConversationStore.CONTEXT_ATTRIBUTE);
+      session.removeAttribute(ConversationStore.EXTENSION_ATTRIBUTE);
+      ctx = null;
+    }
     if (ctx == null) {
       // EIBCALEN = 0: MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM, RETURN-TO-PREV-SCREEN
       return MapBuffer.xctl(screen, ScreenId.COSGN00, null);
