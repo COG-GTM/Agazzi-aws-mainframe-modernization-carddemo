@@ -174,6 +174,24 @@ def endpoints(ws):
 
 
 
+def split_row(line):
+    """Markdown table row -> cells; a backslash escapes the next character (so `\\|` stays in the cell)."""
+    cells, cur, esc = [], "", False
+    for ch in line.strip():
+        if esc:
+            cur, esc = cur + ch, False
+        elif ch == "\\":
+            cur, esc = cur + ch, True
+        elif ch == "|":
+            cells.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        cells.append(cur.strip())
+    return cells[1:]
+
+
 def read_progress(path):
     """Leader-maintained part of MIGRATION_PROGRESS.md: status cells (Stato..Note) per WS and text after the table."""
     status, tail = {}, []
@@ -185,9 +203,7 @@ def read_progress(path):
         if not lines[n].startswith("|"):
             tail = lines[n:]
             break
-        row = lines[n].strip()[1:]
-        row = row[:-1] if row.endswith("|") and not row.endswith("\\|") else row
-        cells = [c.strip() for c in re.split(r"(?<!\\)\|", row)]
+        cells = split_row(lines[n])
         if len(cells) == 11:
             status[cells[0].strip("`")] = cells[5:]
     return status, tail
