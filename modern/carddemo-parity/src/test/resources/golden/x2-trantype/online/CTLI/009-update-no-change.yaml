@@ -1,0 +1,23 @@
+# 1211-EDIT-ARRAY-DESC: UPPER(TRIM) uguale al DB.
+id: CTLI-009
+title: Update senza modifiche
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL2: "U", TRTYPD2: "PAYMENT"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No change detected with respect to database values."
+      fieldErrors: []
+      dbDelta: none

@@ -1,0 +1,21 @@
+# PF03 -> XCTL COADM01C (CA00).
+id: CTLI-013
+title: PF3 torna al menu admin
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF3
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: COADM01
+      dbDelta: none

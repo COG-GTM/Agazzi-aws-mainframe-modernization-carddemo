@@ -1,0 +1,31 @@
+# 9300-DELETE-RECORD: SQLCODE -532 (FK RESTRICT TRNTYCAT).
+id: CTLI-007
+title: Delete di un tipo con categorie
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL1: "D"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Delete HIGHLIGHTED row ? Press F10 to confirm"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF10
+    fields: {TRTSEL1: "D"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Please delete associated child records first: SQLCODE: -532 TRANSACTION_CATEGORY ROWS DEPEND ON THIS TYPE"
+      fieldErrors: []
+      dbDelta: none

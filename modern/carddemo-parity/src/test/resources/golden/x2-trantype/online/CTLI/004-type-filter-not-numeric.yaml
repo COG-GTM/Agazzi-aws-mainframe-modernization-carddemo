@@ -1,0 +1,23 @@
+# 1220-EDIT-TYPECD: TRTYPE non numerico.
+id: CTLI-004
+title: Filtro tipo non numerico
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPE: "AB", TRDESC: ""}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "TYPE CODE FILTER,IF SUPPLIED MUST BE A 2 DIGIT NUMBER"
+      fieldErrors: [TRTYPE]
+      dbDelta: none

@@ -1,0 +1,23 @@
+# 1210-EDIT-ARRAY: WS-MORETHAN1ACTION.
+id: CTLI-011
+title: Due azioni selezionate
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTSEL1: "D", TRTSEL3: "U", TRTYPD3: "Credit memo"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Please select only 1 action"
+      fieldErrors: [TRTSEL1, TRTSEL3]
+      dbDelta: none
