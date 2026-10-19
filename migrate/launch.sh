@@ -25,6 +25,7 @@
 #   PHASE_TIMEOUT      secondi massimi di attesa per fase (default 28800 = 8h)
 
 set -euo pipefail
+umask 077
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROMPTS_DIR="$SCRIPT_DIR/prompts"
@@ -42,6 +43,10 @@ PHASE1_WS="ws-a-auth ws-b-account ws-c-card ws-d-customer ws-e-transactions ws-f
 PHASE2_WS="ws-i-ui ws-j-integration ws-k-data-migration"
 
 TERMINAL_STATUSES="finished blocked expired stopped suspended error exit"
+FAILED_STATUSES="error expired"
+
+# workstream effettivamente lanciati in questo run, per fase (usati dal gate)
+declare -A PHASE_LAUNCHED=()
 
 PHASES="0 1 2"
 ONLY=""
@@ -339,21 +344,34 @@ wait_phase() {
     log "fase $phase in corso:$pending"
     sleep "$POLL_INTERVAL"
   done
+  local failed="" pr
   for ws in $wss; do
     record_index "$phase" "$ws" "$RUN_DIR/$ws.status.json"
-    log "fase $phase / $ws: stato=$(json_status "$RUN_DIR/$ws.status.json") PR=$(json_pr_url "$RUN_DIR/$ws.status.json")"
+    status="$(json_status "$RUN_DIR/$ws.status.json")"
+    pr="$(json_pr_url "$RUN_DIR/$ws.status.json")"
+    log "fase $phase / $ws: stato=$status PR=${pr:--}"
+    # shellcheck disable=SC2086
+    if contains "$status" $FAILED_STATUSES || [ -z "$pr" ]; then
+      failed="$failed $ws($status${pr:+, PR $pr}${pr:-, nessuna PR})"
+    fi
   done
+  [ -z "$failed" ] || die "fase $phase non completata, sessioni fallite o senza PR:$failed"
 }
 
 # ------------------------------------------------------- gate tra le fasi
 
-branch_merged() {
-  local branch="$1" state
-  if command -v gh >/dev/null 2>&1; then
-    state="$(gh pr list --repo "$REPO" --head "$branch" --base "$BASE_BRANCH" --state merged \
-      --json number -q 'length' 2>/dev/null || echo "")"
+# Se la sessione di questo run ha riportato una PR, il gate verifica quella PR
+# specifica (non PR storiche con lo stesso branch); altrimenti verifica che la
+# testa attuale del branch sia contenuta nel branch base.
+ws_merged() {
+  local ws="$1" branch pr="" state
+  branch="$(branch_for "$ws")"
+  [ -f "$RUN_DIR/$ws.status.json" ] && pr="$(json_pr_url "$RUN_DIR/$ws.status.json")"
+  if [ -n "$pr" ] && command -v gh >/dev/null 2>&1; then
+    state="$(gh pr view "$pr" --json state -q .state 2>/dev/null || echo "")"
     if [ -n "$state" ]; then
-      [ "$state" -gt 0 ] && return 0 || return 1
+      [ "$state" = "MERGED" ]
+      return $?
     fi
   fi
   if command -v git >/dev/null 2>&1 && git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
@@ -365,15 +383,18 @@ branch_merged() {
 }
 
 gate_before_phase() {
-  local phase="$1" prev ws missing answer
+  local phase="$1" prev prev_wss ws missing answer
   [ "$phase" -eq 0 ] && return 0
   [ "$DRY_RUN" -eq 1 ] && return 0
   [ "$SKIP_MERGE_CHECK" -eq 1 ] && { log "controllo merge saltato (--skip-merge-check)"; return 0; }
   prev=$((phase - 1))
+  # Se la fase precedente e' stata lanciata in questo run, il gate riguarda solo
+  # i suoi workstream selezionati; altrimenti l'intera fase precedente.
+  prev_wss="${PHASE_LAUNCHED[$prev]:-$(phase_workstreams "$prev")}"
   while :; do
     missing=""
-    for ws in $(phase_workstreams "$prev"); do
-      branch_merged "$(branch_for "$ws")" || missing="$missing $(branch_for "$ws")"
+    for ws in $prev_wss; do
+      ws_merged "$ws" || missing="$missing $(branch_for "$ws")"
     done
     [ -z "$missing" ] && { log "fase $prev: tutti i branch risultano mergiati in $BASE_BRANCH"; return 0; }
     log "prima della fase $phase vanno mergiati in $BASE_BRANCH:$missing"
@@ -413,6 +434,7 @@ main() {
     fi
     gate_before_phase "$phase"
     launch_phase "$phase" "$wss"
+    PHASE_LAUNCHED[$phase]="$wss"
     if [ "$DRY_RUN" -eq 1 ] || [ "$WAIT" -eq 0 ]; then
       continue
     fi
