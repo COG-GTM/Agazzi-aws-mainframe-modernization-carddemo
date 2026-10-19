@@ -185,7 +185,7 @@ def read_progress(path):
         if not lines[n].startswith("|"):
             tail = lines[n:]
             break
-        cells = [c.strip() for c in lines[n].strip().strip("|").split("|")]
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", lines[n].strip()[1:-1])]
         if len(cells) == 11:
             status[cells[0].strip("`")] = cells[5:]
     return status, tail
