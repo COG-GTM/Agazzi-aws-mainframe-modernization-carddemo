@@ -350,10 +350,18 @@ class DatalifecycleJobsTest {
   }
 
   @Test
-  void failedRefreshReopensTheCicsFiles() throws Exception {
-    JobExecution e = launch("CARDFILE", "dd.CARDDATA", dir.resolve("absent.txt").toString());
+  void failedRefreshKeepsCicsFilesClosedUntilTheRestartReopensThem() throws Exception {
+    Path ps = dir.resolve("late/carddata.txt");
+    JobParameters p = params("dd.CARDDATA", ps.toString());
+    JobExecution e = launch("CARDFILE", p);
     assertThat(e.getStatus()).isEqualTo(BatchStatus.FAILED);
     assertThat(exits(e)).containsEntry("CLCIFIL", "COMPLETED").doesNotContainKey("OPCIFIL");
+    assertThat(maintenance.closedFiles()).containsExactlyInAnyOrder("CARDDAT", "CARDAIX");
+    Files.createDirectories(ps.getParent());
+    Files.copy(Goldens.seed("carddata.txt"), ps);
+    JobExecution restart = launch("CARDFILE", p);
+    assertThat(restart.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    assertThat(exits(restart)).doesNotContainKey("CLCIFIL").containsKey("OPCIFIL");
     assertThat(maintenance.inMaintenance()).isFalse();
   }
 

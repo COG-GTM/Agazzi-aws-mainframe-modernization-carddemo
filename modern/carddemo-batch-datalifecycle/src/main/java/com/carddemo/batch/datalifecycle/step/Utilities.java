@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.IntToLongFunction;
 import java.util.function.UnaryOperator;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.dao.DataIntegrityViolationException;
 
 /** IDCAMS, IEFBR14, IEBGENER and SDSF/CEMT steps of the data lifecycle JCL. */
@@ -194,18 +191,6 @@ public final class Utilities {
   }
 
   /** {@code CEMT SET FIL(..) CLO|OPE} issued through SDSF: online maintenance window. */
-  /** Reopens the CICS files closed by CLCIFIL when the job does not reach OPCIFIL. */
-  public JobExecutionListener reopenOnFailure(String... files) {
-    return new JobExecutionListener() {
-      @Override
-      public void afterJob(JobExecution execution) {
-        if (execution.getStatus() != BatchStatus.COMPLETED) {
-          maintenance.open(new LinkedHashSet<>(List.of(files)));
-        }
-      }
-    };
-  }
-
   public LegacyStep cics(boolean close, String... files) {
     return env -> {
       Set<String> set = new LinkedHashSet<>(List.of(files));
