@@ -92,8 +92,12 @@ public final class MqInquiryListener implements SmartLifecycle {
               while (running) {
                 try {
                   channel
-                      .receive(inputQueue, properties.pollWait())
-                      .ifPresent(m -> processor.handle(m, inputQueue, replyQueue, program));
+                      .receiveUnacknowledged(inputQueue, properties.pollWait())
+                      .ifPresent(
+                          m -> {
+                            processor.handle(m, inputQueue, replyQueue, program);
+                            channel.acknowledge(inputQueue, m);
+                          });
                 } catch (RuntimeException e) {
                   LOG.warn("{} poll failed on {}: {}", name, inputQueue, e.toString());
                   pause();
