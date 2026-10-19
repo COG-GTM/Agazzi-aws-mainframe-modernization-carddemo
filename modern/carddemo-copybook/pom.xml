@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.carddemo</groupId>
+    <artifactId>carddemo-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>carddemo-copybook</artifactId>
+  <name>carddemo-copybook</name>
+  <description>Copybook record codecs (Fase 0 minimal zoned DISPLAY; 1A full)</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.carddemo</groupId>
+      <artifactId>carddemo-contracts</artifactId>
+    </dependency>
+  </dependencies>
+</project>

@@ -5,688 +5,688 @@
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| ACCTSID | None | None | None | Y | IC,UNPROT |
-| ACSTTUS | None | None | None | Y | UNPROT |
-| OPNYEAR | None | None | None | Y | FSET,UNPROT |
-| OPNMON | None | None | None | Y | UNPROT |
-| OPNDAY | None | None | None | Y | UNPROT |
-| ACRDLIM | None | None | None | Y | FSET,UNPROT |
-| EXPYEAR | None | None | None | Y | UNPROT |
-| EXPMON | None | None | None | Y | UNPROT |
-| EXPDAY | None | None | None | Y | UNPROT |
-| ACSHLIM | None | None | None | Y | FSET,UNPROT |
-| RISYEAR | None | None | None | Y | UNPROT |
-| RISMON | None | None | None | Y | UNPROT |
-| RISDAY | None | None | None | Y | UNPROT |
-| ACURBAL | None | None | None | Y | FSET,UNPROT |
-| ACRCYCR | None | None | None | Y | FSET,UNPROT |
-| AADDGRP | None | None | None | Y | UNPROT |
-| ACRCYDB | None | None | None | Y | FSET,UNPROT |
-| ACSTNUM | None | None | None | Y | UNPROT |
-| ACTSSN1 | None | None | None | Y | UNPROT |
-| ACTSSN2 | None | None | None | Y | UNPROT |
-| ACTSSN3 | None | None | None | Y | UNPROT |
-| DOBYEAR | None | None | None | Y | UNPROT |
-| DOBMON | None | None | None | Y | UNPROT |
-| DOBDAY | None | None | None | Y | UNPROT |
-| ACSTFCO | None | None | None | Y | UNPROT |
-| ACSFNAM | None | None | None | Y | UNPROT |
-| ACSMNAM | None | None | None | Y | UNPROT |
-| ACSLNAM | None | None | None | Y | UNPROT |
-| ACSADL1 | None | None | None | Y | UNPROT |
-| ACSSTTE | None | None | None | Y | UNPROT |
-| ACSADL2 | None | None | None | Y | UNPROT |
-| ACSZIPC | None | None | None | Y | UNPROT |
-| ACSCITY | None | None | None | Y | UNPROT |
-| ACSCTRY | None | None | None | Y | UNPROT |
-| ACSPH1A | None | None | None | Y | UNPROT |
-| ACSPH1B | None | None | None | Y | UNPROT |
-| ACSPH1C | None | None | None | Y | UNPROT |
-| ACSGOVT | None | None | None | Y | UNPROT |
-| ACSPH2A | None | None | None | Y | UNPROT |
-| ACSPH2B | None | None | None | Y | UNPROT |
-| ACSPH2C | None | None | None | Y | UNPROT |
-| ACSEFTC | None | None | None | Y | UNPROT |
-| ACSPFLG | None | None | None | Y | UNPROT |
-| INFOMSG | None | None | None |  | ASKIP |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
-| FKEYS | None | None | None |  | ASKIP,NORM |
-| FKEY05 | None | None | None |  | ASKIP,DRK |
-| FKEY12 | None | None | None |  | ASKIP,DRK |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| ACCTSID | 5 | 38 | 11 | Y | IC,UNPROT |
+| ACSTTUS | 5 | 70 | 1 | Y | UNPROT |
+| OPNYEAR | 6 | 17 | 4 | Y | FSET,UNPROT |
+| OPNMON | 6 | 24 | 2 | Y | UNPROT |
+| OPNDAY | 6 | 29 | 2 | Y | UNPROT |
+| ACRDLIM | 6 | 61 | 15 | Y | FSET,UNPROT |
+| EXPYEAR | 7 | 17 | 4 | Y | UNPROT |
+| EXPMON | 7 | 24 | 2 | Y | UNPROT |
+| EXPDAY | 7 | 29 | 2 | Y | UNPROT |
+| ACSHLIM | 7 | 61 | 15 | Y | FSET,UNPROT |
+| RISYEAR | 8 | 17 | 4 | Y | UNPROT |
+| RISMON | 8 | 24 | 2 | Y | UNPROT |
+| RISDAY | 8 | 29 | 2 | Y | UNPROT |
+| ACURBAL | 8 | 61 | 15 | Y | FSET,UNPROT |
+| ACRCYCR | 9 | 61 | 15 | Y | FSET,UNPROT |
+| AADDGRP | 10 | 23 | 10 | Y | UNPROT |
+| ACRCYDB | 10 | 61 | 15 | Y | FSET,UNPROT |
+| ACSTNUM | 12 | 23 | 9 | Y | UNPROT |
+| ACTSSN1 | 12 | 55 | 3 | Y | UNPROT |
+| ACTSSN2 | 12 | 61 | 2 | Y | UNPROT |
+| ACTSSN3 | 12 | 66 | 4 | Y | UNPROT |
+| DOBYEAR | 13 | 23 | 4 | Y | UNPROT |
+| DOBMON | 13 | 30 | 2 | Y | UNPROT |
+| DOBDAY | 13 | 35 | 2 | Y | UNPROT |
+| ACSTFCO | 13 | 62 | 3 | Y | UNPROT |
+| ACSFNAM | 15 | 1 | 25 | Y | UNPROT |
+| ACSMNAM | 15 | 28 | 25 | Y | UNPROT |
+| ACSLNAM | 15 | 55 | 25 | Y | UNPROT |
+| ACSADL1 | 16 | 10 | 50 | Y | UNPROT |
+| ACSSTTE | 16 | 73 | 2 | Y | UNPROT |
+| ACSADL2 | 17 | 10 | 50 | Y | UNPROT |
+| ACSZIPC | 17 | 73 | 5 | Y | UNPROT |
+| ACSCITY | 18 | 10 | 50 | Y | UNPROT |
+| ACSCTRY | 18 | 73 | 3 | Y | UNPROT |
+| ACSPH1A | 19 | 10 | 3 | Y | UNPROT |
+| ACSPH1B | 19 | 14 | 3 | Y | UNPROT |
+| ACSPH1C | 19 | 18 | 4 | Y | UNPROT |
+| ACSGOVT | 19 | 58 | 20 | Y | UNPROT |
+| ACSPH2A | 20 | 10 | 3 | Y | UNPROT |
+| ACSPH2B | 20 | 14 | 3 | Y | UNPROT |
+| ACSPH2C | 20 | 18 | 4 | Y | UNPROT |
+| ACSEFTC | 20 | 41 | 10 | Y | UNPROT |
+| ACSPFLG | 20 | 78 | 1 | Y | UNPROT |
+| INFOMSG | 22 | 23 | 45 |  | ASKIP |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
+| FKEYS | 24 | 1 | 21 |  | ASKIP,NORM |
+| FKEY05 | 24 | 23 | 7 |  | ASKIP,DRK |
+| FKEY12 | 24 | 31 | 10 |  | ASKIP,DRK |
 
 ## COACTVW (app/bms/COACTVW.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| ACCTSID | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| ACSTTUS | None | None | None |  | ASKIP |
-| ADTOPEN | None | None | None |  |  |
-| ACRDLIM | None | None | None |  |  |
-| AEXPDT | None | None | None |  |  |
-| ACSHLIM | None | None | None |  |  |
-| AREISDT | None | None | None |  |  |
-| ACURBAL | None | None | None |  |  |
-| ACRCYCR | None | None | None |  |  |
-| AADDGRP | None | None | None |  |  |
-| ACRCYDB | None | None | None |  |  |
-| ACSTNUM | None | None | None |  |  |
-| ACSTSSN | None | None | None |  |  |
-| ACSTDOB | None | None | None |  |  |
-| ACSTFCO | None | None | None |  |  |
-| ACSFNAM | None | None | None |  |  |
-| ACSMNAM | None | None | None |  |  |
-| ACSLNAM | None | None | None |  |  |
-| ACSADL1 | None | None | None |  |  |
-| ACSSTTE | None | None | None |  |  |
-| ACSADL2 | None | None | None |  |  |
-| ACSZIPC | None | None | None |  |  |
-| ACSCITY | None | None | None |  |  |
-| ACSCTRY | None | None | None |  |  |
-| ACSPHN1 | None | None | None |  |  |
-| ACSGOVT | None | None | None |  |  |
-| ACSPHN2 | None | None | None |  |  |
-| ACSEFTC | None | None | None |  |  |
-| ACSPFLG | None | None | None |  |  |
-| INFOMSG | None | None | None |  | PROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| ACCTSID | 5 | 38 | 11 | Y | FSET,IC,NORM,UNPROT |
+| ACSTTUS | 5 | 70 | 1 |  | ASKIP |
+| ADTOPEN | 6 | 17 | 10 |  |  |
+| ACRDLIM | 6 | 61 | 15 |  |  |
+| AEXPDT | 7 | 17 | 10 |  |  |
+| ACSHLIM | 7 | 61 | 15 |  |  |
+| AREISDT | 8 | 17 | 10 |  |  |
+| ACURBAL | 8 | 61 | 15 |  |  |
+| ACRCYCR | 9 | 61 | 15 |  |  |
+| AADDGRP | 10 | 23 | 10 |  |  |
+| ACRCYDB | 10 | 61 | 15 |  |  |
+| ACSTNUM | 12 | 23 | 9 |  |  |
+| ACSTSSN | 12 | 54 | 12 |  |  |
+| ACSTDOB | 13 | 23 | 10 |  |  |
+| ACSTFCO | 13 | 61 | 3 |  |  |
+| ACSFNAM | 15 | 1 | 25 |  |  |
+| ACSMNAM | 15 | 28 | 25 |  |  |
+| ACSLNAM | 15 | 55 | 25 |  |  |
+| ACSADL1 | 16 | 10 | 50 |  |  |
+| ACSSTTE | 16 | 73 | 2 |  |  |
+| ACSADL2 | 17 | 10 | 50 |  |  |
+| ACSZIPC | 17 | 73 | 5 |  |  |
+| ACSCITY | 18 | 10 | 50 |  |  |
+| ACSCTRY | 18 | 73 | 3 |  |  |
+| ACSPHN1 | 19 | 10 | 13 |  |  |
+| ACSGOVT | 19 | 58 | 20 |  |  |
+| ACSPHN2 | 20 | 10 | 13 |  |  |
+| ACSEFTC | 20 | 41 | 10 |  |  |
+| ACSPFLG | 20 | 78 | 1 |  |  |
+| INFOMSG | 22 | 23 | 45 |  | PROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COADM01 (app/bms/COADM01.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN001 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN002 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN003 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN004 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN005 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN006 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN007 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN008 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN009 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN010 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN011 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN012 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTION | None | None | None | Y | FSET,IC,NORM,NUM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| OPTN001 | 6 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN002 | 7 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN003 | 8 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN004 | 9 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN005 | 10 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN006 | 11 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN007 | 12 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN008 | 13 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN009 | 14 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN010 | 15 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN011 | 16 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN012 | 17 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTION | 20 | 41 | 2 | Y | FSET,IC,NORM,NUM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COBIL00 (app/bms/COBIL00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| ACTIDIN | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| CURBAL | None | None | None |  | ASKIP,FSET,NORM |
-| CONFIRM | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| ACTIDIN | 6 | 21 | 11 | Y | FSET,IC,NORM,UNPROT |
+| CURBAL | 11 | 32 | 14 |  | ASKIP,FSET,NORM |
+| CONFIRM | 15 | 60 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COCRDLI (app/bms/COCRDLI.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| PAGENO | None | None | 3 |  |  |
-| ACCTSID | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| CARDSID | None | None | None | Y | FSET,NORM,UNPROT |
-| CRDSEL1 | None | None | None |  | FSET,NORM,PROT |
-| ACCTNO1 | None | None | None |  | NORM,PROT |
-| CRDNUM1 | None | None | None |  | NORM,PROT |
-| CRDSTS1 | None | None | None |  | NORM,PROT |
-| CRDSEL2 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP2 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO2 | None | None | None |  | NORM,PROT |
-| CRDNUM2 | None | None | None |  | NORM,PROT |
-| CRDSTS2 | None | None | None |  | NORM,PROT |
-| CRDSEL3 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP3 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO3 | None | None | None |  | NORM,PROT |
-| CRDNUM3 | None | None | None |  | NORM,PROT |
-| CRDSTS3 | None | None | None |  | NORM,PROT |
-| CRDSEL4 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP4 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO4 | None | None | None |  | NORM,PROT |
-| CRDNUM4 | None | None | None |  | NORM,PROT |
-| CRDSTS4 | None | None | None |  | NORM,PROT |
-| CRDSEL5 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP5 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO5 | None | None | None |  | NORM,PROT |
-| CRDNUM5 | None | None | None |  | NORM,PROT |
-| CRDSTS5 | None | None | None |  | NORM,PROT |
-| CRDSEL6 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP6 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO6 | None | None | None |  | NORM,PROT |
-| CRDNUM6 | None | None | None |  | NORM,PROT |
-| CRDSTS6 | None | None | None |  | NORM,PROT |
-| CRDSEL7 | None | None | None |  | FSET,NORM,PROT |
-| CRDSTP7 | None | None | None |  | ASKIP,DRK,FSET |
-| ACCTNO7 | None | None | None |  | NORM,PROT |
-| CRDNUM7 | None | None | None |  | NORM,PROT |
-| CRDSTS7 | None | None | None |  | NORM,PROT |
-| INFOMSG | None | None | None |  | PROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| PAGENO | 4 | 76 | 3 |  |  |
+| ACCTSID | 6 | 44 | 11 | Y | FSET,IC,NORM,UNPROT |
+| CARDSID | 7 | 44 | 16 | Y | FSET,NORM,UNPROT |
+| CRDSEL1 | 11 | 12 | 1 |  | FSET,NORM,PROT |
+| ACCTNO1 | 11 | 22 | 11 |  | NORM,PROT |
+| CRDNUM1 | 11 | 43 | 16 |  | NORM,PROT |
+| CRDSTS1 | 11 | 67 | 1 |  | NORM,PROT |
+| CRDSEL2 | 12 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP2 | 12 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO2 | 12 | 22 | 11 |  | NORM,PROT |
+| CRDNUM2 | 12 | 43 | 16 |  | NORM,PROT |
+| CRDSTS2 | 12 | 67 | 1 |  | NORM,PROT |
+| CRDSEL3 | 13 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP3 | 13 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO3 | 13 | 22 | 11 |  | NORM,PROT |
+| CRDNUM3 | 13 | 43 | 16 |  | NORM,PROT |
+| CRDSTS3 | 13 | 67 | 1 |  | NORM,PROT |
+| CRDSEL4 | 14 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP4 | 14 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO4 | 14 | 22 | 11 |  | NORM,PROT |
+| CRDNUM4 | 14 | 43 | 16 |  | NORM,PROT |
+| CRDSTS4 | 14 | 67 | 1 |  | NORM,PROT |
+| CRDSEL5 | 15 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP5 | 15 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO5 | 15 | 22 | 11 |  | NORM,PROT |
+| CRDNUM5 | 15 | 43 | 16 |  | NORM,PROT |
+| CRDSTS5 | 15 | 67 | 1 |  | NORM,PROT |
+| CRDSEL6 | 16 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP6 | 16 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO6 | 16 | 22 | 11 |  | NORM,PROT |
+| CRDNUM6 | 16 | 43 | 16 |  | NORM,PROT |
+| CRDSTS6 | 16 | 67 | 1 |  | NORM,PROT |
+| CRDSEL7 | 17 | 12 | 1 |  | FSET,NORM,PROT |
+| CRDSTP7 | 17 | 14 | 1 |  | ASKIP,DRK,FSET |
+| ACCTNO7 | 17 | 22 | 11 |  | NORM,PROT |
+| CRDNUM7 | 17 | 43 | 16 |  | NORM,PROT |
+| CRDSTS7 | 17 | 67 | 1 |  | NORM,PROT |
+| INFOMSG | 20 | 19 | 45 |  | PROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COCRDSL (app/bms/COCRDSL.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| ACCTSID | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| CARDSID | None | None | None | Y | FSET,NORM,UNPROT |
-| CRDNAME | None | None | None |  |  |
-| CRDSTCD | None | None | None |  | ASKIP |
-| EXPMON | None | None | None |  | ASKIP |
-| EXPYEAR | None | None | None |  | ASKIP |
-| INFOMSG | None | None | None |  | PROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
-| FKEYS | None | None | None |  | ASKIP,NORM |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| ACCTSID | 7 | 45 | 11 | Y | FSET,IC,NORM,UNPROT |
+| CARDSID | 8 | 45 | 16 | Y | FSET,NORM,UNPROT |
+| CRDNAME | 11 | 25 | 50 |  |  |
+| CRDSTCD | 13 | 25 | 1 |  | ASKIP |
+| EXPMON | 15 | 25 | 2 |  | ASKIP |
+| EXPYEAR | 15 | 30 | 4 |  | ASKIP |
+| INFOMSG | 20 | 25 | 40 |  | PROT |
+| ERRMSG | 23 | 1 | 80 |  | ASKIP,BRT,FSET |
+| FKEYS | 24 | 1 | 75 |  | ASKIP,NORM |
 
 ## COCRDUP (app/bms/COCRDUP.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| ACCTSID | None | None | None |  | FSET,IC,NORM,PROT |
-| CARDSID | None | None | None | Y | FSET,NORM,UNPROT |
-| CRDNAME | None | None | None | Y | UNPROT |
-| CRDSTCD | None | None | None | Y | UNPROT |
-| EXPMON | None | None | None | Y | UNPROT |
-| EXPYEAR | None | None | None | Y | UNPROT |
-| EXPDAY | None | None | None |  | DRK,FSET,PROT |
-| INFOMSG | None | None | None |  | PROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
-| FKEYS | None | None | None |  | ASKIP,NORM |
-| FKEYSC | None | None | None |  | ASKIP,DRK |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| ACCTSID | 7 | 45 | 11 |  | FSET,IC,NORM,PROT |
+| CARDSID | 8 | 45 | 16 | Y | FSET,NORM,UNPROT |
+| CRDNAME | 11 | 25 | 50 | Y | UNPROT |
+| CRDSTCD | 13 | 25 | 1 | Y | UNPROT |
+| EXPMON | 15 | 25 | 2 | Y | UNPROT |
+| EXPYEAR | 15 | 30 | 4 | Y | UNPROT |
+| EXPDAY | 15 | 36 | 2 |  | DRK,FSET,PROT |
+| INFOMSG | 20 | 25 | 40 |  | PROT |
+| ERRMSG | 23 | 1 | 80 |  | ASKIP,BRT,FSET |
+| FKEYS | 24 | 1 | 21 |  | ASKIP,NORM |
+| FKEYSC | 24 | 23 | 18 |  | ASKIP,DRK |
 
 ## COMEN01 (app/bms/COMEN01.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN001 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN002 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN003 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN004 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN005 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN006 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN007 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN008 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN009 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN010 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN011 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTN012 | None | None | None |  | ASKIP,FSET,NORM |
-| OPTION | None | None | None | Y | FSET,IC,NORM,NUM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| OPTN001 | 6 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN002 | 7 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN003 | 8 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN004 | 9 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN005 | 10 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN006 | 11 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN007 | 12 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN008 | 13 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN009 | 14 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN010 | 15 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN011 | 16 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTN012 | 17 | 20 | 40 |  | ASKIP,FSET,NORM |
+| OPTION | 20 | 41 | 2 | Y | FSET,IC,NORM,NUM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## CORPT00 (app/bms/CORPT00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| MONTHLY | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| YEARLY | None | None | None | Y | FSET,NORM,UNPROT |
-| CUSTOM | None | None | None | Y | FSET,NORM,UNPROT |
-| SDTMM | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| SDTDD | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| SDTYYYY | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| EDTMM | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| EDTDD | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| EDTYYYY | None | None | None | Y | FSET,NORM,NUM,UNPROT |
-| CONFIRM | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| MONTHLY | 7 | 10 | 1 | Y | FSET,IC,NORM,UNPROT |
+| YEARLY | 9 | 10 | 1 | Y | FSET,NORM,UNPROT |
+| CUSTOM | 11 | 10 | 1 | Y | FSET,NORM,UNPROT |
+| SDTMM | 13 | 29 | 2 | Y | FSET,NORM,NUM,UNPROT |
+| SDTDD | 13 | 34 | 2 | Y | FSET,NORM,NUM,UNPROT |
+| SDTYYYY | 13 | 39 | 4 | Y | FSET,NORM,NUM,UNPROT |
+| EDTMM | 14 | 29 | 2 | Y | FSET,NORM,NUM,UNPROT |
+| EDTDD | 14 | 34 | 2 | Y | FSET,NORM,NUM,UNPROT |
+| EDTYYYY | 14 | 39 | 4 | Y | FSET,NORM,NUM,UNPROT |
+| CONFIRM | 19 | 66 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COSGN00 (app/bms/COSGN00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | FSET,NORM,PROT |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | FSET,NORM,PROT |
-| APPLID | None | None | None |  | FSET,NORM,PROT |
-| SYSID | None | None | None |  | FSET,NORM,PROT |
-| USERID | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| PASSWD | None | None | None | Y | DRK,FSET,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 8 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 8 | 8 |  | FSET,NORM,PROT |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 9 |  | FSET,NORM,PROT |
+| APPLID | 3 | 8 | 8 |  | FSET,NORM,PROT |
+| SYSID | 3 | 71 | 8 |  | FSET,NORM,PROT |
+| USERID | 19 | 43 | 8 | Y | FSET,IC,NORM,UNPROT |
+| PASSWD | 20 | 43 | 8 | Y | DRK,FSET,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COTRN00 (app/bms/COTRN00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| PAGENUM | None | None | None |  | ASKIP,FSET,NORM |
-| TRNIDIN | None | None | None | Y | FSET,NORM,UNPROT |
-| SEL0001 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID01 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE01 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC01 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT001 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0002 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID02 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE02 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC02 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT002 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0003 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID03 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE03 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC03 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT003 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0004 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID04 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE04 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC04 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT004 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0005 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID05 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE05 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC05 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT005 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0006 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID06 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE06 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC06 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT006 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0007 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID07 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE07 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC07 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT007 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0008 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID08 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE08 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC08 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT008 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0009 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID09 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE09 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC09 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT009 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0010 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID10 | None | None | None |  | ASKIP,FSET,NORM |
-| TDATE10 | None | None | None |  | ASKIP,FSET,NORM |
-| TDESC10 | None | None | None |  | ASKIP,FSET,NORM |
-| TAMT010 | None | None | None |  | ASKIP,FSET,NORM |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PAGENUM | 4 | 71 | 8 |  | ASKIP,FSET,NORM |
+| TRNIDIN | 6 | 21 | 16 | Y | FSET,NORM,UNPROT |
+| SEL0001 | 10 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID01 | 10 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE01 | 10 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC01 | 10 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT001 | 10 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0002 | 11 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID02 | 11 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE02 | 11 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC02 | 11 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT002 | 11 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0003 | 12 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID03 | 12 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE03 | 12 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC03 | 12 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT003 | 12 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0004 | 13 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID04 | 13 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE04 | 13 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC04 | 13 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT004 | 13 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0005 | 14 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID05 | 14 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE05 | 14 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC05 | 14 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT005 | 14 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0006 | 15 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID06 | 15 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE06 | 15 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC06 | 15 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT006 | 15 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0007 | 16 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID07 | 16 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE07 | 16 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC07 | 16 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT007 | 16 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0008 | 17 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID08 | 17 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE08 | 17 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC08 | 17 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT008 | 17 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0009 | 18 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID09 | 18 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE09 | 18 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC09 | 18 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT009 | 18 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0010 | 19 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID10 | 19 | 8 | 16 |  | ASKIP,FSET,NORM |
+| TDATE10 | 19 | 27 | 8 |  | ASKIP,FSET,NORM |
+| TDESC10 | 19 | 38 | 26 |  | ASKIP,FSET,NORM |
+| TAMT010 | 19 | 67 | 12 |  | ASKIP,FSET,NORM |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COTRN01 (app/bms/COTRN01.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| TRNIDIN | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| TRNID | None | None | None |  | ASKIP,NORM |
-| CARDNUM | None | None | None |  | ASKIP,NORM |
-| TTYPCD | None | None | None |  | ASKIP,NORM |
-| TCATCD | None | None | None |  | ASKIP,NORM |
-| TRNSRC | None | None | None |  | ASKIP,NORM |
-| TDESC | None | None | None |  | ASKIP,NORM |
-| TRNAMT | None | None | None |  | ASKIP,NORM |
-| TORIGDT | None | None | None |  | ASKIP,NORM |
-| TPROCDT | None | None | None |  | ASKIP,NORM |
-| MID | None | None | None |  | ASKIP,NORM |
-| MNAME | None | None | None |  | ASKIP,NORM |
-| MCITY | None | None | None |  | ASKIP,NORM |
-| MZIP | None | None | None |  | ASKIP,NORM |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| TRNIDIN | 6 | 21 | 16 | Y | FSET,IC,NORM,UNPROT |
+| TRNID | 10 | 22 | 16 |  | ASKIP,NORM |
+| CARDNUM | 10 | 58 | 16 |  | ASKIP,NORM |
+| TTYPCD | 12 | 15 | 2 |  | ASKIP,NORM |
+| TCATCD | 12 | 36 | 4 |  | ASKIP,NORM |
+| TRNSRC | 12 | 54 | 10 |  | ASKIP,NORM |
+| TDESC | 14 | 19 | 60 |  | ASKIP,NORM |
+| TRNAMT | 16 | 14 | 12 |  | ASKIP,NORM |
+| TORIGDT | 16 | 42 | 10 |  | ASKIP,NORM |
+| TPROCDT | 16 | 68 | 10 |  | ASKIP,NORM |
+| MID | 18 | 19 | 9 |  | ASKIP,NORM |
+| MNAME | 18 | 48 | 30 |  | ASKIP,NORM |
+| MCITY | 20 | 21 | 25 |  | ASKIP,NORM |
+| MZIP | 20 | 67 | 10 |  | ASKIP,NORM |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COTRN02 (app/bms/COTRN02.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| ACTIDIN | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| CARDNIN | None | None | None | Y | FSET,NORM,UNPROT |
-| TTYPCD | None | None | None | Y | FSET,NORM,UNPROT |
-| TCATCD | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNSRC | None | None | None | Y | FSET,NORM,UNPROT |
-| TDESC | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNAMT | None | None | None | Y | FSET,NORM,UNPROT |
-| TORIGDT | None | None | None | Y | FSET,NORM,UNPROT |
-| TPROCDT | None | None | None | Y | FSET,NORM,UNPROT |
-| MID | None | None | None | Y | FSET,NORM,UNPROT |
-| MNAME | None | None | None | Y | FSET,NORM,UNPROT |
-| MCITY | None | None | None | Y | FSET,NORM,UNPROT |
-| MZIP | None | None | None | Y | FSET,NORM,UNPROT |
-| CONFIRM | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| ACTIDIN | 6 | 21 | 11 | Y | FSET,IC,NORM,UNPROT |
+| CARDNIN | 6 | 55 | 16 | Y | FSET,NORM,UNPROT |
+| TTYPCD | 10 | 15 | 2 | Y | FSET,NORM,UNPROT |
+| TCATCD | 10 | 36 | 4 | Y | FSET,NORM,UNPROT |
+| TRNSRC | 10 | 54 | 10 | Y | FSET,NORM,UNPROT |
+| TDESC | 12 | 19 | 60 | Y | FSET,NORM,UNPROT |
+| TRNAMT | 14 | 14 | 12 | Y | FSET,NORM,UNPROT |
+| TORIGDT | 14 | 42 | 10 | Y | FSET,NORM,UNPROT |
+| TPROCDT | 14 | 68 | 10 | Y | FSET,NORM,UNPROT |
+| MID | 16 | 19 | 9 | Y | FSET,NORM,UNPROT |
+| MNAME | 16 | 48 | 30 | Y | FSET,NORM,UNPROT |
+| MCITY | 18 | 21 | 25 | Y | FSET,NORM,UNPROT |
+| MZIP | 18 | 67 | 10 | Y | FSET,NORM,UNPROT |
+| CONFIRM | 21 | 63 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COUSR00 (app/bms/COUSR00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| PAGENUM | None | None | None |  | ASKIP,FSET,NORM |
-| USRIDIN | None | None | None | Y | FSET,NORM,UNPROT |
-| SEL0001 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID01 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME01 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME01 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE01 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0002 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID02 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME02 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME02 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE02 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0003 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID03 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME03 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME03 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE03 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0004 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID04 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME04 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME04 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE04 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0005 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID05 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME05 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME05 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE05 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0006 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID06 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME06 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME06 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE06 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0007 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID07 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME07 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME07 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE07 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0008 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID08 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME08 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME08 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE08 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0009 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID09 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME09 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME09 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE09 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0010 | None | None | None | Y | FSET,NORM,UNPROT |
-| USRID10 | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME10 | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME10 | None | None | None |  | ASKIP,FSET,NORM |
-| UTYPE10 | None | None | None |  | ASKIP,FSET,NORM |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PAGENUM | 4 | 71 | 8 |  | ASKIP,FSET,NORM |
+| USRIDIN | 6 | 21 | 8 | Y | FSET,NORM,UNPROT |
+| SEL0001 | 10 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID01 | 10 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME01 | 10 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME01 | 10 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE01 | 10 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0002 | 11 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID02 | 11 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME02 | 11 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME02 | 11 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE02 | 11 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0003 | 12 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID03 | 12 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME03 | 12 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME03 | 12 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE03 | 12 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0004 | 13 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID04 | 13 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME04 | 13 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME04 | 13 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE04 | 13 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0005 | 14 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID05 | 14 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME05 | 14 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME05 | 14 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE05 | 14 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0006 | 15 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID06 | 15 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME06 | 15 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME06 | 15 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE06 | 15 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0007 | 16 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID07 | 16 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME07 | 16 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME07 | 16 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE07 | 16 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0008 | 17 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID08 | 17 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME08 | 17 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME08 | 17 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE08 | 17 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0009 | 18 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID09 | 18 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME09 | 18 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME09 | 18 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE09 | 18 | 73 | 1 |  | ASKIP,FSET,NORM |
+| SEL0010 | 19 | 6 | 1 | Y | FSET,NORM,UNPROT |
+| USRID10 | 19 | 12 | 8 |  | ASKIP,FSET,NORM |
+| FNAME10 | 19 | 24 | 20 |  | ASKIP,FSET,NORM |
+| LNAME10 | 19 | 48 | 20 |  | ASKIP,FSET,NORM |
+| UTYPE10 | 19 | 73 | 1 |  | ASKIP,FSET,NORM |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COUSR01 (app/bms/COUSR01.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| FNAME | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| LNAME | None | None | None | Y | FSET,NORM,UNPROT |
-| USERID | None | None | None | Y | FSET,NORM,UNPROT |
-| PASSWD | None | None | None | Y | DRK,FSET,UNPROT |
-| USRTYPE | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| FNAME | 8 | 18 | 20 | Y | FSET,IC,NORM,UNPROT |
+| LNAME | 8 | 56 | 20 | Y | FSET,NORM,UNPROT |
+| USERID | 11 | 15 | 8 | Y | FSET,NORM,UNPROT |
+| PASSWD | 11 | 55 | 8 | Y | DRK,FSET,UNPROT |
+| USRTYPE | 14 | 17 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COUSR02 (app/bms/COUSR02.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| USRIDIN | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| FNAME | None | None | None | Y | FSET,NORM,UNPROT |
-| LNAME | None | None | None | Y | FSET,NORM,UNPROT |
-| PASSWD | None | None | None | Y | DRK,FSET,UNPROT |
-| USRTYPE | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| USRIDIN | 6 | 21 | 8 | Y | FSET,IC,NORM,UNPROT |
+| FNAME | 11 | 18 | 20 | Y | FSET,NORM,UNPROT |
+| LNAME | 11 | 56 | 20 | Y | FSET,NORM,UNPROT |
+| PASSWD | 13 | 16 | 8 | Y | DRK,FSET,UNPROT |
+| USRTYPE | 15 | 17 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COUSR03 (app/bms/COUSR03.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| USRIDIN | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| FNAME | None | None | None |  | ASKIP,FSET,NORM |
-| LNAME | None | None | None |  | ASKIP,FSET,NORM |
-| USRTYPE | None | None | None |  | ASKIP,FSET,NORM |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| USRIDIN | 6 | 21 | 8 | Y | FSET,IC,NORM,UNPROT |
+| FNAME | 11 | 18 | 20 |  | ASKIP,FSET,NORM |
+| LNAME | 13 | 18 | 20 |  | ASKIP,FSET,NORM |
+| USRTYPE | 15 | 17 | 1 |  | ASKIP,FSET,NORM |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COPAU00 (app/app-authorization-ims-db2-mq/bms/COPAU00.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,FSET,NORM |
-| CURDATE | None | None | None |  | ASKIP,FSET,NORM |
-| PGMNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE02 | None | None | None |  | ASKIP,FSET,NORM |
-| CURTIME | None | None | None |  | ASKIP,FSET,NORM |
-| ACCTID | None | None | None | Y | FSET,NORM,UNPROT |
-| CNAME | None | None | None |  | ASKIP,NORM |
-| CUSTID | None | None | None |  | ASKIP,NORM |
-| ADDR001 | None | None | None |  | ASKIP,NORM |
-| ACCSTAT | None | None | None |  | ASKIP,NORM |
-| ADDR002 | None | None | None |  | ASKIP,NORM |
-| PHONE1 | None | None | None |  | ASKIP,NORM |
-| APPRCNT | None | None | None |  | ASKIP,NORM |
-| DECLCNT | None | None | None |  | ASKIP,NORM |
-| CREDLIM | None | None | None |  | ASKIP,FSET,NORM |
-| CASHLIM | None | None | None |  | ASKIP,FSET,NORM |
-| APPRAMT | None | None | None |  | ASKIP,FSET,NORM |
-| CREDBAL | None | None | None |  | ASKIP,FSET,NORM |
-| CASHBAL | None | None | None |  | ASKIP,FSET,NORM |
-| DECLAMT | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0001 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID01 | None | None | None |  | ASKIP,FSET,NORM |
-| PDATE01 | None | None | None |  | ASKIP,FSET,NORM |
-| PTIME01 | None | None | None |  | ASKIP,FSET,NORM |
-| PTYPE01 | None | None | None |  | ASKIP,FSET,NORM |
-| PAPRV01 | None | None | None |  | ASKIP,FSET,NORM |
-| PSTAT01 | None | None | None |  | ASKIP,FSET,NORM |
-| PAMT001 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0002 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID02 | None | None | None |  | ASKIP,FSET,NORM |
-| PDATE02 | None | None | None |  | ASKIP,FSET,NORM |
-| PTIME02 | None | None | None |  | ASKIP,FSET,NORM |
-| PTYPE02 | None | None | None |  | ASKIP,FSET,NORM |
-| PAPRV02 | None | None | None |  | ASKIP,FSET,NORM |
-| PSTAT02 | None | None | None |  | ASKIP,FSET,NORM |
-| PAMT002 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0003 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID03 | None | None | None |  | ASKIP,FSET,NORM |
-| PDATE03 | None | None | None |  | ASKIP,FSET,NORM |
-| PTIME03 | None | None | None |  | ASKIP,FSET,NORM |
-| PTYPE03 | None | None | None |  | ASKIP,FSET,NORM |
-| PAPRV03 | None | None | None |  | ASKIP,FSET,NORM |
-| PSTAT03 | None | None | None |  | ASKIP,FSET,NORM |
-| PAMT003 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0004 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRNID04 | None | None | None |  | ASKIP,FSET,NORM |
-| PDATE04 | None | None | None |  | ASKIP,FSET,NORM |
-| PTIME04 | None | None | None |  | ASKIP,FSET,NORM |
-| PTYPE04 | None | None | None |  | ASKIP,FSET,NORM |
-| PAPRV04 | None | None | None |  | ASKIP,FSET,NORM |
-| PSTAT04 | None | None | None |  | ASKIP,FSET,NORM |
-| PAMT004 | None | None | None |  | ASKIP,FSET,NORM |
-| TRNID05 | None | None | None |  | ASKIP,FSET,NORM |
-| PDATE05 | None | None | None |  | ASKIP,FSET,NORM |
-| PTIME05 | None | None | None |  | ASKIP,FSET,NORM |
-| PTYPE05 | None | None | None |  | ASKIP,FSET,NORM |
-| PAPRV05 | None | None | None |  | ASKIP,FSET,NORM |
-| PSTAT05 | None | None | None |  | ASKIP,FSET,NORM |
-| PAMT005 | None | None | None |  | ASKIP,FSET,NORM |
-| SEL0005 | None | None | None | Y | FSET,NORM,UNPROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,FSET,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,FSET,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,FSET,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,FSET,NORM |
+| ACCTID | 5 | 19 | 11 | Y | FSET,NORM,UNPROT |
+| CNAME | 6 | 10 | 25 |  | ASKIP,NORM |
+| CUSTID | 6 | 58 | 9 |  | ASKIP,NORM |
+| ADDR001 | 7 | 10 | 25 |  | ASKIP,NORM |
+| ACCSTAT | 7 | 58 | 1 |  | ASKIP,NORM |
+| ADDR002 | 8 | 10 | 25 |  | ASKIP,NORM |
+| PHONE1 | 9 | 15 | 13 |  | ASKIP,NORM |
+| APPRCNT | 9 | 58 | 3 |  | ASKIP,NORM |
+| DECLCNT | 9 | 76 | 3 |  | ASKIP,NORM |
+| CREDLIM | 11 | 19 | 12 |  | ASKIP,FSET,NORM |
+| CASHLIM | 11 | 46 | 9 |  | ASKIP,FSET,NORM |
+| APPRAMT | 11 | 69 | 10 |  | ASKIP,FSET,NORM |
+| CREDBAL | 12 | 19 | 12 |  | ASKIP,FSET,NORM |
+| CASHBAL | 12 | 46 | 9 |  | ASKIP,FSET,NORM |
+| DECLAMT | 12 | 69 | 10 |  | ASKIP,FSET,NORM |
+| SEL0001 | 16 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID01 | 16 | 8 | 16 |  | ASKIP,FSET,NORM |
+| PDATE01 | 16 | 27 | 8 |  | ASKIP,FSET,NORM |
+| PTIME01 | 16 | 38 | 8 |  | ASKIP,FSET,NORM |
+| PTYPE01 | 16 | 49 | 4 |  | ASKIP,FSET,NORM |
+| PAPRV01 | 16 | 58 | 1 |  | ASKIP,FSET,NORM |
+| PSTAT01 | 16 | 63 | 1 |  | ASKIP,FSET,NORM |
+| PAMT001 | 16 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0002 | 17 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID02 | 17 | 8 | 16 |  | ASKIP,FSET,NORM |
+| PDATE02 | 17 | 27 | 8 |  | ASKIP,FSET,NORM |
+| PTIME02 | 17 | 38 | 8 |  | ASKIP,FSET,NORM |
+| PTYPE02 | 17 | 49 | 4 |  | ASKIP,FSET,NORM |
+| PAPRV02 | 17 | 58 | 1 |  | ASKIP,FSET,NORM |
+| PSTAT02 | 17 | 63 | 1 |  | ASKIP,FSET,NORM |
+| PAMT002 | 17 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0003 | 18 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID03 | 18 | 8 | 16 |  | ASKIP,FSET,NORM |
+| PDATE03 | 18 | 27 | 8 |  | ASKIP,FSET,NORM |
+| PTIME03 | 18 | 38 | 8 |  | ASKIP,FSET,NORM |
+| PTYPE03 | 18 | 49 | 4 |  | ASKIP,FSET,NORM |
+| PAPRV03 | 18 | 58 | 1 |  | ASKIP,FSET,NORM |
+| PSTAT03 | 18 | 63 | 1 |  | ASKIP,FSET,NORM |
+| PAMT003 | 18 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0004 | 19 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| TRNID04 | 19 | 8 | 16 |  | ASKIP,FSET,NORM |
+| PDATE04 | 19 | 27 | 8 |  | ASKIP,FSET,NORM |
+| PTIME04 | 19 | 38 | 8 |  | ASKIP,FSET,NORM |
+| PTYPE04 | 19 | 49 | 4 |  | ASKIP,FSET,NORM |
+| PAPRV04 | 19 | 58 | 1 |  | ASKIP,FSET,NORM |
+| PSTAT04 | 19 | 63 | 1 |  | ASKIP,FSET,NORM |
+| PAMT004 | 19 | 67 | 12 |  | ASKIP,FSET,NORM |
+| TRNID05 | 20 | 8 | 16 |  | ASKIP,FSET,NORM |
+| PDATE05 | 20 | 27 | 8 |  | ASKIP,FSET,NORM |
+| PTIME05 | 20 | 38 | 8 |  | ASKIP,FSET,NORM |
+| PTYPE05 | 20 | 49 | 4 |  | ASKIP,FSET,NORM |
+| PAPRV05 | 20 | 58 | 1 |  | ASKIP,FSET,NORM |
+| PSTAT05 | 20 | 63 | 1 |  | ASKIP,FSET,NORM |
+| PAMT005 | 20 | 67 | 12 |  | ASKIP,FSET,NORM |
+| SEL0005 | 20 | 3 | 1 | Y | FSET,NORM,UNPROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COPAU01 (app/app-authorization-ims-db2-mq/bms/COPAU01.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| CARDNUM | None | None | None |  | ASKIP,NORM |
-| AUTHDT | None | None | None |  | ASKIP,NORM |
-| AUTHTM | None | None | None |  | ASKIP,NORM |
-| AUTHRSP | None | None | None |  | ASKIP,NORM |
-| AUTHRSN | None | None | None |  | ASKIP,NORM |
-| AUTHCD | None | None | None |  | ASKIP,NORM |
-| AUTHAMT | None | None | None |  | ASKIP,NORM |
-| POSEMD | None | None | None |  | ASKIP,NORM |
-| AUTHSRC | None | None | None |  | ASKIP,NORM |
-| MCCCD | None | None | None |  | ASKIP,NORM |
-| CRDEXP | None | None | None |  | ASKIP,NORM |
-| AUTHTYP | None | None | None |  | ASKIP,NORM |
-| TRNID | None | None | None |  | ASKIP,NORM |
-| AUTHMTC | None | None | None |  | ASKIP,NORM |
-| AUTHFRD | None | None | None |  | ASKIP,NORM |
-| MERNAME | None | None | None |  | ASKIP,NORM |
-| MERID | None | None | None |  | ASKIP,NORM |
-| MERCITY | None | None | None |  | ASKIP,NORM |
-| MERST | None | None | None |  | ASKIP,NORM |
-| MERZIP | None | None | None |  | ASKIP,NORM |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| CARDNUM | 7 | 11 | 16 |  | ASKIP,NORM |
+| AUTHDT | 7 | 43 | 10 |  | ASKIP,NORM |
+| AUTHTM | 7 | 68 | 10 |  | ASKIP,NORM |
+| AUTHRSP | 9 | 14 | 1 |  | ASKIP,NORM |
+| AUTHRSN | 9 | 32 | 20 |  | ASKIP,NORM |
+| AUTHCD | 9 | 68 | 6 |  | ASKIP,NORM |
+| AUTHAMT | 11 | 11 | 12 |  | ASKIP,NORM |
+| POSEMD | 11 | 46 | 4 |  | ASKIP,NORM |
+| AUTHSRC | 11 | 68 | 10 |  | ASKIP,NORM |
+| MCCCD | 13 | 13 | 4 |  | ASKIP,NORM |
+| CRDEXP | 13 | 42 | 5 |  | ASKIP,NORM |
+| AUTHTYP | 13 | 64 | 14 |  | ASKIP,NORM |
+| TRNID | 15 | 12 | 15 |  | ASKIP,NORM |
+| AUTHMTC | 15 | 46 | 1 |  | ASKIP,NORM |
+| AUTHFRD | 15 | 67 | 10 |  | ASKIP,NORM |
+| MERNAME | 19 | 9 | 25 |  | ASKIP,NORM |
+| MERID | 19 | 55 | 15 |  | ASKIP,NORM |
+| MERCITY | 21 | 9 | 25 |  | ASKIP,NORM |
+| MERST | 21 | 49 | 2 |  | ASKIP,NORM |
+| MERZIP | 21 | 61 | 10 |  | ASKIP,NORM |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
 
 ## COTRTLI (app/app-transaction-type-db2/bms/COTRTLI.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| PAGENO | None | None | 3 |  |  |
-| TRTYPE | None | None | None | Y | FSET,IC,NORM,UNPROT |
-| TRDESC | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL1 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP1 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD1 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL2 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP2 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD2 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL3 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP3 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD3 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL4 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP4 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD4 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL5 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP5 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD5 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL6 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP6 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD6 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSEL7 | None | None | None |  | FSET,NORM,PROT |
-| TRTTYP7 | None | None | None |  | FSET,NORM,PROT |
-| TRTYPD7 | None | None | None | Y | FSET,NORM,UNPROT |
-| TRTSELA | None | None | None |  | FSET,NORM,PROT |
-| TRTTYPA | None | None | None |  | FSET,NORM,PROT |
-| TRTDSCA | None | None | None |  | FSET,NORM,PROT |
-| INFOMSG | None | None | None |  | PROT |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
-| BUTNF02 | None | None | None |  | ASKIP,NORM |
-| BUTNF03 | None | None | None |  | ASKIP,NORM |
-| BUTNF07 | None | None | None |  | ASKIP,NORM |
-| BUTNF08 | None | None | None |  | ASKIP,NORM |
-| BUTNF10 | None | None | None |  | ASKIP,NORM |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| PAGENO | 4 | 76 | 3 |  |  |
+| TRTYPE | 6 | 44 | 2 | Y | FSET,IC,NORM,UNPROT |
+| TRDESC | 8 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL1 | 12 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP1 | 12 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD1 | 12 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL2 | 13 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP2 | 13 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD2 | 13 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL3 | 14 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP3 | 14 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD3 | 14 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL4 | 15 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP4 | 15 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD4 | 15 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL5 | 16 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP5 | 16 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD5 | 16 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL6 | 17 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP6 | 17 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD6 | 17 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSEL7 | 18 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYP7 | 18 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTYPD7 | 18 | 25 | 50 | Y | FSET,NORM,UNPROT |
+| TRTSELA | 19 | 6 | 1 |  | FSET,NORM,PROT |
+| TRTTYPA | 19 | 17 | 2 |  | FSET,NORM,PROT |
+| TRTDSCA | 19 | 25 | 50 |  | FSET,NORM,PROT |
+| INFOMSG | 21 | 19 | 45 |  | PROT |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
+| BUTNF02 | 24 | 1 | 7 |  | ASKIP,NORM |
+| BUTNF03 | 24 | 10 | 7 |  | ASKIP,NORM |
+| BUTNF07 | 24 | 19 | 10 |  | ASKIP,NORM |
+| BUTNF08 | 24 | 32 | 10 |  | ASKIP,NORM |
+| BUTNF10 | 24 | 44 | 8 |  | ASKIP,NORM |
 
 ## COTRTUP (app/app-transaction-type-db2/bms/COTRTUP.bms)
 
 | Field | Row | Col | Len | Input | ATTRB |
 |---|---|---|---|---|---|
-| TRNNAME | None | None | None |  | ASKIP,FSET,NORM |
-| TITLE01 | None | None | None |  | ASKIP,NORM |
-| CURDATE | None | None | None |  | ASKIP,NORM |
-| PGMNAME | None | None | None |  | ASKIP,NORM |
-| TITLE02 | None | None | None |  | ASKIP,NORM |
-| CURTIME | None | None | None |  | ASKIP,NORM |
-| TRTYPCD | None | None | None | Y | IC,UNPROT |
-| TRTYDSC | None | None | None | Y | UNPROT |
-| INFOMSG | None | None | None |  | ASKIP |
-| ERRMSG | None | None | None |  | ASKIP,BRT,FSET |
-| FKEYS | None | None | None |  | ASKIP,NORM |
-| FKEY04 | None | None | None |  | ASKIP,DRK |
-| FKEY05 | None | None | None |  | ASKIP,DRK |
-| FKEY06 | None | None | None |  | ASKIP,DRK |
-| FKEY12 | None | None | None |  | ASKIP,DRK |
+| TRNNAME | 1 | 7 | 4 |  | ASKIP,FSET,NORM |
+| TITLE01 | 1 | 21 | 40 |  | ASKIP,NORM |
+| CURDATE | 1 | 71 | 8 |  | ASKIP,NORM |
+| PGMNAME | 2 | 7 | 8 |  | ASKIP,NORM |
+| TITLE02 | 2 | 21 | 40 |  | ASKIP,NORM |
+| CURTIME | 2 | 71 | 8 |  | ASKIP,NORM |
+| TRTYPCD | 12 | 26 | 2 | Y | IC,UNPROT |
+| TRTYDSC | 14 | 26 | 50 | Y | UNPROT |
+| INFOMSG | 22 | 23 | 45 |  | ASKIP |
+| ERRMSG | 23 | 1 | 78 |  | ASKIP,BRT,FSET |
+| FKEYS | 24 | 1 | 21 |  | ASKIP,NORM |
+| FKEY04 | 24 | 23 | 9 |  | ASKIP,DRK |
+| FKEY05 | 24 | 33 | 8 |  | ASKIP,DRK |
+| FKEY06 | 24 | 43 | 6 |  | ASKIP,DRK |
+| FKEY12 | 24 | 69 | 10 |  | ASKIP,DRK |

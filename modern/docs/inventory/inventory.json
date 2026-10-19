@@ -8,513 +8,513 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "IC",
             "UNPROT"
           ],
-          "col": null,
+          "col": 38,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACCTSID",
-          "row": null
+          "row": 5
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 70,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "ACSTTUS",
-          "row": null
+          "row": 5
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 17,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "OPNYEAR",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 24,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "OPNMON",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 29,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "OPNDAY",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 15,
           "name": "ACRDLIM",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 17,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "EXPYEAR",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 24,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "EXPMON",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 29,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "EXPDAY",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 15,
           "name": "ACSHLIM",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 17,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "RISYEAR",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 24,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "RISMON",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 29,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "RISDAY",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 15,
           "name": "ACURBAL",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 15,
           "name": "ACRCYCR",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 23,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "AADDGRP",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 15,
           "name": "ACRCYDB",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 23,
           "input": true,
-          "length": null,
+          "length": 9,
           "name": "ACSTNUM",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 55,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACTSSN1",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 61,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "ACTSSN2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 66,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "ACTSSN3",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 23,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "DOBYEAR",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 30,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "DOBMON",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 35,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "DOBDAY",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 62,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSTFCO",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 1,
           "input": true,
-          "length": null,
+          "length": 25,
           "name": "ACSFNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 28,
           "input": true,
-          "length": null,
+          "length": 25,
           "name": "ACSMNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 55,
           "input": true,
-          "length": null,
+          "length": 25,
           "name": "ACSLNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "ACSADL1",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 73,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "ACSSTTE",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "ACSADL2",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 73,
           "input": true,
-          "length": null,
+          "length": 5,
           "name": "ACSZIPC",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "ACSCITY",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 73,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSCTRY",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSPH1A",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 14,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSPH1B",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 18,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "ACSPH1C",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 58,
           "input": true,
-          "length": null,
+          "length": 20,
           "name": "ACSGOVT",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSPH2A",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 14,
           "input": true,
-          "length": null,
+          "length": 3,
           "name": "ACSPH2B",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 18,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "ACSPH2C",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 41,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "ACSEFTC",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 78,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "ACSPFLG",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 45,
           "name": "INFOMSG",
-          "row": null
+          "row": 22
         },
         {
           "attrb": [
@@ -522,44 +522,44 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 21,
           "name": "FKEYS",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 7,
           "name": "FKEY05",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 31,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "FKEY12",
-          "row": null
+          "row": 24
         }
       ],
       "maps": [
@@ -576,66 +576,66 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -644,247 +644,247 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 38,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACCTSID",
-          "row": null
+          "row": 5
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 70,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "ACSTTUS",
-          "row": null
+          "row": 5
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "ADTOPEN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "ACRDLIM",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AEXPDT",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "ACSHLIM",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AREISDT",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "ACURBAL",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "ACRCYCR",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AADDGRP",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "ACRCYDB",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "ACSTNUM",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 54,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "ACSTSSN",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "ACSTDOB",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 3,
           "name": "ACSTFCO",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "ACSFNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 28,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "ACSMNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 55,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "ACSLNAM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 50,
           "name": "ACSADL1",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "ACSSTTE",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 50,
           "name": "ACSADL2",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 5,
           "name": "ACSZIPC",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 50,
           "name": "ACSCITY",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 3,
           "name": "ACSCTRY",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 13,
           "name": "ACSPHN1",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "ACSGOVT",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 13,
           "name": "ACSPHN2",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 41,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "ACSEFTC",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 78,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "ACSPFLG",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "PROT"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 45,
           "name": "INFOMSG",
-          "row": null
+          "row": 22
         },
         {
           "attrb": [
@@ -892,11 +892,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -913,11 +913,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -925,11 +925,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -937,11 +937,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -949,11 +949,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -961,11 +961,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -973,11 +973,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -985,11 +985,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN001",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -997,11 +997,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN002",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -1009,11 +1009,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN003",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
@@ -1021,11 +1021,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN004",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
@@ -1033,11 +1033,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN005",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -1045,11 +1045,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN006",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -1057,11 +1057,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN007",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -1069,11 +1069,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN008",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -1081,11 +1081,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN009",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -1093,11 +1093,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN010",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -1105,11 +1105,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN011",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -1117,11 +1117,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN012",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -1131,11 +1131,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 41,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "OPTION",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -1143,11 +1143,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -1164,11 +1164,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -1176,11 +1176,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -1188,11 +1188,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -1200,11 +1200,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -1212,11 +1212,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -1224,11 +1224,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -1237,11 +1237,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACTIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -1249,11 +1249,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 32,
           "input": false,
-          "length": null,
+          "length": 14,
           "name": "CURBAL",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -1261,11 +1261,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 60,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "CONFIRM",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -1273,11 +1273,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -1294,74 +1294,74 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 76,
           "input": false,
           "length": 3,
           "name": "PAGENO",
-          "row": null
+          "row": 4
         },
         {
           "attrb": [
@@ -1370,11 +1370,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 44,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACCTSID",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -1382,11 +1382,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 44,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "CARDSID",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -1394,44 +1394,44 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL1",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO1",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM1",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS1",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -1439,11 +1439,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -1451,44 +1451,44 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS2",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -1496,11 +1496,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL3",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -1508,44 +1508,44 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP3",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO3",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM3",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS3",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -1553,11 +1553,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL4",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -1565,44 +1565,44 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP4",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO4",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM4",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS4",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -1610,11 +1610,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL5",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -1622,44 +1622,44 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP5",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO5",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM5",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS5",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -1667,11 +1667,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL6",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -1679,44 +1679,44 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP6",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO6",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM6",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS6",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -1724,11 +1724,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSEL7",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -1736,54 +1736,54 @@
             "DRK",
             "FSET"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTP7",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTNO7",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CRDNUM7",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTS7",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
             "PROT"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 45,
           "name": "INFOMSG",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -1791,11 +1791,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -1812,66 +1812,66 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -1880,11 +1880,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 45,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACCTSID",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -1892,59 +1892,59 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 45,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "CARDSID",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 50,
           "name": "CRDNAME",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "CRDSTCD",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "EXPMON",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 30,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "EXPYEAR",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "PROT"
           ],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "INFOMSG",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -1952,22 +1952,22 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 80,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 75,
           "name": "FKEYS",
-          "row": null
+          "row": 24
         }
       ],
       "maps": [
@@ -1984,66 +1984,66 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2052,11 +2052,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 45,
           "input": false,
-          "length": null,
+          "length": 11,
           "name": "ACCTSID",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -2064,51 +2064,51 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 45,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "CARDSID",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "CRDNAME",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "CRDSTCD",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "EXPMON",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 30,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "EXPYEAR",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -2116,21 +2116,21 @@
             "FSET",
             "PROT"
           ],
-          "col": null,
+          "col": 36,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "EXPDAY",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "PROT"
           ],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "INFOMSG",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -2138,33 +2138,33 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 80,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 21,
           "name": "FKEYS",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 18,
           "name": "FKEYSC",
-          "row": null
+          "row": 24
         }
       ],
       "maps": [
@@ -2181,11 +2181,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2193,11 +2193,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2205,11 +2205,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2217,11 +2217,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2229,11 +2229,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2241,11 +2241,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2253,11 +2253,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN001",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -2265,11 +2265,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN002",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -2277,11 +2277,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN003",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
@@ -2289,11 +2289,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN004",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
@@ -2301,11 +2301,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN005",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2313,11 +2313,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN006",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2325,11 +2325,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN007",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -2337,11 +2337,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN008",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -2349,11 +2349,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN009",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -2361,11 +2361,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN010",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -2373,11 +2373,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN011",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -2385,11 +2385,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 20,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "OPTN012",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -2399,11 +2399,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 41,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "OPTION",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -2411,11 +2411,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -2432,11 +2432,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2444,11 +2444,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2456,11 +2456,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2468,11 +2468,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2480,11 +2480,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2492,11 +2492,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2505,11 +2505,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "MONTHLY",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
@@ -2517,11 +2517,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "YEARLY",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
@@ -2529,11 +2529,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 10,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "CUSTOM",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2542,11 +2542,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 29,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "SDTMM",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -2555,11 +2555,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 34,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "SDTDD",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -2568,11 +2568,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 39,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "SDTYYYY",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -2581,11 +2581,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 29,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "EDTMM",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -2594,11 +2594,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 34,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "EDTDD",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -2607,11 +2607,11 @@
             "NUM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 39,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "EDTYYYY",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -2619,11 +2619,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 66,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "CONFIRM",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -2631,11 +2631,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -2652,11 +2652,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2664,11 +2664,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2676,11 +2676,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2688,11 +2688,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2700,11 +2700,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2712,11 +2712,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2724,11 +2724,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "APPLID",
-          "row": null
+          "row": 3
         },
         {
           "attrb": [
@@ -2736,11 +2736,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "SYSID",
-          "row": null
+          "row": 3
         },
         {
           "attrb": [
@@ -2749,11 +2749,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 43,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "USERID",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -2761,11 +2761,11 @@
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 43,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "PASSWD",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -2773,11 +2773,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -2794,11 +2794,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2806,11 +2806,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2818,11 +2818,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -2830,11 +2830,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2842,11 +2842,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2854,11 +2854,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -2866,11 +2866,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PAGENUM",
-          "row": null
+          "row": 4
         },
         {
           "attrb": [
@@ -2878,11 +2878,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "TRNIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -2890,11 +2890,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0001",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2902,11 +2902,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2914,11 +2914,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2926,11 +2926,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2938,11 +2938,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT001",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -2950,11 +2950,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0002",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2962,11 +2962,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2974,11 +2974,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2986,11 +2986,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -2998,11 +2998,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT002",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -3010,11 +3010,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0003",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3022,11 +3022,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3034,11 +3034,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3046,11 +3046,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3058,11 +3058,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT003",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3070,11 +3070,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0004",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -3082,11 +3082,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -3094,11 +3094,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -3106,11 +3106,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -3118,11 +3118,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT004",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -3130,11 +3130,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0005",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3142,11 +3142,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3154,11 +3154,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3166,11 +3166,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3178,11 +3178,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT005",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3190,11 +3190,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0006",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -3202,11 +3202,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -3214,11 +3214,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -3226,11 +3226,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -3238,11 +3238,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT006",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -3250,11 +3250,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0007",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3262,11 +3262,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3274,11 +3274,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3286,11 +3286,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3298,11 +3298,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT007",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3310,11 +3310,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0008",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -3322,11 +3322,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -3334,11 +3334,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -3346,11 +3346,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -3358,11 +3358,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT008",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -3370,11 +3370,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0009",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3382,11 +3382,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3394,11 +3394,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3406,11 +3406,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3418,11 +3418,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT009",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3430,11 +3430,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0010",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -3442,11 +3442,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -3454,11 +3454,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "TDATE10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -3466,11 +3466,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 26,
           "name": "TDESC10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -3478,11 +3478,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TAMT010",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -3490,11 +3490,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -3511,11 +3511,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3523,11 +3523,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3535,11 +3535,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3547,11 +3547,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3559,11 +3559,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3571,11 +3571,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3584,154 +3584,154 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "TRNIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 22,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CARDNUM",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 15,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TTYPCD",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 36,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TCATCD",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 54,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "TRNSRC",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 60,
           "name": "TDESC",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "TRNAMT",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 42,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "TORIGDT",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 68,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "TPROCDT",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "MID",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 30,
           "name": "MNAME",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "MCITY",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "MZIP",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -3739,11 +3739,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -3760,11 +3760,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3772,11 +3772,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3784,11 +3784,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -3796,11 +3796,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3808,11 +3808,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3820,11 +3820,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -3833,11 +3833,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACTIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -3845,11 +3845,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 55,
           "input": true,
-          "length": null,
+          "length": 16,
           "name": "CARDNIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -3857,11 +3857,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 15,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "TTYPCD",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -3869,11 +3869,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 36,
           "input": true,
-          "length": null,
+          "length": 4,
           "name": "TCATCD",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -3881,11 +3881,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 54,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "TRNSRC",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -3893,11 +3893,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 19,
           "input": true,
-          "length": null,
+          "length": 60,
           "name": "TDESC",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -3905,11 +3905,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 14,
           "input": true,
-          "length": null,
+          "length": 12,
           "name": "TRNAMT",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3917,11 +3917,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 42,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "TORIGDT",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3929,11 +3929,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 68,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "TPROCDT",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -3941,11 +3941,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 19,
           "input": true,
-          "length": null,
+          "length": 9,
           "name": "MID",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3953,11 +3953,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 48,
           "input": true,
-          "length": null,
+          "length": 30,
           "name": "MNAME",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -3965,11 +3965,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 25,
           "name": "MCITY",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3977,11 +3977,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 67,
           "input": true,
-          "length": null,
+          "length": 10,
           "name": "MZIP",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -3989,11 +3989,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 63,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "CONFIRM",
-          "row": null
+          "row": 21
         },
         {
           "attrb": [
@@ -4001,11 +4001,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -4022,11 +4022,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4034,11 +4034,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4046,11 +4046,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4058,11 +4058,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4070,11 +4070,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4082,11 +4082,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4094,11 +4094,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PAGENUM",
-          "row": null
+          "row": 4
         },
         {
           "attrb": [
@@ -4106,11 +4106,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "USRIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -4118,11 +4118,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0001",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -4130,11 +4130,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -4142,11 +4142,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -4154,11 +4154,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -4166,11 +4166,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE01",
-          "row": null
+          "row": 10
         },
         {
           "attrb": [
@@ -4178,11 +4178,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0002",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4190,11 +4190,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4202,11 +4202,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4214,11 +4214,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4226,11 +4226,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE02",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4238,11 +4238,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0003",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -4250,11 +4250,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -4262,11 +4262,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -4274,11 +4274,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -4286,11 +4286,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE03",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -4298,11 +4298,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0004",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -4310,11 +4310,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -4322,11 +4322,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -4334,11 +4334,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -4346,11 +4346,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE04",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -4358,11 +4358,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0005",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4370,11 +4370,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4382,11 +4382,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4394,11 +4394,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4406,11 +4406,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE05",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4418,11 +4418,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0006",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -4430,11 +4430,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -4442,11 +4442,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -4454,11 +4454,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -4466,11 +4466,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE06",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -4478,11 +4478,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0007",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -4490,11 +4490,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -4502,11 +4502,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -4514,11 +4514,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -4526,11 +4526,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE07",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -4538,11 +4538,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0008",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -4550,11 +4550,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -4562,11 +4562,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -4574,11 +4574,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -4586,11 +4586,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE08",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -4598,11 +4598,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0009",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -4610,11 +4610,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -4622,11 +4622,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -4634,11 +4634,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -4646,11 +4646,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE09",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -4658,11 +4658,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 6,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0010",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -4670,11 +4670,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "USRID10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -4682,11 +4682,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 24,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -4694,11 +4694,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 48,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -4706,11 +4706,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 73,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "UTYPE10",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -4718,11 +4718,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -4739,11 +4739,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4751,11 +4751,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4763,11 +4763,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4775,11 +4775,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4787,11 +4787,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4799,11 +4799,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4812,11 +4812,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 18,
           "input": true,
-          "length": null,
+          "length": 20,
           "name": "FNAME",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
@@ -4824,11 +4824,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 56,
           "input": true,
-          "length": null,
+          "length": 20,
           "name": "LNAME",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
@@ -4836,11 +4836,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 15,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "USERID",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4848,11 +4848,11 @@
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 55,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "PASSWD",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4860,11 +4860,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 17,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "USRTYPE",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -4872,11 +4872,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -4893,11 +4893,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4905,11 +4905,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4917,11 +4917,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -4929,11 +4929,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4941,11 +4941,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4953,11 +4953,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -4966,11 +4966,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "USRIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -4978,11 +4978,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 18,
           "input": true,
-          "length": null,
+          "length": 20,
           "name": "FNAME",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -4990,11 +4990,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 56,
           "input": true,
-          "length": null,
+          "length": 20,
           "name": "LNAME",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -5002,11 +5002,11 @@
             "FSET",
             "UNPROT"
           ],
-          "col": null,
+          "col": 16,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "PASSWD",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -5014,11 +5014,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 17,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "USRTYPE",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -5026,11 +5026,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -5047,11 +5047,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5059,11 +5059,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5071,11 +5071,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5083,11 +5083,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5095,11 +5095,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5107,11 +5107,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5120,11 +5120,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 21,
           "input": true,
-          "length": null,
+          "length": 8,
           "name": "USRIDIN",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -5132,11 +5132,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 18,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "FNAME",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -5144,11 +5144,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 18,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "LNAME",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -5156,11 +5156,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "USRTYPE",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -5168,11 +5168,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -5189,11 +5189,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5201,11 +5201,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5213,11 +5213,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
@@ -5225,11 +5225,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5237,11 +5237,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5249,11 +5249,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
@@ -5261,99 +5261,99 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 19,
           "input": true,
-          "length": null,
+          "length": 11,
           "name": "ACCTID",
-          "row": null
+          "row": 5
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "CNAME",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "CUSTID",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "ADDR001",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "ACCSTAT",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "ADDR002",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 15,
           "input": false,
-          "length": null,
+          "length": 13,
           "name": "PHONE1",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 3,
           "name": "APPRCNT",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 76,
           "input": false,
-          "length": null,
+          "length": 3,
           "name": "DECLCNT",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
@@ -5361,11 +5361,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "CREDLIM",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -5373,11 +5373,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 46,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "CASHLIM",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -5385,11 +5385,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 69,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "APPRAMT",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
@@ -5397,11 +5397,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "CREDBAL",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -5409,11 +5409,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 46,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "CASHBAL",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -5421,11 +5421,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 69,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "DECLAMT",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -5433,11 +5433,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0001",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5445,11 +5445,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5457,11 +5457,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PDATE01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5469,11 +5469,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PTIME01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5481,11 +5481,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "PTYPE01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5493,11 +5493,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PAPRV01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5505,11 +5505,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 63,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PSTAT01",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5517,11 +5517,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "PAMT001",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -5529,11 +5529,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0002",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5541,11 +5541,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5553,11 +5553,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PDATE02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5565,11 +5565,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PTIME02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5577,11 +5577,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "PTYPE02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5589,11 +5589,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PAPRV02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5601,11 +5601,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 63,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PSTAT02",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5613,11 +5613,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "PAMT002",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -5625,11 +5625,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0003",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5637,11 +5637,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5649,11 +5649,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PDATE03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5661,11 +5661,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PTIME03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5673,11 +5673,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "PTYPE03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5685,11 +5685,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PAPRV03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5697,11 +5697,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 63,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PSTAT03",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5709,11 +5709,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "PAMT003",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -5721,11 +5721,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0004",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5733,11 +5733,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5745,11 +5745,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PDATE04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5757,11 +5757,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PTIME04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5769,11 +5769,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "PTYPE04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5781,11 +5781,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PAPRV04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5793,11 +5793,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 63,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PSTAT04",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5805,11 +5805,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "PAMT004",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -5817,11 +5817,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 8,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "TRNID05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5829,11 +5829,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 27,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PDATE05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5841,11 +5841,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 38,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PTIME05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5853,11 +5853,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "PTYPE05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5865,11 +5865,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 58,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PAPRV05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5877,11 +5877,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 63,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "PSTAT05",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5889,11 +5889,11 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "PAMT005",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5901,11 +5901,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 3,
           "input": true,
-          "length": null,
+          "length": 1,
           "name": "SEL0005",
-          "row": null
+          "row": 20
         },
         {
           "attrb": [
@@ -5913,11 +5913,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -5933,286 +5933,286 @@
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 11,
           "input": false,
-          "length": null,
+          "length": 16,
           "name": "CARDNUM",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AUTHDT",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 68,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AUTHTM",
-          "row": null
+          "row": 7
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 14,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "AUTHRSP",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 32,
           "input": false,
-          "length": null,
+          "length": 20,
           "name": "AUTHRSN",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 68,
           "input": false,
-          "length": null,
+          "length": 6,
           "name": "AUTHCD",
-          "row": null
+          "row": 9
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 11,
           "input": false,
-          "length": null,
+          "length": 12,
           "name": "AUTHAMT",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 46,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "POSEMD",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 68,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AUTHSRC",
-          "row": null
+          "row": 11
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 13,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "MCCCD",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 42,
           "input": false,
-          "length": null,
+          "length": 5,
           "name": "CRDEXP",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 64,
           "input": false,
-          "length": null,
+          "length": 14,
           "name": "AUTHTYP",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 12,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "TRNID",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 46,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "AUTHMTC",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 67,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "AUTHFRD",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 9,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "MERNAME",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 55,
           "input": false,
-          "length": null,
+          "length": 15,
           "name": "MERID",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 9,
           "input": false,
-          "length": null,
+          "length": 25,
           "name": "MERCITY",
-          "row": null
+          "row": 21
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 49,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "MERST",
-          "row": null
+          "row": 21
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 61,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "MERZIP",
-          "row": null
+          "row": 21
         },
         {
           "attrb": [
@@ -6220,11 +6220,11 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         }
       ],
       "maps": [
@@ -6241,74 +6241,74 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [],
-          "col": null,
+          "col": 76,
           "input": false,
           "length": 3,
           "name": "PAGENO",
-          "row": null
+          "row": 4
         },
         {
           "attrb": [
@@ -6317,11 +6317,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 44,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "TRTYPE",
-          "row": null
+          "row": 6
         },
         {
           "attrb": [
@@ -6329,11 +6329,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRDESC",
-          "row": null
+          "row": 8
         },
         {
           "attrb": [
@@ -6341,11 +6341,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL1",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -6353,11 +6353,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP1",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -6365,11 +6365,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD1",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
@@ -6377,11 +6377,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL2",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -6389,11 +6389,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP2",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -6401,11 +6401,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD2",
-          "row": null
+          "row": 13
         },
         {
           "attrb": [
@@ -6413,11 +6413,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL3",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -6425,11 +6425,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP3",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -6437,11 +6437,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD3",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
@@ -6449,11 +6449,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL4",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -6461,11 +6461,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP4",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -6473,11 +6473,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD4",
-          "row": null
+          "row": 15
         },
         {
           "attrb": [
@@ -6485,11 +6485,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL5",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -6497,11 +6497,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP5",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -6509,11 +6509,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD5",
-          "row": null
+          "row": 16
         },
         {
           "attrb": [
@@ -6521,11 +6521,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL6",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -6533,11 +6533,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP6",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -6545,11 +6545,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD6",
-          "row": null
+          "row": 17
         },
         {
           "attrb": [
@@ -6557,11 +6557,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSEL7",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -6569,11 +6569,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYP7",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -6581,11 +6581,11 @@
             "NORM",
             "UNPROT"
           ],
-          "col": null,
+          "col": 25,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYPD7",
-          "row": null
+          "row": 18
         },
         {
           "attrb": [
@@ -6593,11 +6593,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 6,
           "input": false,
-          "length": null,
+          "length": 1,
           "name": "TRTSELA",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -6605,11 +6605,11 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 17,
           "input": false,
-          "length": null,
+          "length": 2,
           "name": "TRTTYPA",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
@@ -6617,21 +6617,21 @@
             "NORM",
             "PROT"
           ],
-          "col": null,
+          "col": 25,
           "input": false,
-          "length": null,
+          "length": 50,
           "name": "TRTDSCA",
-          "row": null
+          "row": 19
         },
         {
           "attrb": [
             "PROT"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 45,
           "name": "INFOMSG",
-          "row": null
+          "row": 21
         },
         {
           "attrb": [
@@ -6639,66 +6639,66 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 7,
           "name": "BUTNF02",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 10,
           "input": false,
-          "length": null,
+          "length": 7,
           "name": "BUTNF03",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 19,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "BUTNF07",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 32,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "BUTNF08",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 44,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "BUTNF10",
-          "row": null
+          "row": 24
         }
       ],
       "maps": [
@@ -6715,97 +6715,97 @@
             "FSET",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 4,
           "name": "TRNNAME",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE01",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURDATE",
-          "row": null
+          "row": 1
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 7,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "PGMNAME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 21,
           "input": false,
-          "length": null,
+          "length": 40,
           "name": "TITLE02",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 71,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "CURTIME",
-          "row": null
+          "row": 2
         },
         {
           "attrb": [
             "IC",
             "UNPROT"
           ],
-          "col": null,
+          "col": 26,
           "input": true,
-          "length": null,
+          "length": 2,
           "name": "TRTYPCD",
-          "row": null
+          "row": 12
         },
         {
           "attrb": [
             "UNPROT"
           ],
-          "col": null,
+          "col": 26,
           "input": true,
-          "length": null,
+          "length": 50,
           "name": "TRTYDSC",
-          "row": null
+          "row": 14
         },
         {
           "attrb": [
             "ASKIP"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 45,
           "name": "INFOMSG",
-          "row": null
+          "row": 22
         },
         {
           "attrb": [
@@ -6813,66 +6813,66 @@
             "BRT",
             "FSET"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 78,
           "name": "ERRMSG",
-          "row": null
+          "row": 23
         },
         {
           "attrb": [
             "ASKIP",
             "NORM"
           ],
-          "col": null,
+          "col": 1,
           "input": false,
-          "length": null,
+          "length": 21,
           "name": "FKEYS",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 23,
           "input": false,
-          "length": null,
+          "length": 9,
           "name": "FKEY04",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 33,
           "input": false,
-          "length": null,
+          "length": 8,
           "name": "FKEY05",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 43,
           "input": false,
-          "length": null,
+          "length": 6,
           "name": "FKEY06",
-          "row": null
+          "row": 24
         },
         {
           "attrb": [
             "ASKIP",
             "DRK"
           ],
-          "col": null,
+          "col": 69,
           "input": false,
-          "length": null,
+          "length": 10,
           "name": "FKEY12",
-          "row": null
+          "row": 24
         }
       ],
       "maps": [

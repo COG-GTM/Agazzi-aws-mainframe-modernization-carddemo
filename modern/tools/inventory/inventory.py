@@ -114,8 +114,17 @@ def scan_csd(p):
 
 def scan_bms(p):
     text = read(p)
-    joined = re.sub(r"-\s*\n\s*", "", "\n".join(line[:71].rstrip() for line in text.splitlines()
-                                                     if not line.startswith("*")))
+    stmts, cur = [], ""
+    for line in text.splitlines():
+        if line.startswith("*"):
+            continue
+        body = line[:71].rstrip()
+        cur += body.strip() if cur else body
+        if len(line) > 71 and line[71] not in " ":  # assembler continuation in column 72
+            continue
+        stmts.append(cur)
+        cur = ""
+    joined = "\n".join(stmts + ([cur] if cur else []))
     maps, fields = [], []
     for m in re.finditer(r"^(\S+)\s+DFHMDI\s+(.*)$", joined, re.M):
         maps.append(m.group(1))

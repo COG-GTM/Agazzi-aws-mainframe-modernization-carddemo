@@ -13,7 +13,6 @@ workstreams:
       - app/cpy/CSMSG0[12]Y.cpy
       - app/cpy/CSSETATY.cpy
       - app/cpy/CSSTRPFY.cpy
-      - app/cpy/CSUTLDPY.cpy
       - app/cpy/UNUSED1Y.cpy
   1b-datamigration:
     legacy:
@@ -28,6 +27,7 @@ workstreams:
       - app/cpy/CSDAT01Y.cpy
       - app/cpy/CODATECN.cpy
       - app/cpy/CSUTLDWY.cpy
+      - app/cpy/CSUTLDPY.cpy
   b1-posting:
     legacy:
       - app/cbl/CBTRN01C.cbl
