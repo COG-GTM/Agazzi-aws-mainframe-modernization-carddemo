@@ -173,6 +173,43 @@ def endpoints(ws):
     return out
 
 
+
+def split_row(line):
+    """Markdown table row -> cells; a backslash escapes the next character (so `\\|` stays in the cell)."""
+    cells, cur, esc = [], "", False
+    for ch in line.strip():
+        if esc:
+            cur, esc = cur + ch, False
+        elif ch == "\\":
+            cur, esc = cur + ch, True
+        elif ch == "|":
+            cells.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip() or not line.strip().endswith("|"):
+        cells.append(cur.strip())
+    return cells[1:]
+
+
+def read_progress(path):
+    """Leader-maintained part of MIGRATION_PROGRESS.md: status cells (Stato..Note) per WS and text after the table."""
+    status, tail = {}, []
+    if not path.exists():
+        return status, tail
+    lines = path.read_text(encoding="utf-8").splitlines()
+    i = next((n for n, l in enumerate(lines) if l.startswith("| WS |")), len(lines))
+    for n in range(i + 2, len(lines)):
+        if not lines[n].startswith("|"):
+            tail = lines[n:]
+            break
+        cells = split_row(lines[n])
+        if len(cells) == 10:  # blank Note with no closing pipe: trailing whitespace is indistinguishable
+            cells.append("")
+        if len(cells) == 11:
+            status[cells[0].strip("`")] = cells[5:]
+    return status, tail
+
 def main():
     own = yaml.safe_load(open(MODERN / "ownership.yaml"))["workstreams"]
     assert sorted(own) == sorted(WS), f"ownership.yaml ws {sorted(own)} != {sorted(WS)}"
@@ -259,9 +296,13 @@ def main():
             "Aggiornata dal leader a ogni merge (piano §4.5). Ordine di merge suggerito: 1C → 1A → 1B → B4 → B1 → B2 → B3 → B5 → O1 → O2…O5 → O6 → X1–X3.", "",
             "| WS | Titolo | Modulo | Flyway | Branch | Stato | PR | Test (unit/parity/IT) | Gate parità | CONTRACT-CHANGE | Note |",
             "|---|---|---|---|---|---|---|---|---|---|---|"]
+    progress = MODERN / "MIGRATION_PROGRESS.md"
+    status, tail = read_progress(progress)
     for e in index:
-        rows.append(f"| `{e['id']}` | {e['title']} | `{e['module']}` | {e['flyway_range'] or '—'} | `{e['branch']}` | pending | — | — | — | — | |")
-    (MODERN / "MIGRATION_PROGRESS.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
+        cells = status.get(e["id"], ["pending", "—", "—", "—", "—", ""])
+        rows.append(f"| `{e['id']}` | {e['title']} | `{e['module']}` | {e['flyway_range'] or '—'} | `{e['branch']}` | "
+                    + " | ".join(cells) + (" |" if cells[-1] else "|"))
+    progress.write_text("\n".join(rows + tail) + "\n", encoding="utf-8")
     print(f"generated {len(index)} prompts in {outdir}")
 
 

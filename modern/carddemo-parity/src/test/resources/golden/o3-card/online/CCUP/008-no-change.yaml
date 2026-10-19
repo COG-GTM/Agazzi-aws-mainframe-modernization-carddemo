@@ -1,0 +1,20 @@
+# COCRDUPC 1200-EDIT-MAP-INPUTS: same values as fetched
+id: CCUP-008
+title: nessuna modifica
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: enrico rosenbaum
+    CRDSTCD: Y
+    EXPMON: 08
+    EXPYEAR: '2024'
+  expect:
+    message: No change detected with respect to values fetched.
+    dbDelta: none

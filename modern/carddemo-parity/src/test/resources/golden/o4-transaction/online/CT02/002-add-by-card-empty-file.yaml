@@ -1,0 +1,35 @@
+# COTRN02 aggiunta via carta su TRANSACT vuoto: ID 1 - READPREV ENDFILE -> MOVE ZEROS TO TRAN-ID
+id: CT02-002
+title: 'aggiunta via carta su TRANSACT vuoto: ID 1'
+tranid: CT02
+screen: COTRN02
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COTRN02C
+  tranid: CT02
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: ''
+    CARDNIN: '0500024453765740'
+    TTYPCD: '01'
+    TCATCD: '0001'
+    TRNSRC: POS TERM
+    TDESC: COFFEE
+    TRNAMT: '+00000012.34'
+    TORIGDT: '2022-07-18'
+    TPROCDT: '2022-07-18'
+    MID: '000000001'
+    MNAME: BAR
+    MCITY: MILANO
+    MZIP: '20100'
+    CONFIRM: Y
+  expect:
+    message: Transaction added successfully.  Your Tran ID is 0000000000000001.
+    db:
+    - sql: SELECT CAST(COUNT(*) AS VARCHAR) FROM transaction
+      expect: '1'

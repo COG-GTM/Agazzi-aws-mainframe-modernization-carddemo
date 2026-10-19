@@ -1,0 +1,31 @@
+# 1230-EDIT-ALPHANUM-REQD.
+id: CTTU-014
+title: Descrizione non alfanumerica
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: "Pur-chase"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Transaction Desc can have numbers or alphabets only."
+      fieldErrors: [TRTYDSC]
+      dbDelta: none

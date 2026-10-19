@@ -1,0 +1,32 @@
+OPEN FILE OK
+PROCESSING   *  COMMENT: MNTTRDB2 golden input (A/U/D/* + errors) 
+IGNORING COMMENTED LINE
+PROCESSING   A08Annual Fee                                        
+ADDING RECORD
+RECORD INSERTED SUCCESSFULLY
+PROCESSING   A01Duplicate Purchase                                
+ADDING RECORD
+Error accessing: TRANSACTION_TYPE table. SQLCODE: -803                          
+PROCESSING   U02Payment Received                                  
+UPDATING RECORD
+RECORD UPDATED SUCCESSFULLY
+PROCESSING   U77Not There                                         
+UPDATING RECORD
+No records found.TRANSACTION_TYPE table. SQLCODE: -803                          
+PROCESSING   D08                                                  
+DELETING RECORD
+RECORD DELETED SUCCESSFULLY
+PROCESSING   D01                                                  
+DELETING RECORD
+Error accessing: TRANSACTION_TYPE table. SQLCODE: -532                          
+PROCESSING   X99Invalid operation                                 
+ERROR: TYPE NOT VALIDSACTION_TYPE table. SQLCODE: -532                          
+PROCESSING   D55                                                  
+DELETING RECORD
+No records found.ALIDSACTION_TYPE table. SQLCODE: -532                          
+PROCESSING   A09Interest                                          
+ADDING RECORD
+RECORD INSERTED SUCCESSFULLY
+PROCESSING   U08Gone                                              
+UPDATING RECORD
+No records found.ALIDSACTION_TYPE table. SQLCODE: -532                          

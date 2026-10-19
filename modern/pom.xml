@@ -191,6 +191,12 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- contracts-v1.1: SFTP adapter for FileTransferPort (B5 FTPJCL), not managed by Boot. -->
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
+        <version>2.14.0</version>
+      </dependency>
       <dependency>
         <groupId>com.tngtech.archunit</groupId>
         <artifactId>archunit-junit5</artifactId>

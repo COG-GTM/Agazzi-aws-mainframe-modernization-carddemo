@@ -1,0 +1,19 @@
+# COACTUPC Current Balance
+id: CAUP-024
+title: 'errore: Current Balance must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACURBAL: ''
+  expect:
+    message: Current Balance must be supplied.
+    fieldErrors:
+    - ACURBAL
+    dbDelta: none

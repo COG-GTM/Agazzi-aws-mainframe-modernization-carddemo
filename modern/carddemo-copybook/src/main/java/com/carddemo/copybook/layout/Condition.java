@@ -1,0 +1,113 @@
+package com.carddemo.copybook.layout;
+
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * A level-88 condition name attached to an item.
+ *
+ * @param name condition name, e.g. {@code PA-AUTH-APPROVED}
+ * @param values the {@code VALUE}/{@code VALUES} entries, each a single literal or a {@code THRU}
+ *     range
+ */
+public record Condition(String name, List<Range> values) {
+
+  public Condition {
+    values = List.copyOf(values);
+  }
+
+  /**
+   * One {@code VALUE} entry: a literal ({@code from == to}) or an inclusive range. Literals are
+   * kept as written: quoted alphanumerics ({@code 'A'}), numerics ({@code 20}) or figurative
+   * constants ({@code SPACES}, {@code LOW-VALUES}, {@code HIGH-VALUES}, {@code ZEROS}).
+   */
+  public record Range(String from, String to) {
+    public boolean single() {
+      return from.equals(to);
+    }
+  }
+
+  /** Whether the outcome on an alphanumeric value depends on the charset (ranges, HIGH-VALUES). */
+  public boolean charsetSensitive() {
+    return values.stream().anyMatch(r -> !r.single() || r.from().startsWith("HIGH-VALUE"));
+  }
+
+  /** Whether every entry is a single quoted literal (eligible for an enum). */
+  public boolean singleLiteral() {
+    return values.size() == 1 && values.get(0).single() && values.get(0).from().startsWith("'");
+  }
+
+  /**
+   * Tests a decoded field value against this condition, with COBOL comparison semantics:
+   * alphanumerics are compared after padding the literal with spaces to {@code length}, numerics by
+   * value.
+   */
+  public boolean test(Object value, int length) {
+    // a decoded String does not say which charset produced it: ISO-8859-1 (ASCII) semantics
+    return test(value, length, StandardCharsets.ISO_8859_1);
+  }
+
+  /**
+   * As {@link #test(Object, int)}, for a value decoded with {@code charset}: figurative constants
+   * ({@code HIGH-VALUES} = X'FF', {@code LOW-VALUES} = X'00') are the decoding of their byte in
+   * that charset (CP037 X'FF' is U+009F) and ranges use that charset's byte order.
+   */
+  public boolean test(Object value, int length, Charset charset) {
+    for (Range r : values) {
+      if (value instanceof String s) {
+        // alphanumeric comparison follows the byte collating sequence of the charset
+        byte[] v = s.getBytes(charset);
+        byte[] from = alphanumeric(r.from(), length, charset).getBytes(charset);
+        byte[] to = alphanumeric(r.to(), length, charset).getBytes(charset);
+        if (Arrays.compareUnsigned(v, from) >= 0 && Arrays.compareUnsigned(v, to) <= 0) {
+          return true;
+        }
+      } else if (value != null) {
+        BigDecimal v = new BigDecimal(value.toString());
+        if (v.compareTo(numeric(r.from())) >= 0 && v.compareTo(numeric(r.to())) <= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /** Alphanumeric value of a literal, padded with spaces (or repeated, for figuratives). */
+  public static String alphanumeric(String literal, int length) {
+    return alphanumeric(literal, length, StandardCharsets.ISO_8859_1);
+  }
+
+  /** As {@link #alphanumeric(String, int)}, with figurative bytes decoded in {@code charset}. */
+  public static String alphanumeric(String literal, int length, Charset charset) {
+    String fill =
+        switch (literal) {
+          case "SPACE", "SPACES" -> " ";
+          case "LOW-VALUE", "LOW-VALUES" -> new String(new byte[] {0}, charset);
+          case "HIGH-VALUE", "HIGH-VALUES" -> new String(new byte[] {(byte) 0xFF}, charset);
+          case "ZERO", "ZEROS", "ZEROES" -> "0";
+          default -> null;
+        };
+    if (fill != null) {
+      return fill.repeat(length);
+    }
+    String text =
+        literal.length() >= 2 && (literal.startsWith("'") || literal.startsWith("\""))
+            ? literal.substring(1, literal.length() - 1)
+            : literal;
+    StringBuilder sb = new StringBuilder(text);
+    while (sb.length() < length) {
+      sb.append(' ');
+    }
+    return sb.toString();
+  }
+
+  private static BigDecimal numeric(String literal) {
+    return switch (literal) {
+      case "ZERO", "ZEROS", "ZEROES", "LOW-VALUE", "LOW-VALUES" -> BigDecimal.ZERO;
+      default -> new BigDecimal(literal.replace("'", "").replace("+", "").trim());
+    };
+  }
+}

@@ -1,0 +1,43 @@
+# PF02 -> XCTL COTRTUPC; COTRTUPC PF03 -> CDEMO-FROM-PROGRAM.
+id: CTLI-014
+title: PF2 apre CTTU e PF3 torna a CTLI
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF2
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: COTRTUP
+      dbDelta: none
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF3
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: COTRTLI
+      dbDelta: none
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none

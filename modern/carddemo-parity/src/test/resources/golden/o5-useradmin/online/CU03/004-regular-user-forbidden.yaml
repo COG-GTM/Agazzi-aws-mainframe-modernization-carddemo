@@ -1,0 +1,10 @@
+# Regular users cannot delete USRSEC records.
+id: CU03-004
+title: utente non admin
+tranid: CU03
+screen: COUSR03
+user: USER0001
+steps:
+  - action: PF5
+    fields: {USRIDIN: "ADMIN001"}
+    expect: {status: 403}

@@ -1,0 +1,22 @@
+# COACTUPC 1225 blank
+id: CAUP-033
+title: 'errore: First Name must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSFNAM: ''
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: First Name must be supplied.
+    fieldErrors:
+    - ACSFNAM
+    dbDelta: none

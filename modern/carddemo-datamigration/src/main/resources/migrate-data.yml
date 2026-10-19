@@ -1,0 +1,16 @@
+# migrate-data CLI configuration (spring.config.name=migrate-data, see MigrateDataCli).
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    url: ${CARDDEMO_DB_URL:jdbc:postgresql://localhost:5432/carddemo}
+    # no default credentials: CARDDEMO_DB_USER/CARDDEMO_DB_PASSWORD or --spring.datasource.*
+    username: ${CARDDEMO_DB_USER}
+    password: ${CARDDEMO_DB_PASSWORD}
+  flyway:
+    locations: classpath:db/migration
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never

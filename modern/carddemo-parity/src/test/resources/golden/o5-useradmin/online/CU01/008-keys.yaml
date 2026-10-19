@@ -1,0 +1,20 @@
+# EVALUATE EIBAID in COUSR01C.
+id: CU01-008
+title: PF4 pulisce, PF3 esce, tasto non valido
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: PF4
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: "NEWUSER1", PASSWD: "Secr3t", USRTYPE: "U"}
+    expect:
+      message: null
+      data: {FNAME: "", USERID: ""}
+      dbDelta: none
+  - action: PF8
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: "NEWUSER1", PASSWD: "Secr3t", USRTYPE: "U"}
+    expect:
+      message: "Invalid key pressed. Please see below..."
+      fieldErrors: [FNAME]
+  - action: PF3
+    expect:
+      nextScreen: COADM01

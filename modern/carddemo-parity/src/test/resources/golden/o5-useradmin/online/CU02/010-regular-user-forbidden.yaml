@@ -1,0 +1,10 @@
+# Regular users cannot update USRSEC.
+id: CU02-010
+title: utente non admin
+tranid: CU02
+screen: COUSR02
+user: USER0002
+steps:
+  - action: PF5
+    fields: {USRIDIN: "USER0001", FNAME: "Hack", LNAME: "0001", PASSWD: "PASSWORD", USRTYPE: "A"}
+    expect: {status: 403}

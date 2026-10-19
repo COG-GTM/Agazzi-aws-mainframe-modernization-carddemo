@@ -1,0 +1,10 @@
+---- STEP STEP040 PGM=CBSTM03A
+Running JCL : CREASTMT Step STEP040 
+ERROR READING TRNXFILE
+RETURN CODE: 10
+ABENDING PROGRAM
+CEE3ABD ABEND U0
+libcob: warning: implicit CLOSE of TRNX-FILE ('TRNXFILE')
+libcob: warning: implicit CLOSE of HTML-FILE ('HTMLFILE')
+libcob: warning: implicit CLOSE of STMT-FILE ('STMTFILE')
+---- RC=16

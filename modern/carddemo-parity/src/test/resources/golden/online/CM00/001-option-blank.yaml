@@ -1,0 +1,16 @@
+# COMEN01C PROCESS-ENTER-KEY: OPTION = SPACES -> WS-OPTION-X '00' -> WS-OPTION = ZEROS
+#   -> 'Please enter a valid option number...', SEND-MENU-SCREEN.
+id: CM00-001
+title: ENTER senza opzione
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: ""}
+    expect:
+      screen: COMEN01
+      nextScreen: null
+      message: "Please enter a valid option number..."
+      fieldErrors: []
+      dbDelta: none

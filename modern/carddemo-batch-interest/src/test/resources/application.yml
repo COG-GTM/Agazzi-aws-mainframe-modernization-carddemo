@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:b2interest;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  flyway:
+    locations: classpath:db/migration
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never

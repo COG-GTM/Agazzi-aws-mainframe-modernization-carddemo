@@ -1,0 +1,16 @@
+# COCRDLIC 9500-FILTER-RECORDS: account filter
+id: CCLI-008
+title: filtro per conto
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+  expect:
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    fieldErrors: []
+    data:
+      CRDNUM1: 0923877193247330
+      ACCTNO1: '00000000002'
+      CRDNUM2: null

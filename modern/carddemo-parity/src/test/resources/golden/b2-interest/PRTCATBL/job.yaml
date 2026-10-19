@@ -1,0 +1,12 @@
+# PRTCATBL STEP05R REPRO KSDS -> BKUP(+1), STEP10R SORT (OUTREC EDIT in expected-dfsort/) — owner b2-interest.
+job: PRTCATBL
+jcl: app/jcl/PRTCATBL.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  TCATBALF: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y, input: "../INTCALC-GROUPS/input/tcatbal.txt"}
+  BKUP: {org: ps, lrecl: 50, layout: CVTRA01Y, init_empty: true}
+  SORTED: {org: ps, lrecl: 50, layout: CVTRA01Y, init_empty: true}
+steps:
+  - {name: STEP05R, kind: repro, infile: TCATBALF, outfile: BKUP}
+  - {name: STEP10R, kind: sort, sortin: BKUP, sortout: SORTED, fields: [[1, 11, A], [12, 2, A], [14, 4, A]]}
+outputs: [BKUP, SORTED]

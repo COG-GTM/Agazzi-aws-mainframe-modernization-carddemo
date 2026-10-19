@@ -1,0 +1,19 @@
+# COACTUPC Cash Credit Limit
+id: CAUP-022
+title: 'errore: Cash Credit Limit is not valid'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSHLIM: x
+  expect:
+    message: Cash Credit Limit is not valid
+    fieldErrors:
+    - ACSHLIM
+    dbDelta: none

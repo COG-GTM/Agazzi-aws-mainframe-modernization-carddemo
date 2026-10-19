@@ -1,0 +1,26 @@
+# 2000-DECIDE-ACTION PF12: re-read, original values shown.
+id: CAUP-080
+title: PF12 annulla
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '750'
+    ACSSTTE: NY
+    ACSPH2A: '908'
+  expect:
+    message: Changes validated.Press F5 to save
+- action: PF12
+  fields: {}
+  expect:
+    message: Update account details presented above.
+    data:
+      ACSTFCO: '274'
+      ACSSTTE: NC
+    dbDelta: none

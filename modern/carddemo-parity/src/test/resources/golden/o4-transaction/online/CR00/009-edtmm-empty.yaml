@@ -1,0 +1,28 @@
+# CORPT00 validazione EDTMM
+id: CR00-009
+title: validazione EDTMM
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '01'
+    SDTDD: '01'
+    SDTYYYY: '2022'
+    EDTMM: ''
+    EDTDD: '30'
+    EDTYYYY: '2022'
+    CONFIRM: Y
+  expect:
+    message: End Date - Month can NOT be empty...
+    fieldErrors:
+    - EDTMM

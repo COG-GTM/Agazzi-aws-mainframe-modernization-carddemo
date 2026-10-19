@@ -1,0 +1,19 @@
+# COACTUPC Reissue Date
+id: CAUP-023
+title: 'errore: Reissue Date: Month must be a number between 1 and 12.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    RISMON: '00'
+  expect:
+    message: 'Reissue Date: Month must be a number between 1 and 12.'
+    fieldErrors:
+    - RISMON
+    dbDelta: none

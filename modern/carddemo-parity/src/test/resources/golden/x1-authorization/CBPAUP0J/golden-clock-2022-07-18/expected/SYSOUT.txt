@@ -1,0 +1,13 @@
+STARTING PROGRAM CBPAUP0C::
+*-------------------------------------*
+CBPAUP0C PARM RECEIVED :00,00001,00001,N 
+TODAYS DATE            :22199
+ 
+ 
+*-------------------------------------*
+# TOTAL SUMMARY READ  :+0000000022
+# SUMMARY REC DELETED :+0000000000
+# TOTAL DETAILS READ  :+0000000202
+# DETAILS REC DELETED :+0000000000
+*-------------------------------------*
+ 

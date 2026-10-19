@@ -1,0 +1,15 @@
+# COCRDLIC PF7 on page 1: NO PREVIOUS PAGES TO DISPLAY
+id: CCLI-003
+title: PF7 a pagina 1
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: PF7
+  fields: {}
+  expect:
+    message: NO PREVIOUS PAGES TO DISPLAY
+    data:
+      PAGENO: '1'

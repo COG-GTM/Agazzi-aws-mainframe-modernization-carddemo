@@ -1,0 +1,11 @@
+# PROCESS-PF8-KEY with NEXT-PAGE-NO.
+id: CU00-002
+title: PF8 senza pagina successiva
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: PF8
+    expect:
+      message: "You are already at the bottom of the page..."
+      data: {USRID01: ADMIN001, PAGENUM: "00000001"}

@@ -1,0 +1,28 @@
+# CORPT00 validazione CONFIRM
+id: CR00-018
+title: validazione CONFIRM
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '01'
+    SDTDD: '01'
+    SDTYYYY: '2022'
+    EDTMM: '06'
+    EDTDD: '30'
+    EDTYYYY: '2022'
+    CONFIRM: ''
+  expect:
+    message: Please confirm to print the Custom report...
+    fieldErrors:
+    - CONFIRM

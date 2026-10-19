@@ -1,0 +1,11 @@
+# PROCESS-PF7-KEY with CDEMO-CU00-PAGE-NUM = 1.
+id: CU00-003
+title: PF7 sulla prima pagina
+tranid: CU00
+screen: COUSR00
+steps:
+  - method: GET
+  - action: PF7
+    expect:
+      message: "You are already at the top of the page..."
+      data: {USRID01: ADMIN001}

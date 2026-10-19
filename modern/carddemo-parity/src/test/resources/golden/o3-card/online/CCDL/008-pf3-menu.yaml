@@ -1,0 +1,10 @@
+# COCRDSLC PF3 without calling program: XCTL COMEN01C
+id: CCDL-008
+title: PF3 -> menu
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01

@@ -1,0 +1,14 @@
+# COCRDUPC 1220-EDIT-CARD
+id: CCUP-006
+title: carta non numerica
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: X
+  expect:
+    message: CARD ID FILTER,IF SUPPLIED MUST BE A 16 DIGIT NUMBER
+    fieldErrors:
+    - CARDSID

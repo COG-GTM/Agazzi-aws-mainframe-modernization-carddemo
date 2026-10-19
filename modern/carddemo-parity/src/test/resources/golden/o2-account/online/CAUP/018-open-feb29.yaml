@@ -1,0 +1,21 @@
+# COACTUPC EDIT-DAY-MONTH-YEAR leap
+id: CAUP-018
+title: 'errore: Open Date:Not a leap year.Cannot have 29 days in this month.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNYEAR: '2015'
+    OPNMON: '02'
+    OPNDAY: '29'
+  expect:
+    message: Open Date:Not a leap year.Cannot have 29 days in this month.
+    fieldErrors:
+    - OPNYEAR
+    dbDelta: none

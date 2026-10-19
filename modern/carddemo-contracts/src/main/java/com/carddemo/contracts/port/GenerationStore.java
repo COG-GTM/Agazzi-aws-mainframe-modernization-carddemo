@@ -39,6 +39,15 @@ public interface GenerationStore {
   /** Cataloged generations, oldest first. */
   List<Generation> list(String base);
 
+  /**
+   * IDCAMS {@code DEFINE GENERATIONDATAGROUP NAME(base) LIMIT(limit) SCRATCH} (contracts-v1.1).
+   * Returns false if the base was already defined (IDCAMS RC 12). Adapters without a catalog accept
+   * every base and keep the default {@link #limit(String)}.
+   */
+  default boolean define(String base, int limit) {
+    return true;
+  }
+
   /** Retention limit of a base (default 5, as in DEFGDGB/DEFGDGD). */
   default int limit(String base) {
     return 5;

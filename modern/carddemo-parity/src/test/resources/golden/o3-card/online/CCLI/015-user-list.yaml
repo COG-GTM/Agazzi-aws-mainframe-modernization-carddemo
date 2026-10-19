@@ -1,0 +1,16 @@
+# COCRDLIC as regular user: no account in COMMAREA after sign-on -> unfiltered list (as COBOL)
+id: CCLI-015
+title: utente normale
+tranid: CCLI
+screen: COCRDLI
+auth:
+  user: USER0001
+  password: PASSWORD
+steps:
+- action: ENTER
+  fields: {}
+  expect:
+    message: TYPE S FOR DETAIL, U TO UPDATE ANY RECORD
+    data:
+      PAGENO: '1'
+      CRDNUM1: '0500024453765740'
