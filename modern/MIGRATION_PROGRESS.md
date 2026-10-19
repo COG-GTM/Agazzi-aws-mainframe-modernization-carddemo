@@ -43,7 +43,8 @@ Dettagli, comandi e numeri in `docs/PHASE5_REPORT.md`.
 | Merge `phase-1-4` su `phase-5` (5B #55, 5C #53, 5D #52) | ✅ | conflitti su `pom.xml`, progress, PE, ownership, workflow |
 | `modern/security` nel reactor + O1 (Spring Security + Spring Session JDBC, CSRF) | ✅ | `Fase0SecurityAutoConfiguration` rimossa; profili `local`/`it`/`aws` |
 | Chiave sessione unica `ConversationContext.SESSION_ATTRIBUTE` (F6) + stato Serializable (F1) | ✅ | O1–O5, `CoactvwcService.State` |
-| F2 CCLI per account (indice `card_acct_id`, equivalente CARDAIX) | ✅ codice | p95 a 200 VU: vedi report §5 |
+| F2 CCLI per account (indice `card_acct_id`, equivalente CARDAIX) | ⚠️ | p95 CCLI 13.900 → 301,7 ms a 200 VU × 5 min (0 % errori, 100 % checks); target 200 ms non raggiunto su macchina singola condivisa (report §5) |
+| X2 CTTU/CTLI salvataggio con Spring Session JDBC | ✅ | lo stato veniva mutato senza `setAttribute` e quindi perso tra le richieste; `TrantypeSessionPersistenceTest` (sessione che serializza a ogni lettura) |
 | F3 chunk POSTTRAN, INTCALC, COMBTRAN STEP10 | ✅ | commit ogni 1.000 record / 500 account |
 | F4 `carddemo-app` non-web per i job batch | ✅ | `run-job.sh POSTTRAN` → COMPLETED |
 | `fullBatchCycle` con TRANBKP prima di COMBTRAN | ✅ | come `scripts/run_full_batch.sh` |
