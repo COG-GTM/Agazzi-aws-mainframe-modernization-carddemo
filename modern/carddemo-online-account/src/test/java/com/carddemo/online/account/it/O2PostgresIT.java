@@ -8,8 +8,11 @@ import com.carddemo.online.account.testapp.Screens;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = AccountTestApplication.class)
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class O2PostgresIT {
 
   @Container @ServiceConnection
@@ -34,6 +38,7 @@ class O2PostgresIT {
   @Autowired JdbcTemplate jdbc;
 
   @Test
+  @Order(1)
   void goldensPassOnPostgres() throws Exception {
     List<String> mismatches = new ArrayList<>();
     for (String tranid : new String[] {"CAVW", "CAUP"}) {
@@ -49,15 +54,16 @@ class O2PostgresIT {
   }
 
   @Test
+  @Order(2)
   void concurrentUpdateDetectedOnPostgres() throws Exception {
     Screens a = new Screens(mvc, "USER0001", "coactup");
     Screens b = new Screens(mvc, "ADMIN001", "coactup");
     for (Screens t : new Screens[] {a, b}) {
       t.first();
-      t.send("ENTER", "ACCTSID", "00000000002");
+      t.send("ENTER", "ACCTSID", "00000000001");
     }
-    a.send("ENTER", "ACSTFCO", "701", "ACSPH1A", "908", "ACSPH2A", "908", "ACSSTTE", "IN");
-    b.send("ENTER", "ACSTFCO", "702", "ACSPH1A", "908", "ACSPH2A", "908", "ACSSTTE", "IN");
+    a.send("ENTER", "ACSTFCO", "701", "ACSPH2A", "908", "ACSSTTE", "NY");
+    b.send("ENTER", "ACSTFCO", "702", "ACSPH2A", "908", "ACSSTTE", "NY");
     List<String> first = Screens.messages(a.send("PF5"));
     List<String> second = Screens.messages(b.send("PF5"));
     assertThat(first).contains("Changes committed to database");
