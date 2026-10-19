@@ -42,6 +42,21 @@
            88 ERR-FLG-OFF                        VALUE 'N'.
          05 WS-RESP-CD                 PIC S9(09) COMP VALUE ZEROS.
          05 WS-REAS-CD                 PIC S9(09) COMP VALUE ZEROS.
+         05 WS-USRTYPE-INPUT           PIC X(01) VALUE SPACES.
+         05 WS-ADMIN-FLG               PIC X(01) VALUE 'N'.
+           88 CALLER-IS-ADMIN                    VALUE 'Y'.
+           88 CALLER-NOT-ADMIN                   VALUE 'N'.
+
+      * Security record of the signed on user, read back from USRSEC to
+      * re-derive the caller privilege instead of trusting the COMMAREA
+       01 WS-AUTH-USER-DATA.
+         05 WS-AUTH-USR-ID             PIC X(08).
+         05 WS-AUTH-USR-FNAME          PIC X(20).
+         05 WS-AUTH-USR-LNAME          PIC X(20).
+         05 WS-AUTH-USR-PWD            PIC X(08).
+         05 WS-AUTH-USR-TYPE           PIC X(01).
+           88 WS-AUTH-USR-ADMIN                  VALUE 'A'.
+         05 WS-AUTH-USR-FILLER         PIC X(23).
 
        COPY COCOM01Y.
 
@@ -80,6 +95,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM CHECK-ADMIN-AUTHORIZATION
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COUSR1AO
@@ -114,6 +130,9 @@
       *----------------------------------------------------------------*
        PROCESS-ENTER-KEY.
 
+           MOVE FUNCTION UPPER-CASE(USRTYPEI OF COUSR1AI)
+                                            TO WS-USRTYPE-INPUT
+
            EVALUATE TRUE
                WHEN FNAMEI OF COUSR1AI = SPACES OR LOW-VALUES
                    MOVE 'Y'     TO WS-ERR-FLG
@@ -145,19 +164,79 @@
                                    WS-MESSAGE
                    MOVE -1       TO USRTYPEL OF COUSR1AI
                    PERFORM SEND-USRADD-SCREEN
+               WHEN WS-USRTYPE-INPUT NOT = 'A' AND
+                    WS-USRTYPE-INPUT NOT = 'U'
+                   MOVE 'Y'     TO WS-ERR-FLG
+                   MOVE 'User Type must be A (Admin) or U (User)...' TO
+                                   WS-MESSAGE
+                   MOVE -1       TO USRTYPEL OF COUSR1AI
+                   PERFORM SEND-USRADD-SCREEN
                WHEN OTHER
                    MOVE -1       TO FNAMEL OF COUSR1AI
                    CONTINUE
            END-EVALUATE
 
            IF NOT ERR-FLG-ON
+               IF CALLER-NOT-ADMIN
+                   PERFORM SEND-NOT-AUTHORIZED
+               END-IF
                MOVE USERIDI  OF COUSR1AI TO SEC-USR-ID
                MOVE FNAMEI   OF COUSR1AI TO SEC-USR-FNAME
                MOVE LNAMEI   OF COUSR1AI TO SEC-USR-LNAME
                MOVE PASSWDI  OF COUSR1AI TO SEC-USR-PWD
-               MOVE USRTYPEI OF COUSR1AI TO SEC-USR-TYPE
+               MOVE WS-USRTYPE-INPUT     TO SEC-USR-TYPE
                PERFORM WRITE-USER-SEC-FILE
            END-IF.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-ADMIN-AUTHORIZATION
+      *----------------------------------------------------------------*
+      * Adding a user is an administrator only function. The caller
+      * privilege is read back from USRSEC using the signed on user id
+      * so that a forged/propagated COMMAREA cannot grant admin rights.
+      * Non administrators never reach the USRSEC write.
+       CHECK-ADMIN-AUTHORIZATION.
+
+           SET CALLER-NOT-ADMIN TO TRUE
+
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF
+
+           EXEC CICS READ
+                DATASET   (WS-USRSEC-FILE)
+                INTO      (WS-AUTH-USER-DATA)
+                LENGTH    (LENGTH OF WS-AUTH-USER-DATA)
+                RIDFLD    (CDEMO-USER-ID)
+                KEYLENGTH (LENGTH OF CDEMO-USER-ID)
+                RESP      (WS-RESP-CD)
+                RESP2     (WS-REAS-CD)
+           END-EXEC
+
+           IF WS-RESP-CD = DFHRESP(NORMAL) AND WS-AUTH-USR-ADMIN
+               SET CALLER-IS-ADMIN TO TRUE
+           ELSE
+               PERFORM SEND-NOT-AUTHORIZED
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      SEND-NOT-AUTHORIZED
+      *----------------------------------------------------------------*
+      * Ends the task, the caller is not allowed to run this function
+       SEND-NOT-AUTHORIZED.
+
+           MOVE 'You are not authorized to add users ...'
+                                       TO WS-MESSAGE
+
+           EXEC CICS SEND TEXT
+                     FROM(WS-MESSAGE)
+                     LENGTH(LENGTH OF WS-MESSAGE)
+                     ERASE
+                     FREEKB
+           END-EXEC
+
+           EXEC CICS RETURN
+           END-EXEC.
 
       *----------------------------------------------------------------*
       *                      RETURN-TO-PREV-SCREEN
