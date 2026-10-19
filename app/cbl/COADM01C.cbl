@@ -46,6 +46,12 @@
          05 WS-OPTION                  PIC 9(02) VALUE 0.                       
          05 WS-IDX                     PIC S9(04) COMP VALUE ZEROS.             
          05 WS-ADMIN-OPT-TXT           PIC X(40) VALUE SPACES.                  
+         05 WS-AUTH-FLAG               PIC X(01) VALUE 'N'.                     
+           88 USER-IS-ADMIN                      VALUE 'Y'.                     
+           88 USER-NOT-ADMIN                     VALUE 'N'.                     
+         05 WS-MENU-PGM                PIC X(08) VALUE 'COMEN01C'.              
+         05 WS-MENU-TRANID             PIC X(04) VALUE 'CM00'.                  
+         05 WS-SIGNON-PGM              PIC X(08) VALUE 'COSGN00C'.              
                                                                                 
        COPY COCOM01Y.                                                           
        COPY COADM02Y.                                                           
@@ -88,6 +94,7 @@
                PERFORM RETURN-TO-SIGNON-SCREEN                                  
            ELSE                                                                 
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA                
+               PERFORM CHECK-ADMIN-AUTHORIZATION                                
                IF NOT CDEMO-PGM-REENTER                                         
                    SET CDEMO-PGM-REENTER    TO TRUE                             
                    MOVE LOW-VALUES          TO COADM1AO                         
@@ -138,6 +145,9 @@
            END-IF                                                               
 
            IF NOT ERR-FLG-ON                                                    
+               IF NOT USER-IS-ADMIN                                             
+                   PERFORM DENY-ADMIN-ACCESS                                    
+               END-IF                                                           
                IF CDEMO-ADMIN-OPT-PGMNAME(WS-OPTION)(1:5) NOT = 'DUMMY'
                    MOVE WS-TRANID    TO CDEMO-FROM-TRANID                       
                    MOVE WS-PGMNAME   TO CDEMO-FROM-PROGRAM                      
@@ -156,6 +166,65 @@
                   INTO WS-MESSAGE                                               
                PERFORM SEND-MENU-SCREEN                                         
            END-IF.                                                              
+                                                                                
+      *----------------------------------------------------------------*        
+      *                      CHECK-ADMIN-AUTHORIZATION                          
+      *----------------------------------------------------------------*        
+      * The admin menu dispatches to privileged programs, so the user           
+      * type is re-read from the security file on every invocation              
+      * rather than being trusted from the inbound commarea, which any          
+      * signed on user can carry into this transaction.  A user that            
+      * cannot be proven to be an administrator is sent back to the             
+      * regular menu (or to signon) before any menu is displayed.               
+      *----------------------------------------------------------------*        
+       CHECK-ADMIN-AUTHORIZATION.                                               
+                                                                                
+           SET USER-NOT-ADMIN TO TRUE                                           
+           MOVE SPACES        TO CDEMO-USER-TYPE                                
+                                                                                
+           IF CDEMO-USER-ID NOT = SPACES AND LOW-VALUES                         
+               EXEC CICS READ                                                   
+                    DATASET  (WS-USRSEC-FILE)                                   
+                    RIDFLD   (CDEMO-USER-ID)                                    
+                    KEYLENGTH(LENGTH OF CDEMO-USER-ID)                          
+                    INTO     (SEC-USER-DATA)                                    
+                    LENGTH   (LENGTH OF SEC-USER-DATA)                          
+                    RESP     (WS-RESP-CD)                                       
+                    RESP2    (WS-REAS-CD)                                       
+               END-EXEC                                                         
+                                                                                
+               IF WS-RESP-CD = DFHRESP(NORMAL)                                  
+                   MOVE SEC-USR-TYPE TO CDEMO-USER-TYPE                         
+               END-IF                                                           
+           END-IF                                                               
+                                                                                
+           IF CDEMO-USRTYP-ADMIN                                                
+               SET USER-IS-ADMIN TO TRUE                                        
+           ELSE                                                                 
+               PERFORM DENY-ADMIN-ACCESS                                        
+           END-IF.                                                              
+                                                                                
+      *----------------------------------------------------------------*        
+      *                      DENY-ADMIN-ACCESS                                  
+      *----------------------------------------------------------------*        
+       DENY-ADMIN-ACCESS.                                                       
+                                                                                
+           IF CDEMO-USER-ID = SPACES OR LOW-VALUES                              
+               MOVE WS-SIGNON-PGM  TO CDEMO-FROM-PROGRAM                        
+               MOVE WS-SIGNON-PGM  TO CDEMO-TO-PROGRAM                          
+               PERFORM RETURN-TO-SIGNON-SCREEN                                  
+           END-IF                                                               
+                                                                                
+           MOVE WS-TRANID          TO CDEMO-FROM-TRANID                         
+           MOVE WS-PGMNAME         TO CDEMO-FROM-PROGRAM                        
+           MOVE WS-MENU-TRANID     TO CDEMO-TO-TRANID                           
+           MOVE WS-MENU-PGM        TO CDEMO-TO-PROGRAM                          
+           SET  CDEMO-PGM-ENTER    TO TRUE                                      
+                                                                                
+           EXEC CICS                                                            
+               XCTL PROGRAM(WS-MENU-PGM)                                        
+               COMMAREA(CARDDEMO-COMMAREA)                                      
+           END-EXEC.                                                            
                                                                                 
       *----------------------------------------------------------------*        
       *                      RETURN-TO-SIGNON-SCREEN                            
