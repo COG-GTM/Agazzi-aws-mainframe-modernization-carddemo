@@ -4,10 +4,12 @@ import com.carddemo.ext.authorization.codec.PendingAuthSegments;
 import com.carddemo.ext.authorization.config.ConditionalOnAuthorizationExtension;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -110,29 +112,37 @@ public class AuthorizationBatchConfiguration {
 
   /**
    * Publishes the root and child unloads as one unit: both are staged in unique files first, and
-   * the previous root file is restored if the child file cannot be replaced.
+   * the previous root entry (moved aside, never read) is restored if publication fails.
    */
   static void publishPair(Path roots, byte[] rootData, Path children, byte[] childData)
       throws IOException {
     if (roots.toAbsolutePath().normalize().equals(children.toAbsolutePath().normalize())) {
       throw new IllegalArgumentException("roots and children must be different files");
     }
+    if (Files.isDirectory(roots, LinkOption.NOFOLLOW_LINKS)) {
+      throw new IOException("roots is a directory: " + roots);
+    }
     List<Path> staged = new ArrayList<>();
     try {
       Path rootsTmp = stage(roots, rootData, staged);
       Path childrenTmp = stage(children, childData, staged);
-      Path rootsBak =
-          Files.isRegularFile(roots) ? stage(roots, Files.readAllBytes(roots), staged) : null;
-      Files.move(rootsTmp, roots, StandardCopyOption.REPLACE_EXISTING);
+      Path rootsBak = null;
+      if (Files.exists(roots, LinkOption.NOFOLLOW_LINKS)) {
+        rootsBak = roots.resolveSibling(roots.getFileName() + "." + UUID.randomUUID() + ".bak");
+        Files.move(roots, rootsBak);
+      }
       try {
+        Files.move(rootsTmp, roots);
         Files.move(childrenTmp, children, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
+        Files.deleteIfExists(roots);
         if (rootsBak != null) {
-          Files.move(rootsBak, roots, StandardCopyOption.REPLACE_EXISTING);
-        } else {
-          Files.deleteIfExists(roots);
+          Files.move(rootsBak, roots);
         }
         throw e;
+      }
+      if (rootsBak != null) {
+        Files.delete(rootsBak);
       }
     } finally {
       for (Path t : staged) {
