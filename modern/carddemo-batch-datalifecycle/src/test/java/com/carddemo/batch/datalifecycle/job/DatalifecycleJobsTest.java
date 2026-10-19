@@ -58,6 +58,7 @@ class DatalifecycleJobsTest {
   @Autowired JobLauncher launcher;
   @Autowired JdbcTemplate jdbc;
   @Autowired MaintenanceModePort maintenance;
+  @Autowired org.springframework.batch.core.explore.JobExplorer explorer;
   @Autowired GenerationStore generations;
 
   @TempDir Path dir;
@@ -357,12 +358,36 @@ class DatalifecycleJobsTest {
     assertThat(e.getStatus()).isEqualTo(BatchStatus.FAILED);
     assertThat(exits(e)).containsEntry("CLCIFIL", "COMPLETED").doesNotContainKey("OPCIFIL");
     assertThat(maintenance.closedFiles()).containsExactlyInAnyOrder("CARDDAT", "CARDAIX");
+    java.util.Set<String> afterAppRestart = new java.util.HashSet<>();
+    MaintenanceModePort fresh =
+        new MaintenanceModePort() {
+          @Override
+          public void close(java.util.Set<String> files) {
+            afterAppRestart.addAll(files);
+          }
+
+          @Override
+          public void open(java.util.Set<String> files) {
+            afterAppRestart.removeAll(files);
+          }
+
+          @Override
+          public java.util.Set<String> closedFiles() {
+            return java.util.Set.copyOf(afterAppRestart);
+          }
+        };
+    new com.carddemo.batch.datalifecycle.MaintenanceRecovery(explorer, fresh)
+        .afterSingletonsInstantiated();
+    assertThat(fresh.closedFiles()).contains("CARDDAT", "CARDAIX");
     Files.createDirectories(ps.getParent());
     Files.copy(Goldens.seed("carddata.txt"), ps);
     JobExecution restart = launch("CARDFILE", p);
     assertThat(restart.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(exits(restart)).doesNotContainKey("CLCIFIL").containsKey("OPCIFIL");
     assertThat(maintenance.inMaintenance()).isFalse();
+    afterAppRestart.clear();
+    assertThat(new com.carddemo.batch.datalifecycle.MaintenanceRecovery(explorer, fresh).recover())
+        .doesNotContain("CARDDAT", "CARDAIX");
   }
 
   @Test

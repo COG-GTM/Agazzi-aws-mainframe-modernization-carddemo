@@ -14,6 +14,7 @@ import com.carddemo.contracts.port.UserCredentialService;
 import com.carddemo.contracts.record.UserSecurityRecord;
 import java.util.List;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +45,12 @@ public class DatalifecycleJobsConfiguration {
           "USER0003LAURITZ             ALME                PASSWORDU",
           "USER0004AVERARDO            MAZZI               PASSWORDU",
           "USER0005LEE                 TING                PASSWORDU");
+
+  @Bean
+  MaintenanceRecovery datalifecycleMaintenanceRecovery(
+      JobExplorer explorer, MaintenanceModePort maintenance) {
+    return new MaintenanceRecovery(explorer, maintenance);
+  }
 
   @Bean
   @ConditionalOnMissingBean
