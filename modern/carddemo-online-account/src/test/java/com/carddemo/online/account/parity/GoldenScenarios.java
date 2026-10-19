@@ -24,8 +24,8 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * Runs the O2 online goldens (format of {@code com.carddemo.parity.online.OnlineScenario}) through
- * MockMvc with one HTTP session per scenario. Extra expectation {@code data: {FIELD: value}}
- * checks map output fields.
+ * MockMvc with one HTTP session per scenario. Extra expectation {@code data: {FIELD: value}} checks
+ * map output fields.
  */
 public final class GoldenScenarios {
 
@@ -33,8 +33,7 @@ public final class GoldenScenarios {
 
   public static Path dir(String tranid) {
     Path root = Path.of(System.getProperty("modern.root", "..")).toAbsolutePath().normalize();
-    return root.resolve(
-        "carddemo-parity/src/test/resources/golden/o2-account/online/" + tranid);
+    return root.resolve("carddemo-parity/src/test/resources/golden/o2-account/online/" + tranid);
   }
 
   @SuppressWarnings("unchecked")
@@ -57,7 +56,8 @@ public final class GoldenScenarios {
     ObjectMapper json = new ObjectMapper();
     MockHttpSession session = new MockHttpSession();
     Map<String, Object> auth =
-        (Map<String, Object>) sc.getOrDefault("auth", Map.of("user", "USER0001", "password", "PASSWORD"));
+        (Map<String, Object>)
+            sc.getOrDefault("auth", Map.of("user", "USER0001", "password", "PASSWORD"));
     String screen = String.valueOf(sc.get("screen"));
     List<String> mismatches = new ArrayList<>();
     int i = 0;
@@ -71,7 +71,10 @@ public final class GoldenScenarios {
           mvc.perform(
                   post("/api/v1/screens/" + screen.toLowerCase(Locale.ROOT))
                       .session(session)
-                      .with(httpBasic(String.valueOf(auth.get("user")), String.valueOf(auth.get("password"))))
+                      .with(
+                          httpBasic(
+                              String.valueOf(auth.get("user")),
+                              String.valueOf(auth.get("password"))))
                       .contentType(MediaType.APPLICATION_JSON)
                       .content(json.writeValueAsString(body)))
               .andReturn()
@@ -80,8 +83,11 @@ public final class GoldenScenarios {
       JsonNode r = json.readTree(resp);
       Map<String, Object> e = (Map<String, Object>) step.getOrDefault("expect", Map.of());
       if (e.containsKey("nextScreen")
-          && !Objects.equals(e.get("nextScreen") == null ? null : String.valueOf(e.get("nextScreen")), text(r.get("nextScreen")))) {
-        mismatches.add(where + ": nextScreen " + e.get("nextScreen") + " got " + text(r.get("nextScreen")));
+          && !Objects.equals(
+              e.get("nextScreen") == null ? null : String.valueOf(e.get("nextScreen")),
+              text(r.get("nextScreen")))) {
+        mismatches.add(
+            where + ": nextScreen " + e.get("nextScreen") + " got " + text(r.get("nextScreen")));
       }
       if (e.get("message") != null) {
         List<String> msgs = new ArrayList<>();

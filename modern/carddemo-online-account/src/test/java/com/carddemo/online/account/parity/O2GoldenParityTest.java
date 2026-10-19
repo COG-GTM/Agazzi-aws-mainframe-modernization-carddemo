@@ -15,7 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 /** Parity gate of O2: online goldens CAVW and CAUP (plan §11.4). */
 @Tag("parity")
-@SpringBootTest(classes = AccountTestApplication.class, properties = "spring.datasource.url=jdbc:h2:mem:o2parity;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE")
+@SpringBootTest(
+    classes = AccountTestApplication.class,
+    properties =
+        "spring.datasource.url=jdbc:h2:mem:o2parity;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE")
 @AutoConfigureMockMvc
 @DirtiesContext
 class O2GoldenParityTest {

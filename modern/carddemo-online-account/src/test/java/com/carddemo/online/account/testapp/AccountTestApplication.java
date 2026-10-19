@@ -22,6 +22,25 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableJpaRepositories(basePackages = "com.carddemo.domain")
 public class AccountTestApplication {
 
+  /** Test seam between the 9700 check and the REWRITEs (null action = no-op). */
+  public static final class RewriteHook
+      implements com.carddemo.online.account.service.AccountUpdateWriter.BeforeRewrite {
+    public volatile java.util.function.LongConsumer action;
+
+    @Override
+    public void beforeRewrite(long acctId) {
+      java.util.function.LongConsumer a = action;
+      if (a != null) {
+        a.accept(acctId);
+      }
+    }
+  }
+
+  @Bean
+  RewriteHook rewriteHook() {
+    return new RewriteHook();
+  }
+
   @Bean
   BusinessClock businessClock() {
     return FixedBusinessClock.golden();
