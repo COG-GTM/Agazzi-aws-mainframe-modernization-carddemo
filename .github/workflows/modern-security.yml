@@ -111,6 +111,9 @@ jobs:
         run: |
           python3 - <<'PY'
           import glob, json, sys
+          # Reviewed findings: exact rule + file, each with its reason.
+          accepted = {(a["rule"], a["path"]): a["reason"]
+                      for a in json.load(open("modern/security/codeql-suppressions.json"))}
           bad = []
           for f in glob.glob("codeql-results/*.sarif"):
               for run in json.load(open(f))["runs"]:
@@ -122,6 +125,10 @@ jobs:
                           "defaultConfiguration", {}).get("level", "warning")
                       if level in ("error", "warning"):
                           loc = res["locations"][0]["physicalLocation"]
+                          uri = loc["artifactLocation"]["uri"]
+                          if (res["ruleId"], uri) in accepted:
+                              print(f'accepted {res["ruleId"]} {uri}: {accepted[(res["ruleId"], uri)]}')
+                              continue
                           bad.append(f'{res["ruleId"]} {loc["artifactLocation"]["uri"]}:{loc.get("region", {}).get("startLine")}')
           print("\n".join(bad) or "CodeQL: no error/warning security alerts")
           sys.exit(1 if bad else 0)
