@@ -1,0 +1,10 @@
+job: READCUST
+jcl: app/jcl/READCUST.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  CUSTDATA: {org: ksds, lrecl: 500, key: [0, 9], layout: CVCUS01Y, input: "seed:custdata.txt"}
+steps:
+  - name: STEP05
+    program: CBCUS01C
+    dd: {CUSTFILE: CUSTDATA}
+outputs: []

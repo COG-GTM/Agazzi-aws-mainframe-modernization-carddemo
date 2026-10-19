@@ -1,0 +1,10 @@
+job: READCARD
+jcl: app/jcl/READCARD.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  CARDDATA: {org: ksds, lrecl: 150, key: [0, 16], layout: CVACT02Y, input: "seed:carddata.txt"}
+steps:
+  - name: STEP05
+    program: CBACT02C
+    dd: {CARDFILE: CARDDATA}
+outputs: []
