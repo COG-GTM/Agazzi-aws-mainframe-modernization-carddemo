@@ -1,0 +1,24 @@
+ Tran: ....          ........................................    Date: ........
+ Prog: ........      ........................................    Time: ........
+
+                              Add Transaction
+
+      Enter Acct #:  ___________     (or)     Card #:  ________________
+
+      ----------------------------------------------------------------------
+
+      Type CD: __      Category CD: ____      Source: __________
+
+      Description: ____________________________________________________________
+
+      Amount: ____________     Orig Date: __________     Proc Date: __________
+             (-99999999.99)              (YYYY-MM-DD)              (YYYY-MM-DD)
+      Merchant ID: _________     Merchant Name: ______________________________
+
+      Merchant City: _________________________       Merchant Zip: __________
+
+
+      You are about to add this transaction. Please confirm :  _  (Y/N)
+
+ ..............................................................................
+ ENTER=Continue  F3=Back  F4=Clear  F5=Copy Last Tran.
