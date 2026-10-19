@@ -1,0 +1,15 @@
+# COMEN01C does not check CDEMO-USER-TYPE except for options flagged 'A' (none in COMEN02Y):
+#   an admin can use the main menu too.
+id: CM00-019
+title: admin sul menu principale
+tranid: CM00
+screen: COMEN01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "6"}
+    expect:
+      screen: COMEN01
+      nextScreen: COTRN00
+      fieldErrors: []
+      dbDelta: none

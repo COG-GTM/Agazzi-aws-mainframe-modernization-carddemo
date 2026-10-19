@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,10 +22,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * CC00 sign-on scenarios against the real app. Tagged {@code pending-o1}: excluded by {@code
- * failsafe.excludedGroups} until O1 implements COSGN00 (O1 removes the tag in its PR).
+ * O1 online goldens against the real app (PostgreSQL 16 + seed): CC00 sign-on (COSGN00C), CM00 main
+ * menu (COMEN01C) and CA00 admin menu (COADM01C).
  */
-@Tag("pending-o1")
 @SpringBootTest(
     classes = CardDemoApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,9 +40,25 @@ class CC00SignOnScenariosIT {
 
   @TestFactory
   Stream<DynamicTest> cc00() throws Exception {
+    return scenarios("CC00");
+  }
+
+  @TestFactory
+  Stream<DynamicTest> cm00() throws Exception {
+    return scenarios("CM00");
+  }
+
+  @TestFactory
+  Stream<DynamicTest> ca00() throws Exception {
+    return scenarios("CA00");
+  }
+
+  private Stream<DynamicTest> scenarios(String tranid) throws Exception {
     OnlineScenarioRunner runner =
         new OnlineScenarioRunner(URI.create("http://localhost:" + port), this::snapshot);
-    return OnlineScenario.loadAll(ParityPaths.onlineGoldens().resolve("CC00")).stream()
+    List<OnlineScenario> all = OnlineScenario.loadAll(ParityPaths.onlineGoldens().resolve(tranid));
+    assertThat(all).isNotEmpty().noneMatch(OnlineScenario::pending);
+    return all.stream()
         .map(
             s ->
                 DynamicTest.dynamicTest(

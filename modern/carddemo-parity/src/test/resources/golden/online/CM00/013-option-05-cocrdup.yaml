@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 5 (Credit Card Update) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-013
+title: opzione 05 -> COCRDUP
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "05"}
+    expect:
+      screen: COMEN01
+      nextScreen: COCRDUP
+      fieldErrors: []
+      dbDelta: none

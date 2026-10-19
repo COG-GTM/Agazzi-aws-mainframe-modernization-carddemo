@@ -1,0 +1,16 @@
+# COADM01C: option 5 = COTRTLIC, XCTL raises PGMIDERR (extension X2 off,
+#   carddemo.extensions.trantype.enabled=false) -> PGMIDERR-ERR-PARA 'This option is not installed ...'.
+id: CA00-004
+title: opzione 5 con estensione trantype disattiva
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "5"}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "This option is not installed ..."
+      fieldErrors: []
+      dbDelta: none

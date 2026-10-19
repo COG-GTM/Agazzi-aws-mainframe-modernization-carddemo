@@ -1,0 +1,15 @@
+# COADM01C PROCESS-ENTER-KEY: WS-OPTION > CDEMO-ADMIN-OPT-COUNT (6) -> invalid option.
+id: CA00-002
+title: opzione oltre CDEMO-ADMIN-OPT-COUNT
+tranid: CA00
+screen: COADM01
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "7"}
+    expect:
+      screen: COADM01
+      nextScreen: null
+      message: "Please enter a valid option number..."
+      fieldErrors: []
+      dbDelta: none
