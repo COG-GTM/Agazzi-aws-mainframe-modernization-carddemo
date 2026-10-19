@@ -18,6 +18,8 @@ case "${CARDDEMO_JOB_MODE:-local}" in
     # Non-web JVM (Fase 5A, F4): the O1 security chain is servlet-only. Watch the log for the job's
     # final status (or the JVM exit), then stop the JVM and map the status.
     jar="${CARDDEMO_APP_JAR:-$HERE/../../carddemo-app/target/carddemo-app-exec.jar}"
+    # Same Flyway locations as the docker-compose app (profile local: migrations + seed V2).
+    export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-local}"
     log="$(mktemp)"; trap 'rm -f "$log"' EXIT
     java -jar "$jar" --spring.main.web-application-type=none --spring.batch.job.enabled=true \
       --spring.batch.job.name="$job" "${params[@]}" >"$log" 2>&1 &

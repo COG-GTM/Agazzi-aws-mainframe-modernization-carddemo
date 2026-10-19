@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCus
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -84,6 +85,8 @@ public class OnlineAuthSecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/v1/screens/cosgn00")
                     .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/actuator/maintenance")
+                    .hasRole("ADMIN")
                     .requestMatchers(ADMIN_SCREENS)
                     .hasRole("ADMIN")
                     .anyRequest()

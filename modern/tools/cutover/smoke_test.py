@@ -23,9 +23,15 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from http.cookiejar import CookieJar
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+
+
+# One terminal session for the whole run: COMMAREA/session cookie kept between screens (CICS
+# pseudo-conversation), as the SPA and k6 do. Basic auth requests are CSRF-exempt.
+_OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJar()))
 
 
 def http(base, method, path, body=None, auth=None, timeout=15):
@@ -38,7 +44,7 @@ def http(base, method, path, body=None, auth=None, timeout=15):
         data = json.dumps(body).encode()
         req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, data=data, timeout=timeout) as r:
+        with _OPENER.open(req, data=data, timeout=timeout) as r:
             raw = r.read()
             return r.status, json.loads(raw) if raw else None
     except urllib.error.HTTPError as e:
@@ -105,8 +111,10 @@ def main(argv=None):
     else:
         record("maintenance", "PENDING" if code in (401, 404) else "FAIL", f"HTTP {code} (MaintenanceModePort/B5 not exposed)")
 
-    def screen_check(name, scr, fields, ok):
+    def screen_check(name, scr, fields, ok, first_send=False):
         try:
+            if first_send:  # first SEND of the map (transaction start), then the terminal input
+                http(a.base_url, "GET", f"/api/v1/screens/{scr}", auth=auth)
             code, body = screen(a.base_url, scr, fields, auth)
         except OSError as e:
             record(name, "FAIL", str(e))
@@ -125,7 +133,8 @@ def main(argv=None):
     screen_check("signon", "cosgn00", {"USERID": user or "", "PASSWD": pwd or ""},
                  lambda b: None if b.get("nextScreen") else "no nextScreen after sign-on")
     screen_check("cavw", "coactvw", {"ACCTSID": a.account},
-                 lambda b: None if a.account.lstrip("0") in json.dumps(b.get("data")) else "account not in response data")
+                 lambda b: None if a.account.lstrip("0") in json.dumps(b.get("data")) else "account not in response data",
+                 first_send=True)
     if a.allow_write:
         fields = {"ACTIDIN": a.account, "CARDNIN": a.card, "TTYPCD": "01", "TCATCD": "0001", "TRNSRC": "POS TERM",
                   "TDESC": "SMOKE TEST CUTOVER", "TRNAMT": "-00000001.00", "TORIGDT": time.strftime("%Y-%m-%d"),
@@ -133,7 +142,7 @@ def main(argv=None):
                   "MZIP": "00000", "CONFIRM": "Y"}
         screen_check("ct02", "cotrn02", fields,
                      lambda b: None if any("successfully" in (m.get("text") or "").lower() for m in b.get("messages") or [])
-                     else "no confirmation message")
+                     else "no confirmation message", first_send=True)
     else:
         record("ct02", "SKIPPED", "read-only run (pass --allow-write at T-0)")
 

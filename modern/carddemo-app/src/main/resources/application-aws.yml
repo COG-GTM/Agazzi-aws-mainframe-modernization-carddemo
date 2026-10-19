@@ -31,4 +31,5 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        # maintenance: CLOSEFIL/OPENFIL of the cutover runbook (authenticated, write ADMIN-only)
+        include: health,maintenance
