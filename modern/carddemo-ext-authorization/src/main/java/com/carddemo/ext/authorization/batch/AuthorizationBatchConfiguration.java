@@ -2,9 +2,12 @@ package com.carddemo.ext.authorization.batch;
 
 import com.carddemo.ext.authorization.codec.PendingAuthSegments;
 import com.carddemo.ext.authorization.config.ConditionalOnAuthorizationExtension;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -55,12 +58,11 @@ public class AuthorizationBatchConfiguration {
                 (contribution, ctx) -> {
                   var p = contribution.getStepExecution().getJobParameters();
                   PendingAuthUnloadLoadService.Unload u = s.unload(PendingAuthSegments.ASCII);
-                  Path roots = Path.of(p.getString("roots"));
-                  Path children = Path.of(p.getString("children"));
-                  Path rootsTmp = Files.write(sibling(roots), u.roots());
-                  Path childrenTmp = Files.write(sibling(children), u.children());
-                  Files.move(childrenTmp, children, StandardCopyOption.REPLACE_EXISTING);
-                  Files.move(rootsTmp, roots, StandardCopyOption.REPLACE_EXISTING);
+                  publishPair(
+                      Path.of(p.getString("roots")),
+                      u.roots(),
+                      Path.of(p.getString("children")),
+                      u.children());
                   return RepeatStatus.FINISHED;
                 },
                 tx)
@@ -106,8 +108,43 @@ public class AuthorizationBatchConfiguration {
     return new JobBuilder("DBPAUTP0", repo).start(step).build();
   }
 
-  /** Both segment files are written completely before either replaces the previous unload. */
-  private static Path sibling(Path target) {
-    return target.resolveSibling(target.getFileName() + ".tmp");
+  /**
+   * Publishes the root and child unloads as one unit: both are staged in unique files first, and
+   * the previous root file is restored if the child file cannot be replaced.
+   */
+  static void publishPair(Path roots, byte[] rootData, Path children, byte[] childData)
+      throws IOException {
+    if (roots.toAbsolutePath().normalize().equals(children.toAbsolutePath().normalize())) {
+      throw new IllegalArgumentException("roots and children must be different files");
+    }
+    List<Path> staged = new ArrayList<>();
+    try {
+      Path rootsTmp = stage(roots, rootData, staged);
+      Path childrenTmp = stage(children, childData, staged);
+      Path rootsBak =
+          Files.isRegularFile(roots) ? stage(roots, Files.readAllBytes(roots), staged) : null;
+      Files.move(rootsTmp, roots, StandardCopyOption.REPLACE_EXISTING);
+      try {
+        Files.move(childrenTmp, children, StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+        if (rootsBak != null) {
+          Files.move(rootsBak, roots, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+          Files.deleteIfExists(roots);
+        }
+        throw e;
+      }
+    } finally {
+      for (Path t : staged) {
+        Files.deleteIfExists(t);
+      }
+    }
+  }
+
+  private static Path stage(Path target, byte[] data, List<Path> staged) throws IOException {
+    Path dir = target.toAbsolutePath().getParent();
+    Path tmp = Files.createTempFile(dir, target.getFileName() + ".", ".tmp");
+    staged.add(tmp);
+    return Files.write(tmp, data);
   }
 }
