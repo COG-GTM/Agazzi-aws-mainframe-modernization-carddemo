@@ -111,6 +111,14 @@ public class RelationalStore implements KeyLookup {
     jdbc.update("DELETE FROM " + ds.table());
   }
 
+  /** Users already migrated by usrsecToBcrypt. */
+  public long hashedPasswords() {
+    Long n =
+        jdbc.queryForObject(
+            "SELECT COUNT(*) FROM app_user WHERE sec_usr_pwd LIKE '{%'", Long.class);
+    return n == null ? 0 : n;
+  }
+
   public long count(Dataset ds) {
     Long n = jdbc.queryForObject("SELECT COUNT(*) FROM " + ds.table(), Long.class);
     return n == null ? 0 : n;

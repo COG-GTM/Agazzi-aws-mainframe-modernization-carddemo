@@ -13,6 +13,7 @@ public record MigrationOptions(
     Path input,
     Path output,
     List<Dataset> datasets,
+    boolean explicitDatasets,
     Mode mode,
     OnError onError,
     SourceFormat target,
@@ -45,12 +46,17 @@ public record MigrationOptions(
         Path.of(input),
         Path.of(str(p, "output", "target/migrate-data")),
         Dataset.parseList(p.getString("datasets")),
+        explicit(p.getString("datasets")),
         Mode.valueOf(str(p, "mode", "upsert").toUpperCase(Locale.ROOT)),
         OnError.valueOf(str(p, "onError", "abort").toUpperCase(Locale.ROOT)),
         SourceFormat.parse(str(p, "target", "ascii")),
         compare == null || compare.isBlank() ? null : Path.of(compare),
         Boolean.parseBoolean(str(p, "verify", "false")),
         listcat == null || listcat.isBlank() ? null : Path.of(listcat));
+  }
+
+  private static boolean explicit(String datasets) {
+    return datasets != null && !datasets.isBlank() && !datasets.equalsIgnoreCase("ALL");
   }
 
   private static String str(JobParameters p, String k, String def) {

@@ -17,7 +17,11 @@ import java.util.Objects;
 
 /** Source vs database comparison of one {@code vsamToRelational} run. */
 public record ReconciliationReport(
-    String source, String generatedAt, List<Entry> datasets, List<Violation> violations) {
+    String source,
+    String generatedAt,
+    List<Entry> datasets,
+    List<Violation> violations,
+    boolean aborted) {
 
   /** Per-dataset comparison; {@code dbCount}/{@code dbSums} come from SQL aggregates. */
   public record Entry(
@@ -64,8 +68,9 @@ public record ReconciliationReport(
     }
   }
 
+  /** An aborted run never matches, even when the database happens to hold the same rows. */
   public boolean matched() {
-    return datasets.stream().allMatch(Entry::matched);
+    return !aborted && datasets.stream().allMatch(Entry::matched);
   }
 
   public void write(Path dir) {
@@ -84,6 +89,7 @@ public record ReconciliationReport(
     Map<String, Object> root = new LinkedHashMap<>();
     root.put("source", source);
     root.put("matched", matched());
+    root.put("aborted", aborted);
     Map<String, Object> ds = new LinkedHashMap<>();
     for (Entry e : datasets) {
       Map<String, Object> m = new LinkedHashMap<>();
@@ -127,7 +133,9 @@ public record ReconciliationReport(
     sb.append("# Reconciliation report — vsamToRelational\n\n");
     sb.append("- source: `").append(source).append("`\n");
     sb.append("- generated: ").append(generatedAt).append('\n');
-    sb.append("- result: **").append(matched() ? "MATCH" : "MISMATCH").append("**\n\n");
+    sb.append("- result: **")
+        .append(aborted ? "ABORTED" : matched() ? "MATCH" : "MISMATCH")
+        .append("**\n\n");
     sb.append("## Counts and checksums\n\n");
     sb.append(
         "| Dataset | Table | File | LISTCAT REC-TOTAL | Source | Relational (rows / SQL COUNT) |"

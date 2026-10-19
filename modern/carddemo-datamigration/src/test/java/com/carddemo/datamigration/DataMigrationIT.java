@@ -107,7 +107,7 @@ class DataMigrationIT {
 
   @Test
   @Order(2)
-  void relationalToVsamRebuildsAsciiByteIdentical() throws Exception {
+  void relationalToVsamRebuildsAsciiByteIdentical(@TempDir Path empty) throws Exception {
     Path r = out.resolve("unload-ascii");
     assertThat(
             cli(
@@ -128,6 +128,16 @@ class DataMigrationIT {
             .hasSameBinaryContentAs(f);
       }
     }
+    Path none = out.resolve("unload-no-original");
+    assertThat(
+            cli(
+                "--job=relationalToVsam",
+                "--target=ascii",
+                "--output=" + none,
+                "--compare=" + empty,
+                "--verify"))
+        .isEqualTo(1);
+    assertThat(Files.readString(none.resolve("relational-to-vsam.md"))).contains("NO ORIGINAL");
   }
 
   @Test
@@ -192,12 +202,22 @@ class DataMigrationIT {
     assertThat(cli("--job=vsamToRelational", "--input=" + bad, "--output=" + r))
         .as(lastOutput)
         .isEqualTo(1);
-    assertThat(Files.readString(r.resolve("reconciliation.md"))).contains("DUPLICATE_KEY");
+    assertThat(Files.readString(r.resolve("reconciliation.md")))
+        .contains("DUPLICATE_KEY")
+        .contains("result: **ABORTED**");
     assertThat(jdbc().queryForObject("SELECT COUNT(*) FROM card_xref", Long.class))
         .isEqualTo(before);
     assertThat(cli("--job=vsamToRelational", "--input=" + bad, "--on-error=skip", "--output=" + r))
         .as(lastOutput)
         .isZero();
+    assertThat(
+            cli(
+                "--job=vsamToRelational",
+                "--datasets=CARDXREF,CARDDATA",
+                "--input=" + bad,
+                "--output=" + r))
+        .isEqualTo(1);
+    assertThat(lastOutput).contains("CARDDATA");
   }
 
   @Test
@@ -227,10 +247,34 @@ class DataMigrationIT {
     }
     assertThat(cli("--job=usrsecToBcrypt")).isZero();
     assertThat(lastOutput).contains("(w0)");
+    String[] usrsecImport = {
+      "--job=vsamToRelational",
+      "--source=ebcdic",
+      "--datasets=USRSEC",
+      "--input=" + TestPaths.appData("EBCDIC"),
+      "--output=" + out.resolve("usrsec2")
+    };
+    assertThat(cli(usrsecImport)).isEqualTo(1);
+    assertThat(lastOutput).contains("usrsecRollback");
+    Object changed = legacy.get(0).get("sec_usr_id");
+    jdbc()
+        .update(
+            "UPDATE app_user SET sec_usr_pwd = '{bcrypt}changed' WHERE sec_usr_id = ?", changed);
     assertThat(cli("--job=usrsecRollback")).as(lastOutput).isZero();
+    assertThat(
+            jdbc()
+                .queryForObject(
+                    "SELECT sec_usr_pwd FROM app_user WHERE sec_usr_id = ?", String.class, changed))
+        .isEqualTo("{bcrypt}changed");
+    jdbc()
+        .update(
+            "UPDATE app_user SET sec_usr_pwd = ? WHERE sec_usr_id = ?",
+            legacy.get(0).get("sec_usr_pwd"),
+            changed);
     assertThat(
             jdbc().queryForList("SELECT sec_usr_id, sec_usr_pwd FROM app_user ORDER BY sec_usr_id"))
         .isEqualTo(legacy);
+    assertThat(cli(usrsecImport)).as(lastOutput).isZero();
   }
 
   @Test

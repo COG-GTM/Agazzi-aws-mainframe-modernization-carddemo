@@ -81,7 +81,64 @@ public final class SourceValidator {
         }
       }
     }
+    cascade(sources, out);
     return out;
+  }
+
+  /**
+   * Children of a parent record rejected by an ERROR finding are rejected too (until fixpoint), so
+   * {@code --on-error=skip} never loads a child whose parent is skipped.
+   */
+  public static void cascade(Map<Dataset, SourceDataset> sources, List<Violation> out) {
+    boolean changed = true;
+    while (changed) {
+      changed = false;
+      Map<Dataset, Set<Long>> rejected = new HashMap<>();
+      for (Violation v : out) {
+        if (v.severity() == Severity.ERROR) {
+          rejected.computeIfAbsent(v.dataset(), k -> new HashSet<>()).add(v.ordinal());
+        }
+      }
+      for (ForeignKey fk : ForeignKey.ALL) {
+        SourceDataset child = sources.get(fk.child());
+        SourceDataset parent = sources.get(fk.parent());
+        Set<Long> rejectedParents = rejected.getOrDefault(fk.parent(), Set.of());
+        if (fk.severity() != Severity.ERROR
+            || child == null
+            || parent == null
+            || rejectedParents.isEmpty()) {
+          continue;
+        }
+        RecordMapper<Record> pm = fk.parent().mapper();
+        Set<String> all = new HashSet<>();
+        Set<String> accepted = new HashSet<>();
+        for (SourceRecord r : parent.records()) {
+          String key = key(pm, r.value(), fk.parentColumns());
+          all.add(key);
+          if (!rejectedParents.contains(r.ordinal())) {
+            accepted.add(key);
+          }
+        }
+        RecordMapper<Record> cm = fk.child().mapper();
+        Set<Long> rejectedChildren = rejected.getOrDefault(fk.child(), Set.of());
+        for (SourceRecord r : child.records()) {
+          String key = key(cm, r.value(), fk.childColumns());
+          if (!rejectedChildren.contains(r.ordinal())
+              && all.contains(key)
+              && !accepted.contains(key)) {
+            out.add(
+                new Violation(
+                    fk.child(),
+                    r.ordinal(),
+                    Rule.ORPHAN_FK,
+                    Severity.ERROR,
+                    String.join(",", fk.childColumns()),
+                    "'" + key.trim() + "' rejected: " + fk.describe()));
+            changed = true;
+          }
+        }
+      }
+    }
   }
 
   private static void duplicates(SourceDataset src, List<Violation> out) {

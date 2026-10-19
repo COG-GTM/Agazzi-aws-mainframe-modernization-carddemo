@@ -1,7 +1,7 @@
 # relationalToVsam parity
 
 - target: `ASCII`, compared with `app/data/ASCII`
-- generated: 2026-10-19-12.34.37.184755
+- generated: 2026-10-19-12.41.51.189563
 
 | Dataset | File | Records | Bytes expected | Bytes actual | Result |
 |---|---|---:|---:|---:|---|

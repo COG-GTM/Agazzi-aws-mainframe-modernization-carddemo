@@ -34,6 +34,7 @@ public class DataMigrationService {
   public static final class Run {
     Map<Dataset, SourceDataset> sources = Map.of();
     List<Violation> violations = List.of();
+    List<Dataset> missing = List.of();
     final Map<Dataset, Integer> changed = new LinkedHashMap<>();
     final List<VsamExporter.Unloaded> unloaded = new ArrayList<>();
     ReconciliationReport report;
@@ -84,6 +85,23 @@ public class DataMigrationService {
       throw new IllegalArgumentException(
           "no " + o.source() + " extract found in " + o.input().toAbsolutePath());
     }
+    List<Dataset> missing =
+        o.datasets().stream().filter(ds -> !run.sources.containsKey(ds)).toList();
+    if (o.explicitDatasets() && !missing.isEmpty()) {
+      throw new IllegalArgumentException(
+          "requested dataset(s) without "
+              + o.source()
+              + " extract in "
+              + o.input()
+              + ": "
+              + missing);
+    }
+    run.missing = missing;
+    if (run.sources.containsKey(Dataset.USRSEC) && store.hashedPasswords() > 0) {
+      throw new IllegalStateException(
+          "USRSEC cutover active (app_user holds {bcrypt} passwords): run usrsecRollback before"
+              + " re-importing USRSEC");
+    }
     return run.sources;
   }
 
@@ -96,11 +114,16 @@ public class DataMigrationService {
     return run.violations.stream().filter(v -> v.severity() == Violation.Severity.ERROR).count();
   }
 
+  /** ERROR finding on a decoded record (DECODE errors have no record to skip). */
+  static boolean rejects(Violation v) {
+    return v.severity() == Violation.Severity.ERROR && v.rule() != Violation.Rule.DECODE;
+  }
+
   /** Loads all extracts in one transaction (parents first); rejected records are skipped. */
   public Map<Dataset, Integer> load(Run run, MigrationOptions o, long jobExecutionId) {
     Map<Dataset, Set<Long>> rejected =
         run.violations.stream()
-            .filter(v -> v.severity() == Violation.Severity.ERROR)
+            .filter(DataMigrationService::rejects)
             .collect(
                 Collectors.groupingBy(
                     Violation::dataset,
@@ -132,7 +155,7 @@ public class DataMigrationService {
       Dataset ds = src.dataset();
       Set<Long> rejected =
           run.violations.stream()
-              .filter(v -> v.dataset() == ds && v.severity() == Violation.Severity.ERROR)
+              .filter(v -> v.dataset() == ds && rejects(v))
               .map(Violation::ordinal)
               .collect(Collectors.toSet());
       List<SourceRecord> loaded =
@@ -171,36 +194,52 @@ public class DataMigrationService {
     }
     run.report =
         new ReconciliationReport(
-            o.source() + ":" + o.input(), clock.cobolTimestamp(), entries, run.violations);
+            label(run, o), clock.cobolTimestamp(), entries, run.violations, false);
     run.report.write(o.output());
     return run.report;
   }
 
+  private static String label(Run run, MigrationOptions o) {
+    return o.source()
+        + ":"
+        + o.input()
+        + (run.missing.isEmpty() ? "" : " (no extract for " + run.missing + ")");
+  }
+
+  /** Empty selected tables are not exported and any stale file of a previous run is removed. */
   public List<VsamExporter.Unloaded> unload(Run run, MigrationOptions o) {
     Path dir = o.output().resolve(o.target().name().toLowerCase(java.util.Locale.ROOT));
     for (Dataset ds : o.datasets()) {
       if (store.count(ds) > 0) {
         run.unloaded.add(exporter.unload(ds, o.target(), dir));
+      } else {
+        try {
+          Files.deleteIfExists(dir.resolve(VsamExporter.exportFileName(ds, o.target())));
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
       }
     }
     return run.unloaded;
   }
 
-  /** Byte comparison with {@code --compare}; writes relational-to-vsam.md. */
+  private static Path original(Dataset ds, MigrationOptions o) {
+    Path expected = o.compare().resolve(VsamExporter.exportFileName(ds, o.target()));
+    String original = ds.fileName(o.target());
+    if (!Files.isRegularFile(expected) && original != null) {
+      expected = o.compare().resolve(original);
+    }
+    return Files.isRegularFile(expected) ? expected : null;
+  }
+
+  /**
+   * Byte comparison with {@code --compare}; writes relational-to-vsam.md. An exported file without
+   * original, or an original whose table is empty, is a non-identical comparison.
+   */
   public List<VsamExporter.Comparison> compare(Run run, MigrationOptions o) {
     List<VsamExporter.Comparison> out = new ArrayList<>();
     if (o.compare() == null) {
       return out;
-    }
-    for (VsamExporter.Unloaded u : run.unloaded) {
-      Path expected = o.compare().resolve(VsamExporter.exportFileName(u.dataset(), o.target()));
-      String original = u.dataset().fileName(o.target());
-      if (!Files.isRegularFile(expected) && original != null) {
-        expected = o.compare().resolve(original);
-      }
-      if (Files.isRegularFile(expected)) {
-        out.add(VsamExporter.compare(u.dataset(), u.file(), expected));
-      }
     }
     StringBuilder sb = new StringBuilder("# relationalToVsam parity\n\n");
     sb.append("- target: `")
@@ -211,24 +250,39 @@ public class DataMigrationService {
         .append(clock.cobolTimestamp())
         .append("\n\n| Dataset | File | Records | Bytes expected | Bytes actual | Result |\n")
         .append("|---|---|---:|---:|---:|---|\n");
-    for (VsamExporter.Unloaded u : run.unloaded) {
-      VsamExporter.Comparison c =
-          out.stream().filter(x -> x.dataset() == u.dataset()).findFirst().orElse(null);
+    for (Dataset ds : o.datasets()) {
+      VsamExporter.Unloaded u =
+          run.unloaded.stream().filter(x -> x.dataset() == ds).findFirst().orElse(null);
+      Path expected = original(ds, o);
+      if (u == null && expected == null) {
+        continue;
+      }
+      VsamExporter.Comparison c;
+      String result;
+      if (u == null) {
+        long size = size(expected);
+        c = new VsamExporter.Comparison(ds, expected.getFileName().toString(), false, 0, size, 0);
+        result = "NOT EXPORTED (empty table)";
+      } else if (expected == null) {
+        c = new VsamExporter.Comparison(ds, "", false, 0, 0, size(u.file()));
+        result = "NO ORIGINAL";
+      } else {
+        c = VsamExporter.compare(ds, u.file(), expected);
+        result = c.identical() ? "BYTE-IDENTICAL" : "DIFF at byte " + c.firstDiff();
+      }
+      out.add(c);
       sb.append("| ")
-          .append(u.dataset())
+          .append(ds)
           .append(" | `")
-          .append(u.file().getFileName())
+          .append(u == null ? c.file() : u.file().getFileName())
           .append("` | ")
-          .append(u.records())
+          .append(u == null ? 0 : u.records())
           .append(" | ")
-          .append(c == null ? "—" : c.expectedSize())
+          .append(c.expectedSize())
           .append(" | ")
-          .append(c == null ? "—" : c.actualSize())
+          .append(c.actualSize())
           .append(" | ")
-          .append(
-              c == null
-                  ? "no original"
-                  : c.identical() ? "BYTE-IDENTICAL" : "DIFF at byte " + c.firstDiff())
+          .append(result)
           .append(" |\n");
     }
     try {
@@ -240,29 +294,42 @@ public class DataMigrationService {
     return out;
   }
 
+  private static long size(Path p) {
+    try {
+      return Files.size(p);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
   /** Report of a run stopped by validation errors (no DB comparison, nothing loaded). */
   public void reconcileFailed(Run run, MigrationOptions o) {
     List<ReconciliationReport.Entry> entries = new ArrayList<>();
     Map<Dataset, Long> catalog = ListcatCatalog.recordTotals(o.listcat());
     for (SourceDataset src : run.sources.values()) {
-      DatasetMetrics m = DatasetMetrics.of(src.dataset(), src.records());
+      Dataset ds = src.dataset();
+      Map<String, BigDecimal> dbSums = new LinkedHashMap<>();
+      for (String f : ds.checksumFields()) {
+        dbSums.put(f, store.sum(ds, ds.mapper().field(f).column()));
+      }
       entries.add(
           new ReconciliationReport.Entry(
-              src.dataset(),
+              ds,
               src.file(),
-              catalog.get(src.dataset()),
-              m,
-              m,
-              store.count(src.dataset()),
-              m.sums(),
+              catalog.get(ds),
+              DatasetMetrics.of(ds, src.records()),
+              DatasetMetrics.of(ds, store.readAll(ds)),
+              store.count(ds),
+              dbSums,
               0));
     }
     run.report =
         new ReconciliationReport(
-            o.source() + ":" + o.input() + " (ABORTED: validation errors)",
+            label(run, o) + " (ABORTED: validation errors, nothing loaded)",
             clock.cobolTimestamp(),
             entries,
-            run.violations);
+            run.violations,
+            true);
     run.report.write(o.output());
   }
 }

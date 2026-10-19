@@ -58,11 +58,13 @@ public class UsrsecPasswordMigration {
               throw new IllegalStateException("BCrypt self-check failed for " + id.trim());
             }
             jdbc.update(
-                "INSERT INTO dm_usrsec_pwd_backup (sec_usr_id, legacy_pwd, migrated_at)"
-                    + " VALUES (?, ?, ?) ON CONFLICT (sec_usr_id) DO UPDATE SET"
-                    + " legacy_pwd = EXCLUDED.legacy_pwd, migrated_at = EXCLUDED.migrated_at",
+                "INSERT INTO dm_usrsec_pwd_backup (sec_usr_id, legacy_pwd, bcrypt_pwd, migrated_at)"
+                    + " VALUES (?, ?, ?, ?) ON CONFLICT (sec_usr_id) DO UPDATE SET"
+                    + " legacy_pwd = EXCLUDED.legacy_pwd, bcrypt_pwd = EXCLUDED.bcrypt_pwd,"
+                    + " migrated_at = EXCLUDED.migrated_at",
                 id,
                 pwd,
+                hash,
                 now);
             jdbc.update(
                 "UPDATE app_user SET sec_usr_pwd = ?, version = version + 1 WHERE sec_usr_id = ?",
@@ -74,7 +76,10 @@ public class UsrsecPasswordMigration {
         });
   }
 
-  /** Restores the legacy plaintext of every user migrated by {@link #migrate()}. */
+  /**
+   * Restores the legacy plaintext of every user still holding the hash written by {@link
+   * #migrate()}; a password changed after the cutover is kept.
+   */
   public Result rollback() {
     return tx.execute(
         s -> {
@@ -82,7 +87,7 @@ public class UsrsecPasswordMigration {
               jdbc.update(
                   "UPDATE app_user u SET sec_usr_pwd = b.legacy_pwd, version = u.version + 1"
                       + " FROM dm_usrsec_pwd_backup b WHERE u.sec_usr_id = b.sec_usr_id"
-                      + " AND u.sec_usr_pwd LIKE '{bcrypt}%'");
+                      + " AND u.sec_usr_pwd = b.bcrypt_pwd");
           jdbc.update("DELETE FROM dm_usrsec_pwd_backup");
           return new Result(0, 0, restored);
         });

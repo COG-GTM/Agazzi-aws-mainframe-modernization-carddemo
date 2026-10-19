@@ -28,10 +28,12 @@ CREATE TABLE dm_reconciliation (
 CREATE INDEX dm_reconciliation_exec ON dm_reconciliation (job_execution_id);
 
 -- Reversible USRSEC -> {bcrypt} migration (job usrsecToBcrypt / usrsecRollback):
--- legacy SEC-USR-PWD kept until the cutover is confirmed (job usrsecPurgeBackup).
+-- legacy SEC-USR-PWD kept until the cutover is confirmed (job usrsecPurgeBackup);
+-- rollback restores it only where app_user still holds bcrypt_pwd.
 CREATE TABLE dm_usrsec_pwd_backup (
     sec_usr_id   VARCHAR(8)   NOT NULL,
     legacy_pwd   VARCHAR(8)   NOT NULL,
+    bcrypt_pwd   VARCHAR(100) NOT NULL,
     migrated_at  TIMESTAMP    NOT NULL,
     CONSTRAINT pk_dm_usrsec_pwd_backup PRIMARY KEY (sec_usr_id)
 );

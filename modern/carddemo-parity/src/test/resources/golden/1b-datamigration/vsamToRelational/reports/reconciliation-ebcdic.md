@@ -1,7 +1,7 @@
 # Reconciliation report — vsamToRelational
 
-- source: `EBCDIC:app/data/EBCDIC`
-- generated: 2026-10-19-12.34.37.517191
+- source: `EBCDIC:app/data/EBCDIC (no extract for [TRANSACT])`
+- generated: 2026-10-19-12.41.51.783629
 - result: **MATCH**
 
 ## Counts and checksums

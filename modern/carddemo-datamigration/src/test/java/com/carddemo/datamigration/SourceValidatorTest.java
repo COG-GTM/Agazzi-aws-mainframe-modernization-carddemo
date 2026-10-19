@@ -88,4 +88,24 @@ class SourceValidatorTest {
         .anyMatch(x -> x.rule() == Rule.INVALID_DATE && x.field().equals("DALYTRAN-ORIG-TS"));
     assertThat(v).noneMatch(x -> x.field().equals("DALYTRAN-PROC-TS"));
   }
+
+  @Test
+  void childrenOfRejectedParentsAreRejected() {
+    var src =
+        new SourceReader()
+            .readAll(TestPaths.appData("ASCII"), SourceFormat.ASCII, List.of(Dataset.values()));
+    List<Violation> v = new java.util.ArrayList<>();
+    v.add(
+        new Violation(
+            Dataset.ACCTDATA, 1, Rule.INVALID_DATE, Violation.Severity.ERROR, "x", "test"));
+    SourceValidator.cascade(src, v);
+    assertThat(v)
+        .anyMatch(
+            x ->
+                x.dataset() == Dataset.CARDDATA
+                    && x.rule() == Rule.ORPHAN_FK
+                    && x.message().contains("rejected"));
+    assertThat(v).anyMatch(x -> x.dataset() == Dataset.CARDXREF && x.rule() == Rule.ORPHAN_FK);
+    assertThat(v).anyMatch(x -> x.dataset() == Dataset.TCATBALF && x.rule() == Rule.ORPHAN_FK);
+  }
 }

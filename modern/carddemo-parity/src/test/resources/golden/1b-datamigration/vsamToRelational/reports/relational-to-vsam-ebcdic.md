@@ -1,7 +1,7 @@
 # relationalToVsam parity
 
 - target: `EBCDIC`, compared with `app/data/EBCDIC`
-- generated: 2026-10-19-12.34.37.724714
+- generated: 2026-10-19-12.41.51.990117
 
 | Dataset | File | Records | Bytes expected | Bytes actual | Result |
 |---|---|---:|---:|---:|---|
