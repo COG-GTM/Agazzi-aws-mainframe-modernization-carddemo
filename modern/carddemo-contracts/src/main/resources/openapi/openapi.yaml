@@ -645,6 +645,32 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ReportJobHandle' }
         '404': { description: Unknown execution }
+  /api/v1/ext/mqinquiry/system-date:
+    get:
+      tags: [x3-mqinquiry, optional-extension]
+      operationId: mqInquirySystemDate
+      summary: CDRD (CODATE01) system date inquiry, REST twin of the SQS request/reply (optional)
+      responses:
+        '200':
+          description: Reply message (same layout as the MQ reply)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MqInquiryReply' }
+        '404': { description: Extension disabled }
+  /api/v1/ext/mqinquiry/accounts/{acctId}:
+    get:
+      tags: [x3-mqinquiry, optional-extension]
+      operationId: mqInquiryAccount
+      summary: CDRA (COACCT01) account inquiry, REST twin of the SQS request/reply (optional)
+      parameters:
+        - { name: acctId, in: path, required: true, schema: { type: string, pattern: '^[0-9]{11}$' } }
+      responses:
+        '200':
+          description: Reply message (same layout as the MQ reply)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MqInquiryReply' }
+        '404': { description: Extension disabled or account not found }
   /actuator/maintenance:
     get:
       tags: [platform]
@@ -661,6 +687,11 @@ components:
     Unauthorized: { description: Not signed on (no session) }
     Forbidden: { description: User type not allowed (e.g. non-admin on CA00/CU*) }
   schemas:
+    MqInquiryReply:
+      type: object
+      properties:
+        reply: { type: string, description: Fixed-format reply text as sent on the MQ reply queue }
+        correlationId: { type: string }
     Action:
       type: string
       description: AID key pressed (DFHAID)
