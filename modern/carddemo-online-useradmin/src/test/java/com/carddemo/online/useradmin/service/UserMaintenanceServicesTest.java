@@ -313,6 +313,21 @@ class UserMaintenanceServicesTest {
   }
 
   @Test
+  void deletedAndReAddedUserIsNotTheDisplayedOne() {
+    st.selected("USER0005");
+    delete.send(fromList, st);
+    UserRow old = store.snapshot().get("USER0005");
+    store.delete(old);
+    store.insert(
+        new UserRow(
+            old.id(), "Other", old.lastName(), old.password(), old.type(), old.filler(), 0L));
+    ScreenResponse<Cousr03Screen.Output> d =
+        delete.receive(Action.PF5, new Cousr03Screen.Input("USER0005"), ctx, st);
+    assertThat(msg(d)).isEqualTo(Messages.UNABLE_TO_UPDATE);
+    assertThat(store.snapshot()).containsKey("USER0005");
+  }
+
+  @Test
   void updateKeysAndNavigation() {
     Cousr02Screen.Input in = new Cousr02Screen.Input("USER0001", "Z", "0001", "PASSWORD", "U");
     ScreenResponse<Cousr02Screen.Output> r = update.receive(Action.PF3, in, fromList, st);

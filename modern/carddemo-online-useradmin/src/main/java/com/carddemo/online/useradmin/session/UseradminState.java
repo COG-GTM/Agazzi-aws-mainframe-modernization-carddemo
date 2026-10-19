@@ -1,8 +1,13 @@
 package com.carddemo.online.useradmin.session;
 
+import com.carddemo.online.useradmin.store.UserRow;
 import java.io.Serial;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HexFormat;
 
 /**
  * CDEMO-CU00-INFO / CDEMO-CU02-INFO / CDEMO-CU03-INFO: the program-specific tail that COUSR0xC
@@ -32,7 +37,7 @@ public final class UseradminState implements Serializable {
   private String pageNumDisplay = "";
   private Row[] rows = blankRows();
   private String displayedId = "";
-  private long displayedVersion;
+  private String displayedStamp = "";
 
   static Row[] blankRows() {
     Row[] r = new Row[ROWS];
@@ -105,22 +110,49 @@ public final class UseradminState implements Serializable {
   }
 
   /** Program left the user administration area: the CU tail of the commarea is lost. */
-  /** Record shown by CU02/CU03 and its {@code @Version}, checked again on PF5. */
-  public void displayed(String id, long version) {
-    displayedId = id;
-    displayedVersion = version;
+  /**
+   * Record shown by CU02/CU03: its key plus a digest of {@code @Version} and every column, so a
+   * rewrite or a delete-and-re-add by another terminal is detected on PF5.
+   */
+  public void displayed(UserRow row) {
+    displayedId = row.id();
+    displayedStamp = stamp(row);
   }
 
   public void clearDisplayed() {
-    displayed("", 0L);
+    displayedId = "";
+    displayedStamp = "";
+  }
+
+  /** True when {@code current} is the displayed key but no longer the displayed record. */
+  public boolean isStale(UserRow current) {
+    return current.id().equals(displayedId) && !stamp(current).equals(displayedStamp);
+  }
+
+  private static String stamp(UserRow r) {
+    String s =
+        r.version()
+            + "\u0000"
+            + r.firstName()
+            + "\u0000"
+            + r.lastName()
+            + "\u0000"
+            + r.password()
+            + "\u0000"
+            + r.type()
+            + "\u0000"
+            + r.filler();
+    try {
+      return HexFormat.of()
+          .formatHex(
+              MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   public String displayedId() {
     return displayedId;
-  }
-
-  public long displayedVersion() {
-    return displayedVersion;
   }
 
   public void reset() {

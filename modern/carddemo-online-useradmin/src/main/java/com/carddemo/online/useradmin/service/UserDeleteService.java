@@ -68,7 +68,7 @@ public class UserDeleteService {
     read(m)
         .ifPresent(
             r -> {
-              m.st.displayed(r.id(), r.version());
+              m.st.displayed(r);
               m.fname = r.firstName();
               m.lname = r.lastName();
               m.usrtype = r.type();
@@ -87,7 +87,7 @@ public class UserDeleteService {
       return;
     }
     UserRow current = found.get();
-    if (current.id().equals(m.st.displayedId()) && current.version() != m.st.displayedVersion()) {
+    if (m.st.isStale(current)) {
       // changed by another terminal since this screen was displayed
       m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
       return;

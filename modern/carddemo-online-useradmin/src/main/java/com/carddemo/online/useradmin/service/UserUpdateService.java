@@ -83,7 +83,7 @@ public class UserUpdateService {
     Optional<UserRow> row = read(m);
     row.ifPresent(
         r -> {
-          m.st.displayed(r.id(), r.version());
+          m.st.displayed(r);
           m.fname = r.firstName();
           m.lname = r.lastName();
           m.usrtype = r.type();
@@ -107,7 +107,7 @@ public class UserUpdateService {
         return;
       }
       UserRow current = found.get();
-      if (current.id().equals(m.st.displayedId()) && current.version() != m.st.displayedVersion()) {
+      if (m.st.isStale(current)) {
         // changed by another terminal since this screen was displayed
         m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
         return;
@@ -134,19 +134,27 @@ public class UserUpdateService {
   private void updateUserSecFile(
       Map m, UserRow current, String fname, String lname, String type, boolean samePassword) {
     UserStore.WriteOutcome outcome;
+    UserRow written;
     try {
       String pwd = samePassword ? current.password() : credentials.encode(Fields.rtrim(m.passwd));
-      outcome =
-          store.update(
-              new UserRow(
-                  current.id(), fname, lname, pwd, type, current.filler(), current.version()));
+      written =
+          new UserRow(current.id(), fname, lname, pwd, type, current.filler(), current.version());
+      outcome = store.update(written);
     } catch (RuntimeException e) {
       m.reply.error(Messages.UNABLE_TO_UPDATE, "FNAME");
       return;
     }
     switch (outcome) {
       case OK -> {
-        m.st.displayed(current.id(), current.version() + 1);
+        m.st.displayed(
+            new UserRow(
+                written.id(),
+                written.firstName(),
+                written.lastName(),
+                written.password(),
+                written.type(),
+                written.filler(),
+                written.version() + 1));
         m.reply.info(Messages.updated(current.id()));
       }
       case NOT_FOUND -> m.reply.error(Messages.USER_NOT_FOUND, "USRIDIN");
