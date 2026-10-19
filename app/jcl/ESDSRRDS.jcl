@@ -29,20 +29,25 @@
 //*-------------------------------------------------------------------*
 //* CREATE USER SECURITY FILE (PS) FROM IN-STREAM DATA
 //*-------------------------------------------------------------------*
+//* THE PASSWORD FIELD (COLUMNS 49-56, COPYBOOK CSUSR01Y) IS BLANK ON
+//* PURPOSE: THESE ACCOUNTS ARE SEEDED DISABLED AND COSGN00C REFUSES
+//* TO SIGN THEM ON UNTIL A UNIQUE PASSWORD IS SET OUT OF BAND WITH
+//* THE USRSECPW JOB. NEVER STORE A REAL PASSWORD IN THIS MEMBER.
+//*-------------------------------------------------------------------*
 //*
 //STEP01  EXEC PGM=IEBGENER
 //*
 //SYSUT1   DD *
-ADMIN001MARGARET            GOLD                PASSWORDA
-ADMIN002RUSSELL             RUSSELL             PASSWORDA
-ADMIN003RAYMOND             WHITMORE            PASSWORDA
-ADMIN004EMMANUEL            CASGRAIN            PASSWORDA
-ADMIN005GRANVILLE           LACHAPELLE          PASSWORDA
-USER0001LAWRENCE            THOMAS              PASSWORDU
-USER0002AJITH               KUMAR               PASSWORDU
-USER0003LAURITZ             ALME                PASSWORDU
-USER0004AVERARDO            MAZZI               PASSWORDU
-USER0005LEE                 TING                PASSWORDU
+ADMIN001MARGARET            GOLD                        A
+ADMIN002RUSSELL             RUSSELL                     A
+ADMIN003RAYMOND             WHITMORE                    A
+ADMIN004EMMANUEL            CASGRAIN                    A
+ADMIN005GRANVILLE           LACHAPELLE                  A
+USER0001LAWRENCE            THOMAS                      U
+USER0002AJITH               KUMAR                       U
+USER0003LAURITZ             ALME                        U
+USER0004AVERARDO            MAZZI                       U
+USER0005LEE                 TING                        U
 /*
 //SYSUT2   DD DSN=AWS.M2.CARDDEMO.ESDSRRDS.PS,
 //            DISP=(NEW,CATLG,DELETE),

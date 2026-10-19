@@ -63,6 +63,7 @@
        COPY CSDAT01Y.
        COPY CSMSG01Y.
        COPY CSUSR01Y.
+       COPY CSUSR02Y.
 
        COPY DFHAID.
        COPY DFHBMSCA.
@@ -199,6 +200,15 @@
                    MOVE 'Y'     TO WS-ERR-FLG
                    MOVE 'Password can NOT be empty...' TO
                                    WS-MESSAGE
+                   MOVE -1       TO PASSWDL OF COUSR2AI
+                   PERFORM SEND-USRUPD-SCREEN
+               WHEN FUNCTION UPPER-CASE(PASSWDI OF COUSR2AI) =
+                    SEC-PWD-SHIPPED-DEFAULT
+                 OR FUNCTION UPPER-CASE(PASSWDI OF COUSR2AI) =
+                    SEC-PWD-PLACEHOLDER
+                   MOVE 'Y'     TO WS-ERR-FLG
+                   MOVE 'Password is a known default. Pick another...'
+                                   TO WS-MESSAGE
                    MOVE -1       TO PASSWDL OF COUSR2AI
                    PERFORM SEND-USRUPD-SCREEN
                WHEN USRTYPEI OF COUSR2AI = SPACES OR LOW-VALUES

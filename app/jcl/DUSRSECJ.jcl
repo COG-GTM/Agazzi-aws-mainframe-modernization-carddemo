@@ -28,20 +28,29 @@
 //*-------------------------------------------------------------------*
 //* CREATE USER SECURITY FILE (PS) FROM IN-STREAM DATA
 //*-------------------------------------------------------------------*
+//* EVERY ACCOUNT BELOW IS SEEDED DISABLED: THE PASSWORD FIELD
+//* (COLUMNS 49-56, SEE COPYBOOK CSUSR01Y) IS LEFT BLANK ON PURPOSE.
+//* COSGN00C REFUSES TO SIGN ON AN ACCOUNT WHOSE STORED PASSWORD IS
+//* BLANK OR ONE OF THE PUBLISHED DEFAULTS, SO NO USABLE CREDENTIAL
+//* IS SHIPPED WITH THIS REPOSITORY.
+//*
+//* TO ENABLE AN ACCOUNT, RUN THE USRSECPW JOB WITH A UNIQUE PASSWORD
+//* SUPPLIED OUT OF BAND. NEVER STORE A REAL PASSWORD IN THIS MEMBER.
+//*-------------------------------------------------------------------*
 //*
 //STEP01  EXEC PGM=IEBGENER
 //*
 //SYSUT1   DD *
-ADMIN001MARGARET            GOLD                PASSWORDA
-ADMIN002RUSSELL             RUSSELL             PASSWORDA
-ADMIN003RAYMOND             WHITMORE            PASSWORDA
-ADMIN004EMMANUEL            CASGRAIN            PASSWORDA
-ADMIN005GRANVILLE           LACHAPELLE          PASSWORDA
-USER0001LAWRENCE            THOMAS              PASSWORDU
-USER0002AJITH               KUMAR               PASSWORDU
-USER0003LAURITZ             ALME                PASSWORDU
-USER0004AVERARDO            MAZZI               PASSWORDU
-USER0005LEE                 TING                PASSWORDU
+ADMIN001MARGARET            GOLD                        A
+ADMIN002RUSSELL             RUSSELL                     A
+ADMIN003RAYMOND             WHITMORE                    A
+ADMIN004EMMANUEL            CASGRAIN                    A
+ADMIN005GRANVILLE           LACHAPELLE                  A
+USER0001LAWRENCE            THOMAS                      U
+USER0002AJITH               KUMAR                       U
+USER0003LAURITZ             ALME                        U
+USER0004AVERARDO            MAZZI                       U
+USER0005LEE                 TING                        U
 /*
 //SYSUT2   DD DSN=AWS.M2.CARDDEMO.USRSEC.PS,
 //            DISP=(NEW,CATLG,DELETE),
