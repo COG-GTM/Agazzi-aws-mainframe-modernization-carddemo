@@ -1,0 +1,19 @@
+# COACTUPC Expiry Date
+id: CAUP-021
+title: 'errore: Expiry Date : Year must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    EXPYEAR: ''
+  expect:
+    message: 'Expiry Date : Year must be supplied.'
+    fieldErrors:
+    - EXPYEAR
+    dbDelta: none

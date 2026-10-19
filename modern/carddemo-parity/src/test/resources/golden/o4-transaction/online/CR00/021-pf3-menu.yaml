@@ -1,0 +1,18 @@
+# CORPT00 PF3 -> menu
+id: CR00-021
+title: PF3 -> menu
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01

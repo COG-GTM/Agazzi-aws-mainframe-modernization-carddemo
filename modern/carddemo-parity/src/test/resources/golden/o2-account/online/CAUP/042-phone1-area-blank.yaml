@@ -1,0 +1,22 @@
+# COACTUPC 1260 area blank
+id: CAUP-042
+title: 'errore: Phone Number 1: Area code must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH1A: ''
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: 'Phone Number 1: Area code must be supplied.'
+    fieldErrors:
+    - ACSPH1A
+    dbDelta: none

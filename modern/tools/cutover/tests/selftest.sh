@@ -117,10 +117,12 @@ set +e; tools/cutover/rollback/relational-to-vsam.sh --out "$T/rb-open" --base-u
 [[ $rc -eq 4 ]] || fail "rollback freeze gate (rc=$rc)"
 ok "rollback wrapper: refuses to export while Java files are open (exit 4)"
 
-# 7. run-job.sh against the real carddemo-app: returns (no hang) with exit 3 while POSTTRAN is not integrated
-set +e; CARDDEMO_DB_URL="$DB_URL" SPRING_FLYWAY_ENABLED=false timeout 180 tools/cutover/run-job.sh POSTTRAN >/dev/null 2>&1; rc=$?; set -e
-[[ $rc -eq 3 || $rc -eq 0 ]] || fail "run-job.sh POSTTRAN rc=$rc"
-ok "run-job.sh POSTTRAN returned rc=$rc (3 = not integrated yet)"
+# 7. run-job.sh against the real carddemo-app (non-web JVM, Fase 5A F4): POSTTRAN is integrated -> exit 0
+# V1+V2 are loaded above without Flyway: baseline at 2 and let Flyway add the module migrations
+# (V100+) the integrated app validates (ddl-auto=validate).
+set +e; CARDDEMO_DB_URL="$DB_URL" SPRING_FLYWAY_BASELINE_ON_MIGRATE=true SPRING_FLYWAY_BASELINE_VERSION=2 timeout 180 tools/cutover/run-job.sh POSTTRAN >/dev/null 2>&1; rc=$?; set -e
+[[ $rc -eq 0 ]] || fail "run-job.sh POSTTRAN rc=$rc"
+ok "run-job.sh POSTTRAN returned rc=0 (job COMPLETED)"
 
 python3 tools/cutover/decommission_inventory.py --check >/dev/null || fail "decommission inventory stale"
 ok "decommission inventory up to date"

@@ -39,6 +39,7 @@
     <module>carddemo-ext-authorization</module>
     <module>carddemo-ext-trantype</module>
     <module>carddemo-ext-mqinquiry</module>
+    <module>security</module>
     <module>carddemo-app</module>
     <module>carddemo-parity</module>
   </modules>
@@ -168,6 +169,11 @@
         <artifactId>carddemo-app</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.carddemo</groupId>
+        <artifactId>carddemo-security</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Spring Boot BOM (from the parent) already manages: Spring Batch 5, Data JPA, Security 6,
            Web, Actuator, Flyway, PostgreSQL driver, Jackson, RestAssured, SnakeYAML, JUnit 5. -->
       <dependency>
@@ -190,6 +196,12 @@
         <version>${spring-cloud-aws.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <!-- contracts-v1.1: SFTP adapter for FileTransferPort (B5 FTPJCL), not managed by Boot. -->
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
+        <version>2.14.0</version>
       </dependency>
       <dependency>
         <groupId>com.tngtech.archunit</groupId>

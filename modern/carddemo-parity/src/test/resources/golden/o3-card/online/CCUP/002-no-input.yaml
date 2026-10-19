@@ -1,0 +1,12 @@
+# COCRDUPC 1210-EDIT-ACCOUNT/1220-EDIT-CARD: nothing supplied
+id: CCUP-002
+title: nessun input
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: ''
+    CARDSID: ''
+  expect:
+    message: No input received

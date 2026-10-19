@@ -1,0 +1,18 @@
+# 1205-COMPARE-OLD-NEW: NO-CHANGES-DETECTED, cursor on ACSTTUS.
+id: CAUP-006
+title: nessuna modifica
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields: {}
+  expect:
+    message: No change detected with respect to values fetched.
+    fieldErrors:
+    - ACSTTUS
+    dbDelta: none

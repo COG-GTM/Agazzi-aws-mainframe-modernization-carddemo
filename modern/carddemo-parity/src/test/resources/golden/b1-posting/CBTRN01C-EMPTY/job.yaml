@@ -1,0 +1,18 @@
+# b1-posting golden: CBTRN01C with an empty DALYTRAN — only the EOF lookup (spaces card number)
+# is reported on SYSOUT.
+job: CBTRN01C-EMPTY
+jcl: app/cbl/CBTRN01C.cbl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  DALYTRAN: {org: ps, lrecl: 350, layout: CVTRA06Y, init_empty: true}
+  CUSTDATA: {org: ksds, lrecl: 500, key: [0, 9], layout: CVCUS01Y, input: "seed:custdata.txt"}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "../POSTTRAN-EDGE/input/cardxref.txt"}
+  CARDDATA: {org: ksds, lrecl: 150, key: [0, 16], layout: CVACT02Y, input: "seed:carddata.txt"}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "../POSTTRAN-EDGE/input/acctdata.txt"}
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y}
+steps:
+  - name: CBTRN01C
+    program: CBTRN01C
+    dd: {DALYTRAN: DALYTRAN, CUSTFILE: CUSTDATA, XREFFILE: CARDXREF, CARDFILE: CARDDATA,
+         ACCTFILE: ACCTDATA, TRANFILE: TRANSACT}
+outputs: []

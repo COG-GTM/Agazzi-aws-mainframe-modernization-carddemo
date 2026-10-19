@@ -1,0 +1,23 @@
+# 0001-CHECK-PFKEYS -> WS-INVALID-KEY-PRESSED.
+id: CTTU-012
+title: Tasto non valido
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF4
+    fields: {TRTYPCD: "", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Invalid key pressed"
+      fieldErrors: []
+      dbDelta: none

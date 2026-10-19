@@ -1,0 +1,23 @@
+# 1290-CROSS-EDITS: COUNT(1) = 0.
+id: CTLI-005
+title: Filtro tipo senza righe
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPE: "99", TRDESC: ""}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No Records found for these filter conditions"
+      fieldErrors: [TRTYPE]
+      dbDelta: none

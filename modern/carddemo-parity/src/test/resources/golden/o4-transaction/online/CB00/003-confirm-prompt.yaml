@@ -1,0 +1,26 @@
+# COBIL00 mostra saldo e chiede conferma
+id: CB00-003
+title: mostra saldo e chiede conferma
+tranid: CB00
+screen: COBIL00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: COBIL00C
+  tranid: CB00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    ACTIDIN: '00000000001'
+  expect:
+    message: Confirm to make a bill payment...
+    fieldErrors: []
+    fields:
+      CURBAL: '+0000000194.00'
+      ACTIDIN: '00000000001'
+    db:
+    - sql: SELECT CAST(acct_curr_bal AS VARCHAR) FROM account WHERE acct_id=1
+      expect: '194.00'

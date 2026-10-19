@@ -1,0 +1,7 @@
+# Orchestration smoke for scripts/run_full_batch.sh -> Spring Batch job `fullBatchCycle` (b5-orchestration).
+# Not a COBOL golden (nothing to run under GnuCOBOL): it fixes the order in which the cycle launches the
+# batch jobs (by name, JobRegistry) and the step return codes; each job's outputs are the goldens in
+# golden/batch/<JOB>/expected, verified byte for byte by B5GoldenParityTest.
+job: fullBatchCycle
+script: scripts/run_full_batch.sh
+steps: [CLOSEFIL, POSTTRAN, INTCALC, TRANBKP, COMBTRAN, TRANREPT, CREASTMT, OPENFIL]

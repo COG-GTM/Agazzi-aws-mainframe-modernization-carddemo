@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 3 (Credit Card List) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-011
+title: opzione 03 -> COCRDLI
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "03"}
+    expect:
+      screen: COMEN01
+      nextScreen: COCRDLI
+      fieldErrors: []
+      dbDelta: none

@@ -5,6 +5,9 @@ import com.carddemo.parity.db.DbSnapshot;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
@@ -34,7 +38,7 @@ public final class OnlineScenarioRunner {
 
   private final URI baseUri;
   private final Callable<DbSnapshot> snapshots;
-  private final HttpClient http = HttpClient.newHttpClient();
+  private static final String CSRF_COOKIE = "XSRF-TOKEN";
   private final ObjectMapper json = new ObjectMapper();
 
   /**
@@ -48,13 +52,16 @@ public final class OnlineScenarioRunner {
 
   public Result run(OnlineScenario sc) {
     List<String> mismatches = new ArrayList<>();
+    // One terminal per scenario: its own session cookie and CSRF token, like a SPA tab.
+    CookieManager cookies = new CookieManager();
+    HttpClient http = HttpClient.newBuilder().cookieHandler(cookies).build();
     ScreenId current = sc.screen();
     for (int i = 0; i < sc.steps().size(); i++) {
       OnlineScenario.Step step = sc.steps().get(i);
       String where = "%s step %d (%s on %s)".formatted(sc.id(), i + 1, step.action(), current);
       try {
         DbSnapshot before = snapshot(step);
-        JsonNode resp = post(sc, current, step);
+        JsonNode resp = post(http, cookies, sc, current, step);
         if (resp == null) {
           mismatches.add(where + ": endpoint not available");
           break;
@@ -86,7 +93,12 @@ public final class OnlineScenarioRunner {
         : null;
   }
 
-  private JsonNode post(OnlineScenario sc, ScreenId screen, OnlineScenario.Step step)
+  private JsonNode post(
+      HttpClient http,
+      CookieManager cookies,
+      OnlineScenario sc,
+      ScreenId screen,
+      OnlineScenario.Step step)
       throws IOException, InterruptedException {
     Map<String, Object> body = new LinkedHashMap<>();
     body.put("action", step.action().name());
@@ -96,6 +108,7 @@ public final class OnlineScenarioRunner {
                 baseUri.resolve("/api/v1/screens/" + screen.name().toLowerCase(Locale.ROOT)))
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
+            .header("X-XSRF-TOKEN", csrfToken(cookies))
             .POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(body)));
     if (sc.auth() != null) {
       String token = sc.auth().user() + ":" + sc.auth().password();
@@ -108,6 +121,24 @@ public final class OnlineScenarioRunner {
       return null;
     }
     return json.readTree(r.body());
+  }
+
+  /**
+   * Double-submit CSRF (O1 {@code CookieCsrfTokenRepository}): reuse the token cookie the app set,
+   * or plant one; the header must carry the same value.
+   */
+  private String csrfToken(CookieManager cookies) {
+    CookieStore store = cookies.getCookieStore();
+    for (HttpCookie c : store.get(baseUri)) {
+      if (CSRF_COOKIE.equals(c.getName()) && !c.getValue().isEmpty()) {
+        return c.getValue();
+      }
+    }
+    HttpCookie c = new HttpCookie(CSRF_COOKIE, UUID.randomUUID().toString());
+    c.setPath("/");
+    c.setVersion(0);
+    store.add(baseUri, c);
+    return c.getValue();
   }
 
   static List<String> compare(String where, OnlineScenario.Expect e, JsonNode resp) {

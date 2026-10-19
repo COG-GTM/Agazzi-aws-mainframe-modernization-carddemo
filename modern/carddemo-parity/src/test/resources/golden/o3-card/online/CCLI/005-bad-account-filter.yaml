@@ -1,0 +1,14 @@
+# COCRDLIC 2210-EDIT-ACCOUNT: non numeric filter
+id: CCLI-005
+title: filtro conto non numerico
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: ABC
+  expect:
+    message: ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER
+    fieldErrors:
+    - ACCTSID
+    dbDelta: none

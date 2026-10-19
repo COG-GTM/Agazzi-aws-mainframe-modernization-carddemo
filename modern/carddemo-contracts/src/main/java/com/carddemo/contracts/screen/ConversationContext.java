@@ -1,5 +1,8 @@
 package com.carddemo.contracts.screen;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
+
 /**
  * Pseudo-conversational state, mirror of COCOM01Y {@code CARDDEMO-COMMAREA}. Stored in the HTTP
  * session (Spring Session JDBC, O1) instead of {@code RETURN TRANSID COMMAREA}.
@@ -20,7 +23,15 @@ public record ConversationContext(
     String accountStatus,
     Long cardNumber,
     String lastMap,
-    String lastMapset) {
+    String lastMapset)
+    implements Serializable {
+
+  /**
+   * HTTP session attribute holding the current context, shared by every online module
+   * (contracts-v1.1). The value is the {@link ConversationContext} itself, not its JSON.
+   */
+  public static final String SESSION_ATTRIBUTE =
+      "com.carddemo.contracts.screen.ConversationContext";
 
   /** CDEMO-USER-TYPE: 88 CDEMO-USRTYP-ADMIN 'A', CDEMO-USRTYP-USER 'U'. */
   public enum UserType {
@@ -116,6 +127,7 @@ public record ConversationContext(
         lastMapset);
   }
 
+  @JsonIgnore
   public boolean isAdmin() {
     return userType == UserType.ADMIN;
   }

@@ -1,0 +1,19 @@
+# COACTUPC 1220-EDIT-YESNO not Y/N
+id: CAUP-008
+title: 'errore: Account Status must be Y or N.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTTUS: X
+  expect:
+    message: Account Status must be Y or N.
+    fieldErrors:
+    - ACSTTUS
+    dbDelta: none

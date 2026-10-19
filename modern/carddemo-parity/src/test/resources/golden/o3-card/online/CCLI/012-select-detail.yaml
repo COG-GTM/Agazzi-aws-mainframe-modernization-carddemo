@@ -1,0 +1,35 @@
+# COCRDLIC S on a row: XCTL COCRDSLC with account/card of the row
+id: CCLI-012
+title: selezione S -> dettaglio
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields: {}
+  expect: {}
+- action: ENTER
+  fields:
+    CRDSEL3: S
+  expect:
+    nextScreen: COCRDSL
+- action: ENTER
+  fields: {}
+  expect:
+    screen: COCRDSL
+    message: Displaying requested details
+    data:
+      CARDSID: 0923877193247330
+      ACCTSID: '00000000002'
+      CRDNAME: Enrico Rosenbaum
+      EXPMON: 08
+      EXPYEAR: '2024'
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COCRDLI
+- action: ENTER
+  fields: {}
+  expect:
+    screen: COCRDLI
+    data:
+      PAGENO: '1'

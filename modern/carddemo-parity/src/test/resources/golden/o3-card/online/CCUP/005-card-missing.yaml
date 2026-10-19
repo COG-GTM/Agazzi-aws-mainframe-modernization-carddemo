@@ -1,0 +1,14 @@
+# COCRDUPC 1220-EDIT-CARD
+id: CCUP-005
+title: carta mancante
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: ''
+  expect:
+    message: Card number not provided
+    fieldErrors:
+    - CARDSID

@@ -1,0 +1,22 @@
+# COACTUPC 1245 zip
+id: CAUP-039
+title: 'errore: Zip must be all numeric.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSZIPC: 12A45
+    ACSPH2A: '908'
+    ACSSTTE: NY
+  expect:
+    message: Zip must be all numeric.
+    fieldErrors:
+    - ACSZIPC
+    dbDelta: none

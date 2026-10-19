@@ -1,0 +1,200 @@
+{
+  "TRANTYPE" : {
+    "file" : "AWS.M2.CARDDEMO.TRANTYPE.PS",
+    "count" : 7,
+    "checksums" : { },
+    "recordHash" : "00e01dfa3a2144cc485dd57c91afe44eb69fbd8b6455e7f27329535820dac8ec",
+    "columnHashes" : {
+      "TRAN-TYPE@0" : "780f298670a9c634efcbc7cad5d79d121ab70bc427a2e7dba3a05bd093d64e39",
+      "TRAN-TYPE-DESC@2" : "1aca1f7ad3e861e3975caf65c70a873faa7b71e900909422c38f2dcddef37d3c",
+      "FILLER@52" : "09e5bf5ed95057537d42404bb23c43eda5c4d75eedaaca4c40873e5f95d8a7d2"
+    }
+  },
+  "TRANCATG" : {
+    "file" : "AWS.M2.CARDDEMO.TRANCATG.PS",
+    "count" : 18,
+    "checksums" : { },
+    "recordHash" : "b0e57c7d51e580f3c25aad6c501ce02e04fdaeecb2d8b93d7bfb22692a8d86b9",
+    "columnHashes" : {
+      "TRAN-TYPE-CD@0" : "5fe50cd47b73d42d9e059cd1190e3bef4e0bf5eda1718741dfa8fd37eabdf67c",
+      "TRAN-CAT-CD@2" : "8976a3afcd718ce3db487cd59d98b9b733548cc4c329bf6e06681fc3dbadfc64",
+      "TRAN-CAT-TYPE-DESC@6" : "1a3340210ce870b6aaa7b84ef581acbdf95b3ad227e4ec7edbde19d74b1fe1d2",
+      "FILLER@56" : "08e13684abf18b4819ff47025f63469eab6d5210347d66e617416b02bf2ed5c9"
+    }
+  },
+  "DISCGRP" : {
+    "file" : "AWS.M2.CARDDEMO.DISCGRP.PS",
+    "count" : 51,
+    "checksums" : {
+      "DIS-INT-RATE" : "390.00"
+    },
+    "recordHash" : "9222a9e27b86cdb755e6878805c31ee69917c1d61678910072a935633078f17f",
+    "columnHashes" : {
+      "DIS-ACCT-GROUP-ID@0" : "3a634a18fcf83d8864cee705e153daffca854eee6e220df48e982319a054e94d",
+      "DIS-TRAN-TYPE-CD@10" : "78c1246d0bded1a614e7ee052959a5bcda96ee93a70f62da36aeebe4e7c8d673",
+      "DIS-TRAN-CAT-CD@12" : "794abeba9c27fb5e55268d67f1319b7aab5453bfe6fb57f1f7b6e94b8bf3644e",
+      "DIS-INT-RATE@16" : "655014bdea6982a8498d7185b01fe39255a46682664737be6c2f45403fe00a34",
+      "FILLER@22" : "20a81a31896d973586c13cb0a7a8d07dec13dc0d0b55df93da533bf44e2501e2"
+    }
+  },
+  "CUSTDATA" : {
+    "file" : "AWS.M2.CARDDEMO.CUSTDATA.PS",
+    "count" : 50,
+    "checksums" : { },
+    "recordHash" : "36801ce3363967dae3de8c5e8d11d1e677a00b85ebc1749ea342a83c89936c35",
+    "columnHashes" : {
+      "CUST-ID@0" : "eb8be47b2c1f23123a5e1db1191431167ed68d7a496ca6b296d33e0c0aefb107",
+      "CUST-FIRST-NAME@9" : "a0aed3e4f84e09b03f30a9ee55c65514b5086a489a4f12de883eb601f454d7b4",
+      "CUST-MIDDLE-NAME@34" : "49e025ea324ad45b99f357978d6df3b2a001278d458386d3fd25aa94be1f7648",
+      "CUST-LAST-NAME@59" : "c1e54cfd8613c6040d932993581aa3566f5d54b485a7c188c52e6252e902b144",
+      "CUST-ADDR-LINE-1@84" : "2d8c4b5ab48aaeda112cb6b12b3d952508cd9d549981c6cf898756c95bad31dd",
+      "CUST-ADDR-LINE-2@134" : "2b67ac98041f6e3e3ddef48f2042f9965dc29205899f170d6837d6938e6f37f4",
+      "CUST-ADDR-LINE-3@184" : "88b1d8f87154f2f9c977ce814ed459bcc8aba75ea4d15ab2444844637ec3305c",
+      "CUST-ADDR-STATE-CD@234" : "fbb9f7a5ea0af6ae94388415572146a41300aea4c1d49583c281e6b25d6ecd6f",
+      "CUST-ADDR-COUNTRY-CD@236" : "9c3476d9f31de4dd2ff1a7a52a58ca29b8fbb657edbef1a0016c1239d340c198",
+      "CUST-ADDR-ZIP@239" : "b82d1978f16ade55755e380c708cfad44d1c7ffcd4eca16820a4e887f6287374",
+      "CUST-PHONE-NUM-1@249" : "0cd786fd6eaff2b84f1da2ce08259910262d54f1c9d1029dd54f2fd78dafdf52",
+      "CUST-PHONE-NUM-2@264" : "5826de3b8507294965a5601fbf661bfc5c6b700b5bd25c87d926cf39bd426c55",
+      "CUST-SSN@279" : "41bca031efaa97a98faf4d29c05c879e26fa180a912a6c936faa8caca74486c1",
+      "CUST-GOVT-ISSUED-ID@288" : "5a0a852dc90e7bbe0ff5e95f1ce6c7ed42ce2051588d5ab9d47fb5951550408c",
+      "CUST-DOB-YYYY-MM-DD@308" : "4f0d0f1ad11f58fa281294bf29518435e65c118507c917bf31dbc25d012fafdf",
+      "CUST-EFT-ACCOUNT-ID@318" : "026cb069c193102d206613d9b5560cc2f21d5fba03d3f5d0617caa5149355746",
+      "CUST-PRI-CARD-HOLDER-IND@328" : "9e9b5cc39265662e635870cbdddac673ebf0ab005dcb7376d339ce334edc8b6f",
+      "CUST-FICO-CREDIT-SCORE@329" : "53c42dd709d010a317fea42137d93aee60506712cd976fc0415176a980c64d51",
+      "FILLER@332" : "6ae87cc2570d355d48c47342be181914dbdf5f7625e54850236f0f8dcc545da2"
+    }
+  },
+  "ACCTDATA" : {
+    "file" : "AWS.M2.CARDDEMO.ACCTDATA.PS",
+    "count" : 50,
+    "checksums" : {
+      "ACCT-CURR-BAL" : "12269.00",
+      "ACCT-CREDIT-LIMIT" : "233711.00",
+      "ACCT-CASH-CREDIT-LIMIT" : "122148.00"
+    },
+    "recordHash" : "b625fd984d283ae1c43db717b8bcde19757cab20c6ff321f3bad5b6345073659",
+    "columnHashes" : {
+      "ACCT-ID@0" : "eb8be47b2c1f23123a5e1db1191431167ed68d7a496ca6b296d33e0c0aefb107",
+      "ACCT-ACTIVE-STATUS@11" : "9e9b5cc39265662e635870cbdddac673ebf0ab005dcb7376d339ce334edc8b6f",
+      "ACCT-CURR-BAL@12" : "1bd6385517521367cab6f0859e389db33f90988b0836bb2bf93f763fe0641feb",
+      "ACCT-CREDIT-LIMIT@24" : "17685376f1f40c31e1fa5cdcb50a555c51564f75800dd8a2b231a15aa58dc52b",
+      "ACCT-CASH-CREDIT-LIMIT@36" : "d6792d7360dd2ab35bc1f2bd931757f1b871ab31887120e0774fe3e4ffab2e8a",
+      "ACCT-OPEN-DATE@48" : "7d8aa45ef946ea45b39f20f79f7f19de953a04b4c252396b4da4d8f482cc634b",
+      "ACCT-EXPIRAION-DATE@58" : "d20946b7a6cb587f03721bad822e1dcf814b6c91cc0e0e6e084402b389575f7c",
+      "ACCT-REISSUE-DATE@68" : "d20946b7a6cb587f03721bad822e1dcf814b6c91cc0e0e6e084402b389575f7c",
+      "ACCT-CURR-CYC-CREDIT@78" : "2cad184b0dab9b1657c1f8d86790636b8a7ab35e62f6d5adb873b83cc23e0c2f",
+      "ACCT-CURR-CYC-DEBIT@90" : "2cad184b0dab9b1657c1f8d86790636b8a7ab35e62f6d5adb873b83cc23e0c2f",
+      "ACCT-ADDR-ZIP@102" : "594e84da580b1f0814f9f9181d9ce9f68b085b01ba9f5fc81d74d762ded18df6",
+      "ACCT-GROUP-ID@112" : "a439850f2d9f2104b1221d946c679375b013dcdcbaff689dd84a299748d2b3c2",
+      "FILLER@122" : "ec5bcd5a121d56fce70a8dff3164d37156e74d0f9de221ebad7770c5dde0dbc5"
+    }
+  },
+  "CARDDATA" : {
+    "file" : "AWS.M2.CARDDEMO.CARDDATA.PS",
+    "count" : 50,
+    "checksums" : { },
+    "recordHash" : "031dda48176a5ce913580feb768e4b536b33ac7d79765ffaaa45432fbef4e619",
+    "columnHashes" : {
+      "CARD-NUM@0" : "ac005e1a108301541ca5565c614180ed7c83e3ca05b9a91f56c94a66954e14ce",
+      "CARD-ACCT-ID@16" : "217bf7d65f6f4590071880aeeeaeb0d3acc0540c83f6967b32bd4cfaba8bcfdd",
+      "CARD-CVV-CD@27" : "86677b6bd1eca96693635702d2cf1be209fd815a32f2aeb6617448b23a933090",
+      "CARD-EMBOSSED-NAME@30" : "4747b97f500dd20afc7e9639e6757185286f2b116433a544e3acc56489210b6d",
+      "CARD-EXPIRAION-DATE@80" : "e1f0a265a27cb7d39d633b710d401854151dcf1218208f44cd794a9319c5ea2c",
+      "CARD-ACTIVE-STATUS@90" : "9e9b5cc39265662e635870cbdddac673ebf0ab005dcb7376d339ce334edc8b6f",
+      "FILLER@91" : "9097fadcadbe7b7977911d06691d9eebedca60140f2701c53dd3a4cb38b0ce05"
+    }
+  },
+  "CARDXREF" : {
+    "file" : "AWS.M2.CARDDEMO.CARDXREF.PS",
+    "count" : 50,
+    "checksums" : { },
+    "recordHash" : "d49145cf821e7aae049706569b8bf90f6fb52e0fcc53e8099e39beb55e5c7056",
+    "columnHashes" : {
+      "XREF-CARD-NUM@0" : "ac005e1a108301541ca5565c614180ed7c83e3ca05b9a91f56c94a66954e14ce",
+      "XREF-CUST-ID@16" : "217bf7d65f6f4590071880aeeeaeb0d3acc0540c83f6967b32bd4cfaba8bcfdd",
+      "XREF-ACCT-ID@25" : "217bf7d65f6f4590071880aeeeaeb0d3acc0540c83f6967b32bd4cfaba8bcfdd",
+      "FILLER@36" : "1e45b4adf0c6387c26763d95686dc9b425546d03e197b6d8a41040ab4d6a5b7c"
+    }
+  },
+  "TCATBALF" : {
+    "file" : "AWS.M2.CARDDEMO.TCATBALF.PS",
+    "count" : 50,
+    "checksums" : {
+      "TRAN-CAT-BAL" : "0.00"
+    },
+    "recordHash" : "cffeb17568638a8fc61c155d7c1353d82e4e8d1e4f216ad65bb148e89f9fd88c",
+    "columnHashes" : {
+      "TRANCAT-ACCT-ID@0" : "c9a0d5760bc467f685fc3a02a7b7ecb16105d6e521a52535ef3a23eed1c5633b",
+      "TRANCAT-TYPE-CD@11" : "1b487915fb559cdb3812fa7e4f507f00c43994b4df3727adf264c12dbe7fe7eb",
+      "TRANCAT-CD@13" : "1994b103729e0e7c64a9210344ffdce8060c61ccdae3233bd717eec348ef7a45",
+      "TRAN-CAT-BAL@17" : "2cad184b0dab9b1657c1f8d86790636b8a7ab35e62f6d5adb873b83cc23e0c2f",
+      "FILLER@28" : "68b96a3a11766f03b45141e4c8b7554a9113cbab9f267de9bd1b78f40b1956b2"
+    }
+  },
+  "DALYTRAN" : {
+    "file" : "AWS.M2.CARDDEMO.DALYTRAN.PS",
+    "count" : 300,
+    "checksums" : {
+      "DALYTRAN-AMT" : "104801.54"
+    },
+    "recordHash" : "5b25c7ccc8a5b4716f3a7989342edd9b02b2ff617ce2a6ddc24c1531de4bb317",
+    "columnHashes" : {
+      "DALYTRAN-ID@0" : "04cb16fa70fa591988c2fa878a3e56bd5d2dde8537ccf85cf2cb7e856a3db93b",
+      "DALYTRAN-TYPE-CD@16" : "f1b2dafebe4294ddbe45050112adfd0f6221b9906b265be70eafd4e0e17f3b5e",
+      "DALYTRAN-CAT-CD@18" : "d3efc416288f95625971d9e48e5f9babd472000869234878f90356fd9009d214",
+      "DALYTRAN-SOURCE@22" : "ce3c51e0cb14f87c820fd2db6110d3a4783e62bb0a2f7d608c2dc01c3123747e",
+      "DALYTRAN-DESC@32" : "75f9e4046281577b568b13ec6ebdeced8a58beb76f3c88e431f1040f955e4ac5",
+      "DALYTRAN-AMT@132" : "c8ca7fcb68a383c55bcafb2518131edbccdbe70d96015157fe001c3eb8da56ad",
+      "DALYTRAN-MERCHANT-ID@143" : "1a7ee1ee1934bce23a27240e8aac82250937d6b5588211b113302d764fe61749",
+      "DALYTRAN-MERCHANT-NAME@152" : "0755438aeb6276cdcf44f431fc50e19346a2698f0b7817784ff0d1ad66a13cfd",
+      "DALYTRAN-MERCHANT-CITY@202" : "3cba2b02127f3f3fc10e31123f426d4f0412141143124f805ed6bf5645491a80",
+      "DALYTRAN-MERCHANT-ZIP@252" : "301725b94ffffb57a1b8577c0c7b249e74b086f7d935e4cc324abc014a1e50dc",
+      "DALYTRAN-CARD-NUM@262" : "d27fbce78f29fedcf98974553fa86c376ec70780deafbbc7ec2847f12aba4886",
+      "DALYTRAN-ORIG-TS@278" : "5a2add9e820a8b5d6b31faabedce5ea402b713feb51327ce52c194b22ec947ad",
+      "DALYTRAN-PROC-TS@304" : "440cdeadaf9e51edae76fc73ceec163bf43704398e96ec9d59a137b617fafaef",
+      "FILLER@330" : "03f6410995f9b66b91f92d5a597c77de2f1f45ad001d1eb708710f00340f7496"
+    }
+  },
+  "USRSEC" : {
+    "file" : "AWS.M2.CARDDEMO.USRSEC.PS",
+    "count" : 10,
+    "checksums" : { },
+    "recordHash" : "2ada5e8b2cb11ef709eb53aad51c6e85fcdb8f2a3122b1ea7876d03bab9d1c60",
+    "columnHashes" : {
+      "SEC-USR-ID@0" : "0e016fbe9f52303aef916b9ddcfe71c041a0d11ab5dca321664c595b0e125221",
+      "SEC-USR-FNAME@8" : "ff5b635d8545d5e85bebf12bb9eaefb38aa2add26a95adb9f57c821f4db9d700",
+      "SEC-USR-LNAME@28" : "b99e4119dfdb48aa778089ba8c1cc8f416f177e109c8cd134a437dd7f86138a7",
+      "SEC-USR-PWD@48" : "6801970358e129a7f758b6917e755c6c9bb25f290580f35384a97d66ae774ee3",
+      "SEC-USR-TYPE@56" : "bae4e1e49e2540af8216f572aaba964271808e8cfeb140db863f2e1a8cd3b4fd",
+      "SEC-USR-FILLER@57" : "48577c4149b0add473ce8cccc22d4bede64b6b8bf635eec1f5882dddfeb20a57"
+    }
+  },
+  "USRSEC_ESDS" : {
+    "file" : "AWS.M2.CARDDEMO.USRSEC.PS",
+    "count" : 10,
+    "checksums" : { },
+    "recordHash" : "2ada5e8b2cb11ef709eb53aad51c6e85fcdb8f2a3122b1ea7876d03bab9d1c60",
+    "columnHashes" : {
+      "SEC-USR-ID@0" : "0e016fbe9f52303aef916b9ddcfe71c041a0d11ab5dca321664c595b0e125221",
+      "SEC-USR-FNAME@8" : "ff5b635d8545d5e85bebf12bb9eaefb38aa2add26a95adb9f57c821f4db9d700",
+      "SEC-USR-LNAME@28" : "b99e4119dfdb48aa778089ba8c1cc8f416f177e109c8cd134a437dd7f86138a7",
+      "SEC-USR-PWD@48" : "6801970358e129a7f758b6917e755c6c9bb25f290580f35384a97d66ae774ee3",
+      "SEC-USR-TYPE@56" : "bae4e1e49e2540af8216f572aaba964271808e8cfeb140db863f2e1a8cd3b4fd",
+      "SEC-USR-FILLER@57" : "48577c4149b0add473ce8cccc22d4bede64b6b8bf635eec1f5882dddfeb20a57"
+    }
+  },
+  "USRSEC_RRDS" : {
+    "file" : "AWS.M2.CARDDEMO.USRSEC.PS",
+    "count" : 10,
+    "checksums" : { },
+    "recordHash" : "2ada5e8b2cb11ef709eb53aad51c6e85fcdb8f2a3122b1ea7876d03bab9d1c60",
+    "columnHashes" : {
+      "SEC-USR-ID@0" : "0e016fbe9f52303aef916b9ddcfe71c041a0d11ab5dca321664c595b0e125221",
+      "SEC-USR-FNAME@8" : "ff5b635d8545d5e85bebf12bb9eaefb38aa2add26a95adb9f57c821f4db9d700",
+      "SEC-USR-LNAME@28" : "b99e4119dfdb48aa778089ba8c1cc8f416f177e109c8cd134a437dd7f86138a7",
+      "SEC-USR-PWD@48" : "6801970358e129a7f758b6917e755c6c9bb25f290580f35384a97d66ae774ee3",
+      "SEC-USR-TYPE@56" : "bae4e1e49e2540af8216f572aaba964271808e8cfeb140db863f2e1a8cd3b4fd",
+      "SEC-USR-FILLER@57" : "48577c4149b0add473ce8cccc22d4bede64b6b8bf635eec1f5882dddfeb20a57"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+# 2000-DECIDE-ACTION WS-DELETE-WAS-CANCELLED.
+id: CTTU-010
+title: Delete annullato con F12
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF4
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Delete this record ? Press F4 to confirm"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF12
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Delete was cancelled"
+      fieldErrors: []
+      dbDelta: none

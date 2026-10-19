@@ -1,0 +1,10 @@
+# COCRDUPC PF3: XCTL COMEN01C
+id: CCUP-015
+title: PF3 -> menu
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: PF3
+  fields: {}
+  expect:
+    nextScreen: COMEN01

@@ -3,7 +3,6 @@ id: CC00-003
 title: utente inesistente
 tranid: CC00
 screen: COSGN00
-status: pending-o1
 steps:
   - action: ENTER
     fields: {USERID: "NOBODY01", PASSWD: "PASSWORD"}

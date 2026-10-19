@@ -10,6 +10,7 @@
 #   JAR        executable app jar      (default modern/carddemo-app/target/carddemo-app-exec.jar)
 #   DATA       datagen output dir      (default modern/target/perf-data; generated if missing)
 #   SCALE/SEED datagen parameters      (default 1000 / 20221231)
+#   TRANREPT_START/TRANREPT_END  TRANREPT date range (default 2022-01-01..2022-12-31)
 #   JOBS       jobs to run, in order   (default "POSTTRAN INTCALC TRANREPT CREASTMT fullBatchCycle")
 #   STORAGE    db | file               (B1 job parameter `storage`, default db)
 #   RELOAD     1 = reload the dataset before every job (isolated timings, default); 0 = chained run
@@ -19,8 +20,8 @@
 #   JAVA_OPTS  JVM flags for the job JVM (e.g. "-Xmx2g -XX:+UseZGC")
 #   JOB_ARGS   extra Spring args for every job (e.g. "--spring.datasource.hikari.maximum-pool-size=20")
 #   TIMEOUT_S  per-job timeout in seconds (default 3600)
-#   WEB_TYPE   spring.main.web-application-type for the job JVM (default servlet on a random port:
-#              the online security chain needs HttpSecurity; the B5 CLI exit stops the JVM)
+#   WEB_TYPE   spring.main.web-application-type for the job JVM (default none since Fase 5A F4:
+#              the online security chain is servlet-only; the B5 CLI exit stops the JVM)
 #   RESULTS    output dir              (default modern/target/perf-results/batch-<timestamp>)
 # Exit status: 3 when any job is not OK (FAILED/TIMEOUT/NOT_AVAILABLE), after writing the report.
 set -euo pipefail
@@ -37,7 +38,7 @@ JOBS="${JOBS:-POSTTRAN INTCALC TRANREPT CREASTMT fullBatchCycle}"
 STORAGE="${STORAGE:-db}"
 RELOAD="${RELOAD:-1}"
 TIMEOUT_S="${TIMEOUT_S:-3600}"
-WEB_TYPE="${WEB_TYPE:-servlet}"
+WEB_TYPE="${WEB_TYPE:-none}"
 PROFILE="${PROFILE:-local}"
 RESULTS="${RESULTS:-$MODERN/target/perf-results/batch-$(date -u +%Y%m%dT%H%M%SZ)}"
 export PGHOST="${PGHOST:-localhost}" PGPORT="${PGPORT:-5432}" PGDATABASE="${PGDATABASE:-carddemo}"
@@ -117,9 +118,13 @@ for JOB in $JOBS; do
   read -r NREC DSN <<<"$(input_records "$JOB")"
   WORK="$RESULTS/work-$JOB"
   mkdir -p "$WORK"
-  if [[ "$STORAGE" == "file" ]]; then
+  # B3 reports (TRANREPT, CREASTMT) read the sequential datasets of datasetDir in both modes.
+  if [[ "$STORAGE" == "file" || "$JOB" == "TRANREPT" || "$JOB" == "CREASTMT" ]]; then
     cp "$DATA"/datasets/*.dat "$WORK/"
   fi
+  EXTRA_ARGS=""
+  # TRANREPT: date range as job parameters (replaces SYMNAMES/DATEPARM of TRANREPT.jcl).
+  [[ "$JOB" == "TRANREPT" || "$JOB" == "fullBatchCycle" ]] && EXTRA_ARGS="startDate=${TRANREPT_START:-2022-01-01} endDate=${TRANREPT_END:-2022-12-31}"
   log "run $JOB (storage=$STORAGE, input $DSN=$NREC)"
   T0=$(now_ms)
   set +e
@@ -133,7 +138,7 @@ for JOB in $JOBS; do
     --spring.datasource.username="$PGUSER" \
     --spring.datasource.password="$PGPASSWORD" \
     --carddemo.orchestration.datasets-dir="$WORK" \
-    ${JOB_ARGS:-} \
+    ${JOB_ARGS:-} ${EXTRA_ARGS} \
     storage="$STORAGE" datasetDir="$WORK" run.id="$(date +%s%N)" \
     >"$RESULTS/$JOB.log" 2>&1
   RC=$?
@@ -141,7 +146,8 @@ for JOB in $JOBS; do
   T1=$(now_ms)
   ELAPSED=$((T1 - T0))
   BSTATUS=$(psql -At -c "SELECT status FROM batch_job_execution e JOIN batch_job_instance i ON i.job_instance_id=e.job_instance_id WHERE i.job_name='$JOB' ORDER BY e.job_execution_id DESC LIMIT 1" 2>/dev/null || true)
-  if [[ $RC -eq 0 && "$BSTATUS" == "COMPLETED" ]]; then
+  # RC 4 = JCL warning (e.g. CBTRN02C rejects), still a completed run.
+  if [[ $RC -le 4 && "$BSTATUS" == "COMPLETED" ]]; then
     STATUS=OK
   elif grep -qiE "No job (found|configurations? found)|job.*not (found|registered)|NoSuchJob" "$RESULTS/$JOB.log"; then
     STATUS=NOT_AVAILABLE

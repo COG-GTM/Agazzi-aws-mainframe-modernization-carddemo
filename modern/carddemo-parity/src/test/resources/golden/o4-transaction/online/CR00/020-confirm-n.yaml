@@ -1,0 +1,22 @@
+# CORPT00 N annulla e pulisce
+id: CR00-020
+title: N annulla e pulisce
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    MONTHLY: X
+    CONFIRM: N
+  expect:
+    message: null
+    fields:
+      MONTHLY: ''

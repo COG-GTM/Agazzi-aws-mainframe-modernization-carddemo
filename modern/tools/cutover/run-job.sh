@@ -15,11 +15,13 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 params=("run.date=$(date -u +%Y-%m-%dT%H:%M:%S)" "$@")
 case "${CARDDEMO_JOB_MODE:-local}" in
   local)
-    # The app is a servlet app (Fase0 security needs HttpSecurity), so the JVM keeps running after
-    # the job: watch the log for the job's final status, then stop the JVM and map the status.
+    # Non-web JVM (Fase 5A, F4): the O1 security chain is servlet-only. Watch the log for the job's
+    # final status (or the JVM exit), then stop the JVM and map the status.
     jar="${CARDDEMO_APP_JAR:-$HERE/../../carddemo-app/target/carddemo-app-exec.jar}"
+    # Same Flyway locations as the docker-compose app (profile local: migrations + seed V2).
+    export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-local}"
     log="$(mktemp)"; trap 'rm -f "$log"' EXIT
-    java -jar "$jar" --server.port=0 --spring.batch.job.enabled=true \
+    java -jar "$jar" --spring.main.web-application-type=none --spring.batch.job.enabled=true \
       --spring.batch.job.name="$job" "${params[@]}" >"$log" 2>&1 &
     pid=$!
     status="" deadline=$((SECONDS + ${CARDDEMO_JOB_TIMEOUT:-14400}))
@@ -47,6 +49,13 @@ case "${CARDDEMO_JOB_MODE:-local}" in
     fi
     set +e; wait "$pid"; rc=$?; set -e
     tail -20 "$log"
+    # Non-web JVM (F4): it exits with the step RC (CBTRN02C RC 4 = rejects, a JCL warning) as soon
+    # as the job ends, possibly before the loop above saw the status line.
+    status=$(grep -o "Job: \[[^]]*name=$job\][^$]*status: \[[A-Z_]*\]" "$log" | grep -o "status: \[[A-Z_]*\]" | tail -1 || true)
+    if [[ -n "$status" ]]; then
+      echo "run-job: $job $status (rc=$rc)"
+      [[ "$status" == "status: [COMPLETED]" ]] && exit 0 || exit 1
+    fi
     if grep -q "No job found with name\|No job configurations found\|Job name must be specified\|NoSuchJobException" "$log"; then
       echo "run-job: job $job not registered in $jar (module not integrated yet)" >&2; exit 3
     fi

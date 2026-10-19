@@ -1,0 +1,28 @@
+# CORPT00 validazione SDTDD
+id: CR00-013
+title: validazione SDTDD
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    CUSTOM: X
+    SDTMM: '01'
+    SDTDD: '32'
+    SDTYYYY: '2022'
+    EDTMM: '06'
+    EDTDD: '30'
+    EDTYYYY: '2022'
+    CONFIRM: Y
+  expect:
+    message: Start Date - Not a valid Day...
+    fieldErrors:
+    - SDTDD

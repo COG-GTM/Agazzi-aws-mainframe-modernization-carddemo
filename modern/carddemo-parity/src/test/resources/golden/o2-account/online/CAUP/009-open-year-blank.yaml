@@ -1,0 +1,19 @@
+# COACTUPC EDIT-YEAR-CCYY blank
+id: CAUP-009
+title: 'errore: Open Date : Year must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNYEAR: ''
+  expect:
+    message: 'Open Date : Year must be supplied.'
+    fieldErrors:
+    - OPNYEAR
+    dbDelta: none

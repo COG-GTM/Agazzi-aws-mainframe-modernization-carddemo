@@ -83,6 +83,36 @@ rimandato a COSGN00 (finding F6). Le latenze per TX restano quelle del run 1:
 `cb00_payments`.) Le TX con check falliti (sessione rimandata a COSGN00) rispondono comunque in
 fretta, quindi i loro p95 vanno ri-misurati dopo il fix F6.
 
+### 3.1 Fase 5A — `online-mix.js` 200 VU × 5 min dopo F1/F2/F6 — verificato
+
+App integrata in `docker compose` (immagine `carddemo-app:local` da `migration/5a-integration`,
+profilo `local`, Spring Security + Spring Session JDBC, CSRF attivo), DB `carddemo` caricato con
+`load.sql` ×1.000 (seed 42), k6 v0.54.0 sulla stessa macchina (8 vCPU, 31 GB, Postgres e app in
+container). Comando:
+`k6 run -e BASE_URL=http://localhost:8080 -e VUS=200 -e RAMP_UP=30s -e DURATION=5m -e FIXTURES=$PWD/../../target/perf-data/k6/fixtures.json online-mix.js`
+
+263.326 richieste (763 req/s), 98.079 iterazioni, **0,00 % errori HTTP, 100 % checks** (911.367/911.367:
+nessun rimbalzo a COSGN00, F6 chiuso). k6 esce comunque con 99 per i threshold di latenza.
+
+| TX | p90 | p95 | p99 | max | p95 < 200 ms |
+|---|---:|---:|---:|---:|:---:|
+| CC00 sign-on | 174,3 | 393,4 | 904,1 | 3.000 | ✗ |
+| CAVW | 175,3 | 362,0 | 840,2 | 2.998 | ✗ |
+| CCLI (filtro account + PF8/PF7) | 162,5 | **301,7** | 798,9 | 2.429 | ✗ |
+| CT00 (+ PF8) | 177,3 | 351,0 | 872,6 | 2.629 | ✗ |
+| CT01 | 180,5 | 396,9 | 901,1 | 3.742 | ✗ |
+| CT02 add + CONFIRM | 166,5 | 319,8 | 813,4 | 2.564 | ✗ |
+| CB00 pay + CONFIRM | 173,7 | 367,4 | 853,2 | 2.282 | ✗ |
+| CU00 (admin) | 176,3 | 394,1 | 865,5 | 2.266 | ✗ |
+| totale | 171,8 | 351,4 | 850,9 | 3.742 | ✗ |
+
+(ms.) CCLI passa da p95 13.900 ms a 301,7 ms (F2: path per account `card_acct_id`) e non è più
+l'outlier: tutte le TX hanno ora p95 300–400 ms con p90 < 200 ms. Rispetto alla §3 il throughput
+quasi raddoppia (763 vs 400 req/s) perché nessuna chiamata viene più rimbalzata e CCLI non blocca
+più i VU; il p95 uniforme indica saturazione della singola macchina condivisa da k6, app e
+Postgres, non un collo di bottiglia di una TX. **Il target p95 < 200 ms a 200 VU non è raggiunto su
+questo ambiente**: va rimisurato su un ambiente dimensionato (RDS + task ECS separati, k6 esterno).
+
 ## 4. Batch ×1.000 — vedi tabella
 
 `RELOAD=1` (dataset ×1.000 ricaricato prima di ogni job, ~5 s: 50.000 account/carte, 300.000
@@ -99,6 +129,32 @@ TRANSACT + 300.000 DALYTRAN), `STORAGE=db`, `TIMEOUT_S=900`.
 Throughput (rec/s) non ancora disponibile: nessun job integrato completa a ×1.000 entro 15 min.
 L'harness ora esce con 3 se un job non è `OK`; verificato anche su un dataset ×2 (`JOBS=NOPE` →
 NOT_AVAILABLE, exit 3; cambio `SEED` → dataset rigenerato, report con il nuovo seed).
+
+### 4.1 Fase 5A — `migration/5a-integration` dopo F3/F4 — verificato
+
+Stessa macchina e stesso dataset ×1.000 (seed 42), `RELOAD=1`, `STORAGE=db`, app con
+`spring.main.web-application-type=none` (F4). Comando:
+`RESULTS=target/perf-results/batch-5a-N JOBS="..." perf/batch/run-batch-perf.sh` (CSV in
+`target/perf-results/batch-5a-2` e `batch-5a-5`).
+
+| Job | Esito | RC | Tempo | Input | rec/s | Note |
+|---|---|---:|---:|---|---:|---|
+| POSTTRAN | OK | 4 | 342,0 s | DALYTRAN 300.000 | 877,1 | chunk da 1.000 (F3); RC 4 = rifiuti del campione, come in COBOL |
+| INTCALC | OK | 0 | 37,3 s | TCATBALF 50.000 | 1.341,3 | chunk da 500 account (F3) |
+| TRANREPT | OK | 0 | 13,4 s | TRANSACT 300.000 | 22.348,0 | `startDate=2022-01-01 endDate=2022-12-31` |
+| CREASTMT | **FAILED** | — | 14,3 s | TRANSACT 300.000 | — | abend `CBSTM03A: WS-CARD-TBL overflow (> 51 cards)`: limite `OCCURS 51` del COBOL, vedi sotto |
+| fullBatchCycle | OK | 0 | 646,2 s | DALYTRAN 300.000 | 464,3 | catena `CLOSEFIL,POSTTRAN,INTCALC,TRANBKP,COMBTRAN,TRANREPT,OPENFIL` (senza CREASTMT) |
+
+CREASTMT su ×1.000: `CBSTM03A` carica le carte di un cliente in `WS-CARD-TBL OCCURS 51` e le
+transazioni per carta in `WS-TRAN-TBL OCCURS 10`; il generatore ×1.000 supera entrambi i limiti, che
+il programma COBOL originale non gestisce. La porta Java riproduce il limite (abend) invece di
+allargare la tabella, quindi CREASTMT non è misurabile su questo dataset senza una decisione di
+parità (allargare le tabelle = PE nuova) o un generatore con ≤ 51 carte per cliente e ≤ 10
+transazioni per carta. Sul seed (golden GnuCOBOL) CREASTMT è a 0 diff.
+
+Il `fullBatchCycle` misurato esclude quindi CREASTMT tramite
+`--carddemo.orchestration.full-cycle.jobs=...`; la catena di default resta quella completa
+`CLOSEFIL → POSTTRAN → INTCALC → TRANBKP → COMBTRAN → TRANREPT → CREASTMT → OPENFIL`.
 
 ## 5. Finding per i workstream (non corretti in questa PR: fuori perimetro)
 

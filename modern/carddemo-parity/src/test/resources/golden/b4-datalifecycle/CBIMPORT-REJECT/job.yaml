@@ -1,0 +1,18 @@
+job: CBIMPORT
+jcl: app/jcl/CBIMPORT.jcl
+business_timestamp: "2022/07/18 12:00:00"
+# Rejects: unknown record types Z, 9 and blank go to ERROUT.
+# CARDOUT has no DD in the legacy JCL: it is cataloged here (and optional in Java).
+datasets:
+  EXPDATA: {org: ksds, lrecl: 500, key: [27, 4], layout: CVEXPORT, input: "input/EXPREJ.dat"}
+  CUSTOUT: {org: ps, lrecl: 500, init_empty: true}
+  ACCTOUT: {org: ps, lrecl: 300, init_empty: true}
+  XREFOUT: {org: ps, lrecl: 50, init_empty: true}
+  TRNXOUT: {org: ps, lrecl: 350, init_empty: true}
+  CARDOUT: {org: ps, lrecl: 150, init_empty: true}
+  ERROUT: {org: ps, lrecl: 132, init_empty: true}
+steps:
+  - name: STEP01
+    program: CBIMPORT
+    dd: {EXPFILE: EXPDATA, CUSTOUT: CUSTOUT, ACCTOUT: ACCTOUT, XREFOUT: XREFOUT, TRNXOUT: TRNXOUT, CARDOUT: CARDOUT, ERROUT: ERROUT}
+outputs: [CUSTOUT, ACCTOUT, XREFOUT, TRNXOUT, CARDOUT, ERROUT]

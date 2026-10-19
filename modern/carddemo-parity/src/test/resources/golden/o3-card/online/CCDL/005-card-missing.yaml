@@ -1,0 +1,14 @@
+# COCRDSLC 2220-EDIT-CARD: card blank
+id: CCDL-005
+title: carta mancante
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: ''
+  expect:
+    message: Card number not provided
+    fieldErrors:
+    - CARDSID

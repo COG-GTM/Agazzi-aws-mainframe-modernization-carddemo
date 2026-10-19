@@ -1,0 +1,23 @@
+# CORPT00 mensile confermato - SUBMIT-JOB-TO-INTRDR -> ReportJobLauncherPort
+id: CR00-003
+title: mensile confermato
+tranid: CR00
+screen: CORPT00
+auth:
+  user: USER0001
+  password: PASSWORD
+signon:
+  program: CORPT00C
+  tranid: CR00
+steps:
+- get: true
+  expect: {}
+- action: ENTER
+  fields:
+    MONTHLY: X
+    CONFIRM: Y
+  expect:
+    message: Monthly report submitted for printing ...
+    severity: INFO
+    fields:
+      MONTHLY: ''

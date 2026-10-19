@@ -1,0 +1,14 @@
+# COMEN01C PROCESS-ENTER-KEY WHEN OTHER: option 7 (Transaction View) -> XCTL PROGRAM(CDEMO-MENU-OPT-PGMNAME).
+id: CM00-015
+title: opzione 07 -> COTRN01
+tranid: CM00
+screen: COMEN01
+auth: {user: USER0001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {OPTION: "07"}
+    expect:
+      screen: COMEN01
+      nextScreen: COTRN01
+      fieldErrors: []
+      dbDelta: none

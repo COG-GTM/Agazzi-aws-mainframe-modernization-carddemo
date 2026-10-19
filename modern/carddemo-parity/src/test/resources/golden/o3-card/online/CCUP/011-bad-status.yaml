@@ -1,0 +1,21 @@
+# COCRDUPC 1240-EDIT-CARDSTATUS
+id: CCUP-011
+title: stato non valido
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: ENRICO
+    CRDSTCD: X
+    EXPMON: 08
+    EXPYEAR: '2024'
+  expect:
+    message: Card Active Status must be Y or N
+    fieldErrors:
+    - CRDSTCD

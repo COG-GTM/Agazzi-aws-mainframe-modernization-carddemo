@@ -1,0 +1,21 @@
+# COCRDUPC 1230-EDIT-NAME: blank
+id: CCUP-009
+title: nome mancante
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: ''
+    CRDSTCD: Y
+    EXPMON: 08
+    EXPYEAR: '2024'
+  expect:
+    message: Card name not provided
+    fieldErrors:
+    - CRDNAME

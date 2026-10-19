@@ -1,0 +1,73 @@
+---- STEP CBTRN01C PGM=CBTRN01C
+START OF EXECUTION OF PROGRAM CBTRN01C
+EDGE000000000001010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000255{800000000Abshire-Lowe                                      North Enoshaven                                   72112     96802941546036972022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 9680294154603697
+ACCOUNT ID : 00000000001
+CUSTOMER ID: 000000001
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000002020003POS TERM  Purchase at Abshire-Lowe                                                                            0000000102N800000000Abshire-Lowe                                      North Enoshaven                                   72112     96802941546036972022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 9680294154603697
+ACCOUNT ID : 00000000001
+CUSTOMER ID: 000000001
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000003010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000010{800000000Abshire-Lowe                                      North Enoshaven                                   72112     00000000000000002022-06-10 19:27:53.000000                                              
+INVALID CARD NUMBER FOR XREF
+CARD NUMBER 0000000000000000 COULD NOT BE VERIFIED. SKIPPING TRANSACTION ID-EDGE000000000003
+EDGE000000000004010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000010{800000000Abshire-Lowe                                      North Enoshaven                                   72112     99999999999999992022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 9999999999999999
+ACCOUNT ID : 99999999999
+CUSTOMER ID: 000000001
+INVALID ACCOUNT NUMBER FOUND
+ACCOUNT 99999999999 NOT FOUND
+EDGE000000000005010001POS TERM  Purchase at Abshire-Lowe                                                                            0000001000A800000000Abshire-Lowe                                      North Enoshaven                                   72112     09238771932473302022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 0923877193247330
+ACCOUNT ID : 00000000002
+CUSTOMER ID: 000000002
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000006010001POS TERM  Purchase at Abshire-Lowe                                                                            0000001000{800000000Abshire-Lowe                                      North Enoshaven                                   72112     09238771932473302022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 0923877193247330
+ACCOUNT ID : 00000000002
+CUSTOMER ID: 000000002
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000007010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000010{800000000Abshire-Lowe                                      North Enoshaven                                   72112     39991692463758852022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 3999169246375885
+ACCOUNT ID : 00000000003
+CUSTOMER ID: 000000003
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000008010001POS TERM  Purchase at Abshire-Lowe                                                                            0000099999I800000000Abshire-Lowe                                      North Enoshaven                                   72112     39991692463758852022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 3999169246375885
+ACCOUNT ID : 00000000003
+CUSTOMER ID: 000000003
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000009010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000000A800000000Abshire-Lowe                                      North Enoshaven                                   72112     96802941546036972030-12-31 23:59:59.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 9680294154603697
+ACCOUNT ID : 00000000001
+CUSTOMER ID: 000000001
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000010010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000255{800000000Abshire-Lowe                                      North Enoshaven                                   72112     96802941546036972022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 9680294154603697
+ACCOUNT ID : 00000000001
+CUSTOMER ID: 000000001
+SUCCESSFUL READ OF ACCOUNT FILE
+EDGE000000000011010001POS TERM  Purchase at Abshire-Lowe                                                                            0000000000A800000000Abshire-Lowe                                      North Enoshaven                                   72112     09238771932473302022-06-10 19:27:53.000000                                              
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 0923877193247330
+ACCOUNT ID : 00000000002
+CUSTOMER ID: 000000002
+SUCCESSFUL READ OF ACCOUNT FILE
+SUCCESSFUL READ OF XREF
+CARD NUMBER: 0923877193247330
+ACCOUNT ID : 00000000002
+CUSTOMER ID: 000000002
+SUCCESSFUL READ OF ACCOUNT FILE
+END OF EXECUTION OF PROGRAM CBTRN01C
+---- RC=0

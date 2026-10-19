@@ -1,0 +1,19 @@
+# b1-posting golden: CBTRN02C (POSTTRAN STEP15) on crafted edge cases — reject codes 100/101/102/103
+# (102 overwritten by 103), credit vs debit cycle totals, TCATBAL create vs update, limit and
+# expiration-date boundaries, cumulative postings on the same account.
+job: POSTTRAN-EDGE
+jcl: app/jcl/POSTTRAN.jcl
+business_timestamp: "2022/07/18 12:00:00"
+datasets:
+  DALYTRAN: {org: ps, lrecl: 350, layout: CVTRA06Y, input: "input/dailytran.txt"}
+  TRANSACT: {org: ksds, lrecl: 350, key: [0, 16], layout: CVTRA05Y}
+  CARDXREF: {org: ksds, lrecl: 50, key: [0, 16], layout: CVACT03Y, input: "input/cardxref.txt"}
+  DALYREJS: {org: ps, lrecl: 430, layout: DALYREJS, init_empty: true}
+  ACCTDATA: {org: ksds, lrecl: 300, key: [0, 11], layout: CVACT01Y, input: "input/acctdata.txt"}
+  TCATBALF: {org: ksds, lrecl: 50, key: [0, 17], layout: CVTRA01Y, input: "input/tcatbal.txt"}
+steps:
+  - name: STEP15
+    program: CBTRN02C
+    dd: {DALYTRAN: DALYTRAN, TRANFILE: TRANSACT, XREFFILE: CARDXREF, DALYREJS: DALYREJS,
+         ACCTFILE: ACCTDATA, TCATBALF: TCATBALF}
+outputs: [TRANSACT, DALYREJS, ACCTDATA, TCATBALF]

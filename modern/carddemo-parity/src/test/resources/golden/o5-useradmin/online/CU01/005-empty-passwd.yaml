@@ -1,0 +1,12 @@
+# PROCESS-ENTER-KEY validation order: PASSWD checked before the later empty fields.
+id: CU01-005
+title: PASSWD vuoto
+tranid: CU01
+screen: COUSR01
+steps:
+  - action: ENTER
+    fields: {FNAME: "Jane", LNAME: "Doe", USERID: "NEWUSER1", PASSWD: " ", USRTYPE: ""}
+    expect:
+      message: "Password can NOT be empty..."
+      fieldErrors: [PASSWD]
+      dbDelta: none

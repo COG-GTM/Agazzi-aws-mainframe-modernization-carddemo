@@ -1,17 +1,57 @@
 [
   {
-    "rule": "java/spring-disabled-csrf-protection",
-    "path": "modern/carddemo-app/src/main/java/com/carddemo/app/config/Fase0SecurityAutoConfiguration.java",
-    "reason": "Fase 0 fallback chain (HTTP Basic, no session cookie => no ambient credential for CSRF). @ConditionalOnMissingBean: replaced by the O1 session-based chain, which must enable CSRF (ASVS-L2.md 4.2.2). File is outside the 5C perimeter."
-  },
-  {
     "rule": "java/relative-path-command",
     "path": "modern/carddemo-parity/src/test/java/com/carddemo/parity/batch/GoldenHarnessReproducibilityTest.java",
     "reason": "Test-only code, never shipped: runs the golden harness script from the checked-out repo in CI."
   },
   {
     "rule": "java/relative-path-command",
-    "path": "modern/security/src/test/java/com/carddemo/security/TlsProfileIT.java",
+    "path": "modern/carddemo-app/src/test/java/com/carddemo/security/TlsProfileIT.java",
     "reason": "Test-only code, never shipped: invokes openssl from PATH to generate a throw-away self-signed certificate."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/carddemo-platform/src/test/java/com/carddemo/platform/parity/GoldenFixtures.java",
+    "reason": "Test-only code, never shipped: runs the GnuCOBOL golden harness script/tools from the checked-out repo in CI."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/carddemo-online-auth/src/test/java/com/carddemo/online/auth/parity/MenuOptionsGoldenParityTest.java",
+    "reason": "Test-only code, never shipped: runs the GnuCOBOL golden harness script/tools from the checked-out repo in CI."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/carddemo-batch-posting/src/test/java/com/carddemo/batch/posting/golden/B1GoldenReproducibilityTest.java",
+    "reason": "Test-only code, never shipped: runs the GnuCOBOL golden harness script/tools from the checked-out repo in CI."
+  },
+  {
+    "rule": "java/relative-path-command",
+    "path": "modern/carddemo-batch-datalifecycle/src/test/java/com/carddemo/batch/datalifecycle/B4CobolGoldenParityTest.java",
+    "reason": "Test-only code, never shipped: runs the GnuCOBOL golden harness script/tools from the checked-out repo in CI."
+  },
+  {
+    "rule": "java/spring-disabled-csrf-protection",
+    "path": "modern/carddemo-online-useradmin/src/test/java/com/carddemo/online/useradmin/support/UseradminTestApp.java",
+    "reason": "Test-only Spring Boot app of a single module (never shipped): exercises the module controllers without the O1 chain. The integrated carddemo-app uses OnlineAuthSecurityConfiguration with CSRF enabled (CookieCsrfTokenRepository), covered by SecurityHardeningIT/OnlineAuthSessionIT."
+  },
+  {
+    "rule": "java/spring-disabled-csrf-protection",
+    "path": "modern/carddemo-online-transaction/src/test/java/com/carddemo/online/transaction/parity/O4TestApplication.java",
+    "reason": "Test-only Spring Boot app of a single module (never shipped): exercises the module controllers without the O1 chain. The integrated carddemo-app uses OnlineAuthSecurityConfiguration with CSRF enabled (CookieCsrfTokenRepository), covered by SecurityHardeningIT/OnlineAuthSessionIT."
+  },
+  {
+    "rule": "java/spring-disabled-csrf-protection",
+    "path": "modern/carddemo-online-card/src/test/java/com/carddemo/online/card/support/O3TestApplication.java",
+    "reason": "Test-only Spring Boot app of a single module (never shipped): exercises the module controllers without the O1 chain. The integrated carddemo-app uses OnlineAuthSecurityConfiguration with CSRF enabled (CookieCsrfTokenRepository), covered by SecurityHardeningIT/OnlineAuthSessionIT."
+  },
+  {
+    "rule": "java/spring-disabled-csrf-protection",
+    "path": "modern/carddemo-online-account/src/test/java/com/carddemo/online/account/testapp/AccountTestApplication.java",
+    "reason": "Test-only Spring Boot app of a single module (never shipped): exercises the module controllers without the O1 chain. The integrated carddemo-app uses OnlineAuthSecurityConfiguration with CSRF enabled (CookieCsrfTokenRepository), covered by SecurityHardeningIT/OnlineAuthSessionIT."
+  },
+  {
+    "rule": "java/concatenated-sql-query",
+    "path": "modern/carddemo-datamigration/src/main/java/com/carddemo/datamigration/store/RelationalStore.java",
+    "reason": "Table and column names come from the static Dataset catalogue (not user input) and are checked against an SQL identifier pattern before use; values are bound as parameters. Identifiers cannot be JDBC parameters."
   }
 ]

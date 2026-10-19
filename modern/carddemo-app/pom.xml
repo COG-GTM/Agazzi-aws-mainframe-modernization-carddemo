@@ -90,6 +90,10 @@
       <artifactId>carddemo-ext-mqinquiry</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.carddemo</groupId>
+      <artifactId>carddemo-security</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
@@ -152,10 +156,23 @@
       <artifactId>localstack</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>secretsmanager</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>carddemo-app</finalName>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <!-- Logback is configured once per JVM: each IT class (profiles test/aws/tls) gets its own. -->
+          <reuseForks>false</reuseForks>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>

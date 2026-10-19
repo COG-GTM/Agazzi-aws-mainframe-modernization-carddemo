@@ -3,7 +3,6 @@ id: CC00-001
 title: ENTER con User ID vuoto
 tranid: CC00
 screen: COSGN00
-status: pending-o1
 steps:
   - action: ENTER
     fields: {USERID: "", PASSWD: "PASSWORD"}

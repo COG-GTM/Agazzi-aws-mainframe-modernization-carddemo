@@ -1,0 +1,21 @@
+# COACTUPC 1280-EDIT-US-STATE-ZIP-CD (seed NC + 12546)
+id: CAUP-050
+title: 'errore: Invalid zip code for state'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    ACSTFCO: '700'
+    ACSPH2A: '908'
+    ACSSTTE: NC
+  expect:
+    message: Invalid zip code for state
+    fieldErrors:
+    - ACSSTTE
+    dbDelta: none

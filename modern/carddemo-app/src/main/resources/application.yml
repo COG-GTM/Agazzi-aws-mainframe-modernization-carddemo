@@ -47,12 +47,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,maintenance
   endpoint:
     health:
       show-details: never
       probes:
         enabled: true
 carddemo:
+  # Env names shared with modern/deploy (terraform local.container_env) and docker-compose.
   messaging:
-    type: in-memory
+    type: ${CARDDEMO_MESSAGING_TYPE:in-memory}
+  gdg:
+    type: ${CARDDEMO_GDG_TYPE:filesystem}
+    bucket: ${CARDDEMO_GDG_BUCKET:}
+  reports:
+    queue-url: ${CARDDEMO_REPORT_QUEUE_URL:}

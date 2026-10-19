@@ -1,0 +1,23 @@
+# 1245-EDIT-NUM-REQD TEST-NUMVAL.
+id: CTTU-003
+title: Tipo non numerico
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "A1", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Tran Type code must be numeric."
+      fieldErrors: [TRTYPCD]
+      dbDelta: none

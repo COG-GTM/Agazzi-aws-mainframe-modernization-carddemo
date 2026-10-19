@@ -1,0 +1,67 @@
+O|001|3030|Y|3030|3030|N|N
+O|002|0000|Y|3030|3030|N|N
+O|003|3031|Y|3031|3031|Y|Y
+O|004|3031|Y|3031|3031|Y|Y
+O|005|3031|Y|3031|3031|Y|Y
+O|006|3131|Y|3131|3131|Y|N
+O|007|3132|Y|3132|3132|N|N
+O|008|3939|Y|3939|3939|N|N
+O|009|3030|Y|3030|3030|N|N
+O|010|3030|Y|3030|3030|N|N
+O|011|3037|Y|3037|3037|Y|N
+O|012|3036|Y|3036|3036|Y|Y
+O|013|3035|Y|3035|3035|Y|Y
+O|014|3130|Y|3130|3130|Y|N
+O|015|3039|Y|3039|3039|Y|N
+O|016|3061|Y|3030|3030|N|N
+O|017|3161|Y|3031|3031|Y|Y
+O|018|6131|Y|3030|3030|N|N
+O|019|2d31|Y|3031|3031|Y|Y
+O|020|2b31|Y|3031|3031|Y|Y
+O|021|312e|Y|3031|3031|Y|Y
+O|022|4131|Y|3030|3030|N|N
+O|023|3141|Y|3031|3031|Y|Y
+O|024|3100|Y|3031|3031|Y|Y
+O|025|0031|Y|3030|3030|N|N
+O|026|3031|Y|3031|3031|Y|Y
+O|027|3034|Y|3034|3034|Y|Y
+M|01. Account View                        |
+M|02. Account Update                      |
+M|03. Credit Card List                    |
+M|04. Credit Card View                    |
+M|05. Credit Card Update                  |
+M|06. Transaction List                    |
+M|07. Transaction View                    |
+M|08. Transaction Add                     |
+M|09. Transaction Reports                 |
+M|10. Bill Payment                        |
+M|11. Pending Authorization View          |
+A|01. User List (Security)                |
+A|02. User Add (Security)                 |
+A|03. User Update (Security)              |
+A|04. User Delete (Security)              |
+A|05. Transaction Type List/Update (Db2)  |
+A|06. Transaction Type Maintenance (Db2)  |
+N|01|This option Account View is not installed...                                    |
+D|01|This option Accountis coming soon ...                                           |
+N|02|This option Account Update is not installed...                                  |
+D|02|This option Accountis coming soon ...                                           |
+N|03|This option Credit Card List is not installed...                                |
+D|03|This option Creditis coming soon ...                                            |
+N|04|This option Credit Card View is not installed...                                |
+D|04|This option Creditis coming soon ...                                            |
+N|05|This option Credit Card Update is not installed...                              |
+D|05|This option Creditis coming soon ...                                            |
+N|06|This option Transaction List is not installed...                                |
+D|06|This option Transactionis coming soon ...                                       |
+N|07|This option Transaction View is not installed...                                |
+D|07|This option Transactionis coming soon ...                                       |
+N|08|This option Transaction Add is not installed...                                 |
+D|08|This option Transactionis coming soon ...                                       |
+N|09|This option Transaction Reports is not installed...                             |
+D|09|This option Transactionis coming soon ...                                       |
+N|10|This option Bill Payment is not installed...                                    |
+D|10|This option Billis coming soon ...                                              |
+N|11|This option Pending Authorization View is not installed...                      |
+D|11|This option Pendingis coming soon ...                                           |
+P|This option is not installed ...                                                |

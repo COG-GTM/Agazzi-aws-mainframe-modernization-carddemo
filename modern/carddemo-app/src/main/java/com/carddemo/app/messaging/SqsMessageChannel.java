@@ -15,6 +15,7 @@ public final class SqsMessageChannel implements MessageChannelPort {
 
   private final SqsClient sqs;
   private final Map<String, String> urls = new ConcurrentHashMap<>();
+  private final Map<String, String> receipts = new ConcurrentHashMap<>();
 
   public SqsMessageChannel(SqsClient sqs) {
     this.sqs = sqs;
@@ -38,6 +39,14 @@ public final class SqsMessageChannel implements MessageChannelPort {
 
   @Override
   public Optional<ChannelMessage> receive(String channel, Duration wait) {
+    Optional<ChannelMessage> m = receiveUnacknowledged(channel, wait);
+    m.ifPresent(msg -> acknowledge(channel, msg));
+    return m;
+  }
+
+  /** The message stays in flight (visibility timeout) until {@link #acknowledge}. */
+  @Override
+  public Optional<ChannelMessage> receiveUnacknowledged(String channel, Duration wait) {
     int seconds = (int) Math.min(20, Math.max(0, wait.toSeconds()));
     var resp =
         sqs.receiveMessage(
@@ -50,7 +59,7 @@ public final class SqsMessageChannel implements MessageChannelPort {
       return Optional.empty();
     }
     Message m = resp.messages().get(0);
-    sqs.deleteMessage(b -> b.queueUrl(url(channel)).receiptHandle(m.receiptHandle()));
+    receipts.put(m.messageId(), m.receiptHandle());
     Map<String, String> headers = new HashMap<>();
     m.messageAttributes().forEach((k, v) -> headers.put(k, v.stringValue()));
     return Optional.of(
@@ -59,5 +68,13 @@ public final class SqsMessageChannel implements MessageChannelPort {
             headers.getOrDefault("correlationId", m.messageId()),
             m.body(),
             headers));
+  }
+
+  @Override
+  public void acknowledge(String channel, ChannelMessage message) {
+    String receipt = receipts.remove(message.id());
+    if (receipt != null) {
+      sqs.deleteMessage(b -> b.queueUrl(url(channel)).receiptHandle(receipt));
+    }
   }
 }

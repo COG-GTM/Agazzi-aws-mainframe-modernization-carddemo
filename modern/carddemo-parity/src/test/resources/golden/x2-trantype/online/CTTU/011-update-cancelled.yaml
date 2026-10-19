@@ -1,0 +1,39 @@
+# 2000-DECIDE-ACTION WS-UPDATE-WAS-CANCELLED -> valori originali.
+id: CTTU-011
+title: Update annullato con F12
+tranid: CTTU
+screen: COTRTUP
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: ""}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Enter transaction type to be maintained"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPCD: "01", TRTYDSC: "New Desc"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Changes validated.Press F5 to save"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF12
+    fields: {TRTYPCD: "01", TRTYDSC: "New Desc"}
+    expect:
+      screen: COTRTUP
+      nextScreen: null
+      message: "Update was cancelled"
+      fieldErrors: []
+      dbDelta: none

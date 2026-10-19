@@ -1,0 +1,37 @@
+# COCRDUPC happy path: search, edit, PF5 -> 9200-WRITE-PROCESSING REWRITE
+id: CCUP-001
+title: aggiornamento e salvataggio
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect:
+    message: Details of selected card shown above
+    data:
+      CRDNAME: ENRICO ROSENBAUM
+      EXPDAY: '11'
+- action: ENTER
+  fields:
+    CRDNAME: ENRICO R ROSENBAUM
+    CRDSTCD: Y
+    EXPMON: 09
+    EXPYEAR: '2026'
+  expect:
+    message: Changes validated.Press F5 to save
+    dbDelta: none
+- action: PF5
+  fields:
+    CRDNAME: ENRICO R ROSENBAUM
+    CRDSTCD: Y
+    EXPMON: 09
+    EXPYEAR: '2026'
+  expect:
+    message: Changes committed to database
+    dbDelta: changed
+- action: ENTER
+  fields: {}
+  expect:
+    message: Please enter Account and Card Number

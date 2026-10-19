@@ -107,6 +107,6 @@ class OnlineScenarioRunnerTest {
               assertThat(s.steps()).isNotEmpty();
               assertThat(s.screen()).isNotNull();
             });
-    assertThat(all).filteredOn(s -> s.tranid().equals("CC00")).allMatch(OnlineScenario::pending);
+    assertThat(all).filteredOn(s -> s.tranid().equals("CC00")).noneMatch(OnlineScenario::pending);
   }
 }

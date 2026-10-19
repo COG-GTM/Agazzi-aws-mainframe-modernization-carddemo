@@ -1,0 +1,19 @@
+# COACTUPC EDIT-DAY blank
+id: CAUP-014
+title: 'errore: Open Date : Day must be supplied.'
+tranid: CAUP
+screen: COACTUP
+steps:
+- action: ENTER
+  fields: {}
+- action: ENTER
+  fields:
+    ACCTSID: '00000000001'
+- action: ENTER
+  fields:
+    OPNDAY: ''
+  expect:
+    message: 'Open Date : Day must be supplied.'
+    fieldErrors:
+    - OPNDAY
+    dbDelta: none

@@ -1,0 +1,31 @@
+# 1230-EDIT-DESC: TR_DESCRIPTION LIKE '%Pay%' -> solo 02.
+id: CTLI-006
+title: Filtro descrizione LIKE
+tranid: CTLI
+screen: COTRTLI
+auth: {user: ADMIN001, password: PASSWORD}
+steps:
+  - action: ENTER
+    fields: {}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: ENTER
+    fields: {TRTYPE: "", TRDESC: "Pay"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "Type U to update, D to delete any record"
+      fieldErrors: []
+      dbDelta: none
+  - action: PF8
+    fields: {TRTYPE: "", TRDESC: "Pay"}
+    expect:
+      screen: COTRTLI
+      nextScreen: null
+      message: "No more pages for these search conditions"
+      fieldErrors: []
+      dbDelta: none
