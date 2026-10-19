@@ -8,7 +8,7 @@ Migrazione di CardDemo (COBOL/CICS/VSAM/JCL in `app/`) verso Java 21 + Spring Bo
 | 1 | 8 in parallelo | `ws-a-auth`, `ws-b-account`, `ws-c-card`, `ws-d-customer`, `ws-e-transactions`, `ws-f-batch-posting`, `ws-g-batch-interest`, `ws-h-reports` |
 | 2 | 3 in parallelo | `ws-i-ui`, `ws-j-integration`, `ws-k-data-migration` |
 
-Una fase parte quando tutte le sessioni della fase precedente sono terminate con una PR (stato `error`/`expired` o nessuna PR => il launcher si ferma con exit code != 0) **e** quelle PR risultano mergiate nel branch base. Il gate controlla la PR specifica riportata dalla sessione di questo run (`gh pr view`), con fallback `git merge-base --is-ancestor` sulla testa del branch; con `--only` considera solo i workstream lanciati nella fase precedente.
+Una fase parte quando tutte le sessioni della fase precedente sono terminate con una PR in uno stato di successo (`SUCCESS_STATUSES`, default `finished blocked`; qualsiasi altro stato o nessuna PR => il launcher si ferma con exit code != 0) **e** quelle PR risultano mergiate nel branch base. Il gate controlla la PR specifica riportata dalla sessione di questo run (`gh pr view`: `MERGED` con base `BASE_BRANCH`), con fallback `git merge-base --is-ancestor` sulla testa del branch; con `--only` considera solo i workstream lanciati nella fase precedente.
 
 ## Uso
 

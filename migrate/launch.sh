@@ -16,6 +16,7 @@
 # Variabili d'ambiente:
 #   DEVIN_API_KEY      (obbligatoria, tranne in --dry-run)
 #   DEVIN_ORG_ID       se impostata usa l'API v3 per-organizzazione, altrimenti v1
+#   SUCCESS_STATUSES   stati finali accettati come successo (default "finished blocked")
 #   DEVIN_API_BASE     default https://api.devin.ai
 #   DEVIN_PLAYBOOK_ID  opzionale, playbook da allegare a ogni sessione
 #   DEVIN_MAX_ACU      opzionale, limite ACU per sessione
@@ -43,10 +44,15 @@ PHASE1_WS="ws-a-auth ws-b-account ws-c-card ws-d-customer ws-e-transactions ws-f
 PHASE2_WS="ws-i-ui ws-j-integration ws-k-data-migration"
 
 TERMINAL_STATUSES="finished blocked expired stopped suspended error exit"
-FAILED_STATUSES="error expired"
+# Stati finali accettati come successo (oltre alla PR obbligatoria). `blocked` e'
+# incluso perche' una sessione Devin, finito il lavoro e aperta la PR, resta in
+# attesa dell'utente. Gli altri stati terminali (stopped, suspended, exit, error,
+# expired) fanno fallire il launcher.
+SUCCESS_STATUSES="${SUCCESS_STATUSES:-finished blocked}"
 
-# workstream effettivamente lanciati in questo run, per fase (usati dal gate)
-declare -A PHASE_LAUNCHED=()
+# workstream effettivamente lanciati in questo run: PHASE_LAUNCHED_<fase>
+# shellcheck disable=SC2034  # letti via indirezione in gate_before_phase
+PHASE_LAUNCHED_0="" PHASE_LAUNCHED_1="" PHASE_LAUNCHED_2=""
 
 PHASES="0 1 2"
 ONLY=""
@@ -351,8 +357,8 @@ wait_phase() {
     pr="$(json_pr_url "$RUN_DIR/$ws.status.json")"
     log "fase $phase / $ws: stato=$status PR=${pr:--}"
     # shellcheck disable=SC2086
-    if contains "$status" $FAILED_STATUSES || [ -z "$pr" ]; then
-      failed="$failed $ws($status${pr:+, PR $pr}${pr:-, nessuna PR})"
+    if ! contains "$status" $SUCCESS_STATUSES || [ -z "$pr" ]; then
+      failed="$failed $ws($status, ${pr:-nessuna PR})"
     fi
   done
   [ -z "$failed" ] || die "fase $phase non completata, sessioni fallite o senza PR:$failed"
@@ -368,9 +374,9 @@ ws_merged() {
   branch="$(branch_for "$ws")"
   [ -f "$RUN_DIR/$ws.status.json" ] && pr="$(json_pr_url "$RUN_DIR/$ws.status.json")"
   if [ -n "$pr" ] && command -v gh >/dev/null 2>&1; then
-    state="$(gh pr view "$pr" --json state -q .state 2>/dev/null || echo "")"
+    state="$(gh pr view "$pr" --json state,baseRefName -q '.state + " " + .baseRefName' 2>/dev/null || echo "")"
     if [ -n "$state" ]; then
-      [ "$state" = "MERGED" ]
+      [ "$state" = "MERGED $BASE_BRANCH" ]
       return $?
     fi
   fi
@@ -390,7 +396,9 @@ gate_before_phase() {
   prev=$((phase - 1))
   # Se la fase precedente e' stata lanciata in questo run, il gate riguarda solo
   # i suoi workstream selezionati; altrimenti l'intera fase precedente.
-  prev_wss="${PHASE_LAUNCHED[$prev]:-$(phase_workstreams "$prev")}"
+  prev_wss="PHASE_LAUNCHED_$prev"
+  prev_wss="${!prev_wss}"
+  [ -n "$prev_wss" ] || prev_wss="$(phase_workstreams "$prev")"
   while :; do
     missing=""
     for ws in $prev_wss; do
@@ -434,7 +442,7 @@ main() {
     fi
     gate_before_phase "$phase"
     launch_phase "$phase" "$wss"
-    PHASE_LAUNCHED[$phase]="$wss"
+    printf -v "PHASE_LAUNCHED_$phase" '%s' "$wss"
     if [ "$DRY_RUN" -eq 1 ] || [ "$WAIT" -eq 0 ]; then
       continue
     fi
