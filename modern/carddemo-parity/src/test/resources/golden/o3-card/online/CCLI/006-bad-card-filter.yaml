@@ -1,0 +1,13 @@
+# COCRDLIC 2220-EDIT-CARD: non numeric filter
+id: CCLI-006
+title: filtro carta non numerico
+tranid: CCLI
+screen: COCRDLI
+steps:
+- action: ENTER
+  fields:
+    CARDSID: 12345X
+  expect:
+    message: CARD ID FILTER,IF SUPPLIED MUST BE A 16 DIGIT NUMBER
+    fieldErrors:
+    - CARDSID

@@ -1,0 +1,25 @@
+# COCRDUPC PF12: re-read the record, changes discarded
+id: CCUP-014
+title: PF12 annulla
+tranid: CCUP
+screen: COCRDUP
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: '00000000002'
+    CARDSID: 0923877193247330
+  expect: {}
+- action: ENTER
+  fields:
+    CRDNAME: NEW NAME
+    CRDSTCD: Y
+    EXPMON: 08
+    EXPYEAR: '2024'
+  expect: {}
+- action: PF12
+  fields: {}
+  expect:
+    message: Details of selected card shown above
+    data:
+      CRDNAME: ENRICO ROSENBAUM
+    dbDelta: none

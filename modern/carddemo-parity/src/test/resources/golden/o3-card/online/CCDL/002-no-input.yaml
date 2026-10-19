@@ -1,0 +1,12 @@
+# COCRDSLC 2000-PROCESS-INPUTS: both keys blank
+id: CCDL-002
+title: nessun input
+tranid: CCDL
+screen: COCRDSL
+steps:
+- action: ENTER
+  fields:
+    ACCTSID: ''
+    CARDSID: ''
+  expect:
+    message: No input received
