@@ -20,13 +20,14 @@ export function initialInput(id: ScreenIdName, state: ScreenState): Fields {
   return out;
 }
 
-/** Same-screen redisplay: response data wins, fields it omits keep what the operator typed. */
+/**
+ * Same-screen redisplay. A response carrying `data` is the full SEND MAP (fields it omits are cleared);
+ * a response without `data` (e.g. validation errors only) keeps what the operator typed.
+ */
 export function mergeInput(id: ScreenIdName, prev: Fields, state: ScreenState): Fields {
+  if (state.data) return initialInput(id, state);
   const out: Fields = {};
-  for (const f of inputFields(layoutOf(id))) {
-    const v = state.data?.[f.name!];
-    out[f.name!] = v != null ? v.trimEnd().slice(0, f.length) : (prev[f.name!] ?? '');
-  }
+  for (const f of inputFields(layoutOf(id))) out[f.name!] = prev[f.name!] ?? '';
   return out;
 }
 
@@ -45,15 +46,15 @@ export function App({ api: apiProp, flags: flagsProp }: AppProps) {
   const [input, setInput] = useState<Fields>({});
   const [localError, setLocalError] = useState<string>();
   const [busy, setBusy] = useState(false);
-  /** Set when an XCTL target's first send failed: the next AID retries the GET instead of posting. */
-  const [pendingSend, setPendingSend] = useState(false);
+  /** XCTL target whose first send failed with a retryable error: ENTER retries its GET. */
+  const [retryTarget, setRetryTarget] = useState<ScreenIdName>();
 
   const show = useCallback((next: ScreenIdName, s: ScreenState, err?: string) => {
     setId(next);
     setState(s);
     setInput(initialInput(next, s));
     setLocalError(err);
-    setPendingSend(false);
+    setRetryTarget(undefined);
   }, []);
 
   const redisplay = useCallback((current: ScreenIdName, s: ScreenState, err?: string) => {
@@ -69,21 +70,26 @@ export function App({ api: apiProp, flags: flagsProp }: AppProps) {
         ? 'Invalid input'
         : `Unable to reach the server (${res.status || 'network'})`;
 
-  /** First send of a map (GET). On failure the map is shown empty and the next AID retries the GET. */
+  /**
+   * First send of a map (GET). On failure the current map stays active (PF keys keep working on it);
+   * a retryable failure arms `retryTarget` so ENTER re-issues the GET.
+   */
   const enter = useCallback(
-    async (target: ScreenIdName): Promise<void> => {
+    async (target: ScreenIdName): Promise<boolean> => {
       const res = await api.get(target);
       if (res.ok) {
         show(target, res.state);
-        return;
+        return true;
       }
       if (res.reason === 'unauthorized' && target !== SIGN_ON) {
         const signOn = await api.get(SIGN_ON);
         show(SIGN_ON, signOn.ok ? signOn.state : emptyState(SIGN_ON), 'Please sign on first');
-        return;
+        return true;
       }
-      show(target, emptyState(target), res.reason === 'unauthorized' ? undefined : errorText(res));
-      setPendingSend(res.reason !== 'unauthorized');
+      const retryable = res.reason === 'error';
+      setRetryTarget(retryable ? target : undefined);
+      setLocalError(`${screen(target).transactionId}: ${errorText(res)}${retryable ? ' - press ENTER to retry' : ''}`);
+      return false;
     },
     [api, show],
   );
@@ -130,13 +136,15 @@ export function App({ api: apiProp, flags: flagsProp }: AppProps) {
     async (action: Action) => {
       setBusy(true);
       try {
-        if (pendingSend) await enter(id);
+        const retry = retryTarget;
+        setRetryTarget(undefined);
+        if (retry && action === 'ENTER') await enter(retry);
         else await apply(id, await api.post(id, action, buildFields(id, input)));
       } finally {
         setBusy(false);
       }
     },
-    [api, apply, enter, id, input, pendingSend],
+    [api, apply, enter, id, input, retryTarget],
   );
 
   const View = VIEWS[id];

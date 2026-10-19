@@ -128,7 +128,7 @@ describe('buildFields', () => {
     expect((container.querySelector('input[name="USERID"]') as HTMLInputElement).value).toBe('USER0001');
   });
 
-  it('switches to the XCTL target when its first send fails and retries the GET on the next AID', async () => {
+  it('keeps the current map when an XCTL first send fails and retries the GET on ENTER', async () => {
     let fail = true;
     const api = fakeApi(
       async () => st('COSGN00', { nextScreen: 'COMEN01' }),
@@ -137,17 +137,45 @@ describe('buildFields', () => {
     const { container } = render(<App api={api} flags={flagsOff} />);
     await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
     await act(async () => {
-      fireEvent.click(container.querySelector('button')!);
+      fireEvent.click(container.querySelector('button')!); // ENTER
     });
-    await waitFor(() => expect(mapOf(container)).toBe('COMEN1A'));
-    expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).toContain('503');
+    await waitFor(() => expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).toContain('503'));
+    expect(mapOf(container)).toBe('COSGN0A');
     fail = false;
     await act(async () => {
-      fireEvent.click(container.querySelector('button')!);
+      fireEvent.click(container.querySelector('button')!); // ENTER = retry
     });
     expect(api.post).toHaveBeenCalledTimes(1);
-    expect(api.get).toHaveBeenLastCalledWith('COMEN01');
-    await waitFor(() => expect(container.querySelector('[data-field="ERRMSG"]')!.textContent?.trim()).toBe(''));
+    await waitFor(() => expect(mapOf(container)).toBe('COMEN1A'));
+  });
+
+  it('lets PF keys act on the current map after a failed first send, and does not retry a 403', async () => {
+    const api = fakeApi(
+      async () => st('COSGN00', { nextScreen: 'COMEN01' }),
+      async (id) => (id === 'COMEN01' ? { ok: false, status: 403, reason: 'forbidden' } : st(id)),
+    );
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
+    await act(async () => {
+      fireEvent.click(container.querySelector('button')!); // ENTER
+    });
+    await waitFor(() => expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).toContain('not authorized'));
+    expect(container.querySelector('[data-field="ERRMSG"]')!.textContent).not.toContain('retry');
+    await act(async () => {
+      fireEvent.keyDown(container.querySelector('input[name="USERID"]')!, { key: 'F3' });
+    });
+    expect(api.post).toHaveBeenLastCalledWith('COSGN00', 'PF3', expect.anything());
+  });
+
+  it('clears inputs when a same-screen response carries data without them (SEND MAP of a cleared map)', async () => {
+    const api = fakeApi(async () => st('COSGN00', { data: {} }));
+    const { container } = render(<App api={api} flags={flagsOff} />);
+    await waitFor(() => expect(mapOf(container)).toBe('COSGN0A'));
+    fireEvent.change(container.querySelector('input[name="USERID"]')!, { target: { value: 'USER0001' } });
+    await act(async () => {
+      fireEvent.keyDown(container.querySelector('input[name="USERID"]')!, { key: 'F4' });
+    });
+    await waitFor(() => expect((container.querySelector('input[name="USERID"]') as HTMLInputElement).value).toBe(''));
   });
 
   it('treats an initial 401 on COSGN00 as a sign-on prompt, not an outage', async () => {
