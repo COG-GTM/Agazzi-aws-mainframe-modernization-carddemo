@@ -128,6 +128,18 @@ class TrantypeEnabledIT extends PostgresSupport {
                 .toJobParameters());
     assertThat(chk.getStepExecutions().iterator().next().getExitStatus().getExitDescription())
         .isEqualTo("RC=0000");
+
+    JobExecution missing =
+        launcher.run(
+            mnttrdb2,
+            new JobParametersBuilder()
+                .addString("INPFILE", tmp.resolve("nope").toString())
+                .addLong("run", System.nanoTime())
+                .toJobParameters());
+    assertThat(missing.getStatus()).isEqualTo(org.springframework.batch.core.BatchStatus.FAILED);
+    assertThat(missing.getExitStatus().getExitCode()).isEqualTo("FAILED");
+    assertThat(missing.getStepExecutions().iterator().next().getExitStatus().getExitDescription())
+        .isEqualTo("RC=0012");
     reseed();
   }
 }

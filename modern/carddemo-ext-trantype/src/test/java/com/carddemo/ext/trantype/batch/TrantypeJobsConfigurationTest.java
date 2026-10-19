@@ -62,13 +62,13 @@ class TrantypeJobsConfigurationTest {
     StepExecution missing =
         step(new JobParametersBuilder().addString("INPFILE", "/nope").toJobParameters());
     StepContribution c2 = new StepContribution(missing);
-    org.assertj.core.api.Assertions.assertThatThrownBy(
-            () ->
-                TrantypeJobsConfiguration.maintenance(
-                    new TranTypeMaintenance(InMemoryTransactionTypeStore.seeded()),
-                    c2,
-                    new ChunkContext(new StepContext(missing))))
-        .hasMessage("RC=0012");
+    TrantypeJobsConfiguration.maintenance(
+        new TranTypeMaintenance(InMemoryTransactionTypeStore.seeded()),
+        c2,
+        new ChunkContext(new StepContext(missing)));
+    missing.apply(c2);
+    TrantypeJobsConfiguration.RC_LISTENER.afterStep(missing);
+    assertThat(missing.getStatus()).isEqualTo(org.springframework.batch.core.BatchStatus.FAILED);
     assertThat(c2.getExitStatus().getExitDescription()).isEqualTo("RC=0012");
     assertThat(c2.getExitStatus().getExitCode()).isEqualTo("FAILED");
   }

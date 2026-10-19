@@ -9,10 +9,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -34,13 +37,28 @@ public class TrantypeJobsConfiguration {
   public static final String MNTTRDB2 = "MNTTRDB2";
   public static final String TRANEXTR = "TRANEXTR";
 
+  /** RC >= 8 (exit code FAILED, description kept) fails the step and therefore the job. */
+  static final StepExecutionListener RC_LISTENER =
+      new StepExecutionListener() {
+        @Override
+        public ExitStatus afterStep(StepExecution se) {
+          if (ExitStatus.FAILED.getExitCode().equals(se.getExitStatus().getExitCode())) {
+            se.setStatus(BatchStatus.FAILED);
+          }
+          return se.getExitStatus();
+        }
+      };
+
   /** Exit code for legacy RC 4 (warning); RC 8+ maps to {@link ExitStatus#FAILED}. */
   public static final String COMPLETED_WITH_WARNINGS = "COMPLETED WITH WARNINGS";
 
   @Bean
   Job mnttrdb2Job(JobRepository repo, PlatformTransactionManager tx, TranTypeMaintenance job) {
     Step step =
-        new StepBuilder("COBTUPDT", repo).tasklet((c, ctx) -> maintenance(job, c, ctx), tx).build();
+        new StepBuilder("COBTUPDT", repo)
+            .tasklet((c, ctx) -> maintenance(job, c, ctx), tx)
+            .listener(RC_LISTENER)
+            .build();
     return new JobBuilder(MNTTRDB2, repo).start(step).build();
   }
 
@@ -50,6 +68,7 @@ public class TrantypeJobsConfiguration {
     Step step =
         new StepBuilder("CONSISTENCY", repo)
             .tasklet((c, ctx) -> consistency(check, c, ctx), tx)
+            .listener(RC_LISTENER)
             .build();
     return new JobBuilder(TRANEXTR, repo).start(step).build();
   }
@@ -104,9 +123,6 @@ public class TrantypeJobsConfiguration {
             ? ExitStatus.COMPLETED
             : rc < 8 ? new ExitStatus(COMPLETED_WITH_WARNINGS) : ExitStatus.FAILED;
     contribution.setExitStatus(status.addExitDescription(String.format("RC=%04d", rc)));
-    if (rc >= 8) {
-      throw new IllegalStateException(String.format("RC=%04d", rc));
-    }
   }
 
   /** RECFM=F dataset (no line ends, like the GnuCOBOL harness input) or one record per line. */
