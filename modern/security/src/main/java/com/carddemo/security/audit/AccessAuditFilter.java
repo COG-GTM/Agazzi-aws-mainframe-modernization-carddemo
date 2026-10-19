@@ -27,7 +27,9 @@ public class AccessAuditFilter extends OncePerRequestFilter {
 
   private static final Pattern ACTION = Pattern.compile("[A-Z0-9]{1,5}");
   private static final Pattern REQUEST_ID = Pattern.compile("[A-Za-z0-9-]{8,64}");
-  private static final int BODY_CACHE_LIMIT = 16 * 1024;
+
+  /** BMS screen payloads are a few KiB; larger bodies are audited without {@code action}. */
+  private static final int BODY_CACHE_LIMIT = 64 * 1024;
 
   private final AuditLog log;
   private final ObjectMapper mapper;

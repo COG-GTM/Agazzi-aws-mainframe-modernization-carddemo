@@ -9,7 +9,9 @@ server:
   servlet:
     session:
       cookie:
+        name: __Host-CARDDEMO_SESSION
         secure: true
+        path: /
 spring:
   ssl:
     bundle:
