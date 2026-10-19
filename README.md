@@ -242,6 +242,22 @@ The application supports two user roles:
 - **Regular Users**: Can perform standard card management functions
 - **Admin Users**: Can perform administrative functions like user management
 
+#### Customer entitlement of a regular user
+
+The user security record (`CSUSR01Y`, file `USRSEC`) carries the id of the
+customer a regular user is entitled to see in columns 58-66
+(`SEC-USR-CUST-ID`). Account View (`COACTVWC`) only returns account and
+customer data when the signed on user is an administrator, or when the
+customer cross referenced to the requested account matches that entitlement.
+Records where the field is blank or zero (records created by earlier releases
+of CardDemo, or users added through the Add User screen) are treated as
+entitled to no customer, so those users cannot view account data until an
+operator sets the field. The shipped demo data entitles `USER000n` to customer
+`00000000n`; administrator records carry zeroes.
+
+The Account View screen shows the customer social security number in full
+only to administrators; regular users see `***-**-nnnn`.
+
 ### User Functions
 
 ![User Function Flow](./diagrams/Application-Flow-User.png "User Function Flow")

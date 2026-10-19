@@ -20,7 +20,17 @@
          05 SEC-USR-LNAME              PIC X(20).
          05 SEC-USR-PWD                PIC X(08).
          05 SEC-USR-TYPE               PIC X(01).
-         05 SEC-USR-FILLER             PIC X(23).
+            88 SEC-USR-ADMIN           VALUE 'A'.
+            88 SEC-USR-REGULAR         VALUE 'U'.
+      *  Customer this user is entitled to see. Blank or zeroes mean
+      *  the user is not entitled to any customer or account data.
+         05 SEC-USR-CUST-ID-X          PIC X(09).
+            88 SEC-USR-NO-CUST-ID      VALUES SPACES
+                                              LOW-VALUES
+                                              ZEROES.
+         05 SEC-USR-CUST-ID REDEFINES SEC-USR-CUST-ID-X
+                                       PIC 9(09).
+         05 SEC-USR-FILLER             PIC X(14).
       *
       * Ver: CardDemo_v1.0-15-g27d6c6f-68 Date: 2022-07-19 23:15:59 CDT
       *
