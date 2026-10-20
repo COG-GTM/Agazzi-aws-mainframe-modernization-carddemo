@@ -94,12 +94,14 @@ sviluppo (8 vCPU, app e Postgres in container, k6 locale): numeri indicativi, no
 | POSTTRAN (DALYTRAN 300.000) | OK, RC 4 | 342,0 s | 877,1 |
 | INTCALC (TCATBALF 50.000) | OK, RC 0 | 37,3 s | 1.341,3 |
 | TRANREPT (TRANSACT 300.000) | OK, RC 0 | 13,4 s | 22.348,0 |
-| CREASTMT (TRANSACT 300.000) | **abend** `WS-CARD-TBL overflow (> 51 cards)` | 14,3 s | — |
-| fullBatchCycle senza CREASTMT | OK, RC 0 | 646,2 s | 464,3 |
+| CREASTMT (TRANSACT 300.000) | OK, RC 0 (50.000 estratti conto) | 17,2 s | 17.435,8 |
+| fullBatchCycle completo (con CREASTMT) | OK, RC 0 | 692,3 s | 433,3 |
 
-Prima di F3/F4 POSTTRAN andava in timeout a 900 s e il contesto `none` non partiva. CREASTMT riproduce
-il limite `OCCURS 51` / `OCCURS 10` di `CBSTM03A`: il dataset ×1.000 lo supera, il COBOL farebbe lo
-stesso. Allargare le tabelle sarebbe una nuova PE, da decidere col business owner.
+Prima di F3/F4 POSTTRAN andava in timeout a 900 s e il contesto `none` non partiva. Fino al 2026-10-19
+CREASTMT riproduceva i limiti `OCCURS 51` / `OCCURS 10` di `CBSTM03A` e su ×1.000 andava in abend
+(14,3 s), quindi `fullBatchCycle` era stato misurato senza CREASTMT (646,2 s). Con PE-015 e PE-016,
+approvate dal business owner, la tabella Java non ha limiti: CREASTMT ×1.000 e il ciclo completo
+passano. Sul seed resta 0 diff contro il golden GnuCOBOL.
 
 ## 6. Cutover tooling (5D) sull'app integrata
 
@@ -151,7 +153,7 @@ Il seed contiene i 50 account e le 50 carte del campione ASCII, ad esempio accou
 ## 8. Rischi residui
 
 - **p95 online < 200 ms non raggiunto** (§5): 351 ms totale, CCLI 302 ms a 200 VU, misurato su una sola macchina condivisa da k6, app e Postgres. Va rimisurato su un ambiente dimensionato prima di dichiarare il target.
-- **CREASTMT ×1.000** (§5): abend sul limite `OCCURS 51` del COBOL. Serve una decisione: dati reali entro il limite, oppure PE per allargare le tabelle.
+- **CREASTMT ×1.000** (§5): risolto con PE-015/PE-016 (tabelle senza limite), approvate dal business owner il 2026-10-19.
 - **INTCALC.** I record restano caricati in memoria per tutto il job. Il commit per chunk limita il lavoro perso, non la memoria.
 - **Restart a metà job.** Dopo un abend, POSTTRAN/INTCALC lasciano committati i chunk già fatti, come il COBOL. Il restart va da backup (TRANBKP/snapshot): non c'è restart da checkpoint.
 - **Campioni EBCDIC ≠ ASCII** su ACCTDATA (account 49) e DISCGRP (`DEFAULT/07/0001`), §1. Al T-14 va fissata la sorgente canonica, cioè l'unload reale da z/OS.

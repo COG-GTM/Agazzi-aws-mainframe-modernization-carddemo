@@ -142,19 +142,14 @@ Stessa macchina e stesso dataset ×1.000 (seed 42), `RELOAD=1`, `STORAGE=db`, ap
 | POSTTRAN | OK | 4 | 342,0 s | DALYTRAN 300.000 | 877,1 | chunk da 1.000 (F3); RC 4 = rifiuti del campione, come in COBOL |
 | INTCALC | OK | 0 | 37,3 s | TCATBALF 50.000 | 1.341,3 | chunk da 500 account (F3) |
 | TRANREPT | OK | 0 | 13,4 s | TRANSACT 300.000 | 22.348,0 | `startDate=2022-01-01 endDate=2022-12-31` |
-| CREASTMT | **FAILED** | — | 14,3 s | TRANSACT 300.000 | — | abend `CBSTM03A: WS-CARD-TBL overflow (> 51 cards)`: limite `OCCURS 51` del COBOL, vedi sotto |
-| fullBatchCycle | OK | 0 | 646,2 s | DALYTRAN 300.000 | 464,3 | catena `CLOSEFIL,POSTTRAN,INTCALC,TRANBKP,COMBTRAN,TRANREPT,OPENFIL` (senza CREASTMT) |
+| CREASTMT | OK | 0 | 17,2 s | TRANSACT 300.000 | 17.435,8 | 50.000 estratti conto (STMTPS 1.250.000 righe, STMTHTML 6.500.000), tabelle senza limite (PE-015/PE-016) |
+| fullBatchCycle | OK | 0 | 692,3 s | DALYTRAN 300.000 | 433,3 | catena completa `CLOSEFIL → POSTTRAN → INTCALC → TRANBKP → COMBTRAN → TRANREPT → CREASTMT → OPENFIL` |
 
-CREASTMT su ×1.000: `CBSTM03A` carica le carte di un cliente in `WS-CARD-TBL OCCURS 51` e le
-transazioni per carta in `WS-TRAN-TBL OCCURS 10`; il generatore ×1.000 supera entrambi i limiti, che
-il programma COBOL originale non gestisce. La porta Java riproduce il limite (abend) invece di
-allargare la tabella, quindi CREASTMT non è misurabile su questo dataset senza una decisione di
-parità (allargare le tabelle = PE nuova) o un generatore con ≤ 51 carte per cliente e ≤ 10
-transazioni per carta. Sul seed (golden GnuCOBOL) CREASTMT è a 0 diff.
-
-Il `fullBatchCycle` misurato esclude quindi CREASTMT tramite
-`--carddemo.orchestration.full-cycle.jobs=...`; la catena di default resta quella completa
-`CLOSEFIL → POSTTRAN → INTCALC → TRANBKP → COMBTRAN → TRANREPT → CREASTMT → OPENFIL`.
+Prima di PE-015/PE-016 CREASTMT riproduceva i limiti `WS-CARD-TBL OCCURS 51` / `WS-TRAN-TBL OCCURS 10`
+di `CBSTM03A`. Su ×1.000 andava in abend dopo 14,3 s e `fullBatchCycle` era misurato senza CREASTMT
+(646,2 s). Il COBOL non controlla l'overflow e scrive oltre la tabella, quindi non c'è un risultato
+COBOL da riprodurre oltre il limite. Sul seed (golden GnuCOBOL) CREASTMT resta a 0 diff.
+Misura del 2026-10-20: `JOBS="CREASTMT fullBatchCycle" perf/batch/run-batch-perf.sh`, `storage=db`.
 
 ## 5. Finding per i workstream (non corretti in questa PR: fuori perimetro)
 
