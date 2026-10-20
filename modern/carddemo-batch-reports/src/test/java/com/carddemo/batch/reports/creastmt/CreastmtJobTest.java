@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -107,20 +108,28 @@ class CreastmtJobTest {
   }
 
   @Test
-  void transactionTableLimits() {
-    List<String> many = new ArrayList<>();
-    for (int i = 0; i < 11; i++) {
-      many.add("4444333322221111" + String.format("%016d", i));
+  void transactionTableIsUnboundedBeyondCobolOccurs() {
+    List<String> trnx = new ArrayList<>();
+    for (int c = 0; c < 52; c++) {
+      for (int i = 0; i < 11; i++) {
+        trnx.add(String.format("%016d", c) + String.format("%016d", i));
+      }
     }
-    assertThatThrownBy(() -> Cbstm03aService.loadTransactions(many))
-        .isInstanceOf(JobAbendException.class)
-        .hasMessageContaining("WS-TRAN-TBL");
-    List<String> cards = new ArrayList<>();
-    for (int i = 0; i < 52; i++) {
-      cards.add(String.format("%016d", i) + "0000000000000001");
-    }
-    assertThatThrownBy(() -> Cbstm03aService.loadTransactions(cards))
-        .isInstanceOf(JobAbendException.class)
-        .hasMessageContaining("WS-CARD-TBL");
+    Map<String, List<String>> table = Cbstm03aService.loadTransactions(trnx);
+    assertThat(table).hasSize(52);
+    assertThat(table.get(String.format("%016d", 51))).hasSize(11);
+  }
+
+  @Test
+  void cardAfterAGreaterCardIsNotReachedLikeTrnxfileGet() {
+    List<String> trnx =
+        List.of(
+            "2222222222222222" + "0000000000000001",
+            "3333333333333333" + "0000000000000002",
+            "1111111111111111" + "0000000000000003",
+            "3333333333333333" + "0000000000000004");
+    Map<String, List<String>> table = Cbstm03aService.loadTransactions(trnx);
+    assertThat(table).containsOnlyKeys("2222222222222222", "3333333333333333");
+    assertThat(table.get("3333333333333333")).hasSize(2);
   }
 }

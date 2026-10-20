@@ -31,6 +31,8 @@ Un workstream che introduce una differenza la aggiunge come `proposed` nella pro
 | PE-012 | COACTVWC | AUTHZ-ACCT-VIEW | qualsiasi conto, SSN in chiaro | controllo ownership, SSN mascherato per gli utenti | sicurezza 5C (#53) | leader migrazione (Fase 5A) | approved |
 | PE-013 | COBIL00C | AUTHZ-BILL-PAY | qualsiasi `ACCT-ID` | controllo ownership (admin senza restrizioni) | sicurezza 5C (#53) | leader migrazione (Fase 5A) | approved |
 | PE-014 | COACCT01 | AUTHZ-MQ-REQUESTER | nessuna identità del richiedente | richiedente autenticato + entitlement | sicurezza 5C (#53), estensione X3 | leader migrazione (Fase 5A) | approved |
+| PE-015 | CREASTMT | WS-CARD-TBL | `OCCURS 51` carte in memoria; oltre il limite il programma scrive fuori tabella (comportamento indefinito) | tabella senza limite, indicizzata per carta | dataset di produzione (×1.000) oltre 51 carte | Simone Agazzi (business owner), 2026-10-19 | approved |
+| PE-016 | CREASTMT | WS-TRAN-TBL | `OCCURS 10` transazioni per carta; oltre il limite scrive fuori tabella | nessun limite di transazioni per carta | come PE-015 | Simone Agazzi (business owner), 2026-10-19 | approved |
 
 Note Fase 5A:
 
@@ -39,3 +41,7 @@ Note Fase 5A:
   corrisponde a nessun campo COBOL, così queste righe non allargano il gate dei comparatori.
 - PE-007, PE-008, PE-010 e PE-011 restano `proposed` perché sono dubbie (vedi Motivo): serve una decisione
   del business owner prima del cutover. PE-001 e le altre sono `approved`.
+- PE-015/PE-016: entro i limiti del COBOL (seed del repo, golden GnuCOBOL) l'output è identico. Oltre i
+  limiti `CBSTM03A` non va in abend ma scrive oltre la tabella, quindi non c'è un comportamento COBOL
+  da riprodurre. Il Java mantiene la scansione di 4000-TRNXFILE-GET, che si ferma alla prima carta
+  maggiore di quella XREF.

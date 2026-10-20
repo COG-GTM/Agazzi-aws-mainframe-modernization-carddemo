@@ -15,20 +15,21 @@ import com.carddemo.copybook.ZonedRecordCodec;
 import com.carddemo.platform.math.CobolMath;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CBSTM03A (+ CBSTM03B file I/O): one text statement (80 columns) and one HTML statement (100
  * columns) per card cross-reference record. Transactions (TRXFL KSDS, {@code COSTM01}) are first
- * loaded into the in-memory table of the program (51 cards x 10 transactions).
+ * loaded into the in-memory table of the program. The COBOL table is {@code OCCURS 51} cards x
+ * {@code OCCURS 10} transactions; the Java table is unbounded (PE-015, PE-016).
  */
 public final class Cbstm03aService {
 
   public static final String PROGRAM = "CBSTM03A";
   public static final int STMT_LRECL = 80;
   public static final int HTML_LRECL = 100;
-  static final int MAX_CARDS = 51;
-  static final int MAX_TRANS_PER_CARD = 10;
 
   static final ZonedRecordCodec<StatementTransactionRecord> TRNX =
       ZonedRecordCodec.of(StatementTransactionRecord.class);
@@ -51,8 +52,6 @@ public final class Cbstm03aService {
   /** Files read through CBSTM03B. */
   public record Files(List<String> trnxFile, List<String> xrefFile, Ksds custFile, Ksds acctFile) {}
 
-  private record Card(String cardNum, List<String> trans) {}
-
   private final List<String> text = new ArrayList<>();
   private final List<String> html = new ArrayList<>();
 
@@ -60,7 +59,7 @@ public final class Cbstm03aService {
 
   public static Statements run(Files files) {
     Cbstm03aService s = new Cbstm03aService();
-    List<Card> table = loadTransactions(files.trnxFile());
+    Map<String, List<String>> table = loadTransactions(files.trnxFile());
     for (String xrefRaw : files.xrefFile()) {
       String xref = pad(xrefRaw, 50);
       String cust = read(files.custFile(), xref.substring(16, 25), "CUSTFILE");
@@ -71,26 +70,26 @@ public final class Cbstm03aService {
     return new Statements(s.text, s.html);
   }
 
-  /** 8100-TRNXFILE-OPEN + 8500-READTRNX-READ. */
-  static List<Card> loadTransactions(List<String> trnxFile) {
+  /**
+   * 8100-TRNXFILE-OPEN + 8500-READTRNX-READ, indexed by card for 4000-TRNXFILE-GET.
+   *
+   * <p>4000-TRNXFILE-GET scans the table in load order and stops at the first card greater than the
+   * XREF card, so a transaction is printed only if no earlier transaction has a greater card. Only
+   * those transactions are indexed, which keeps the lookup O(1) per XREF record.
+   */
+  static Map<String, List<String>> loadTransactions(List<String> trnxFile) {
     if (trnxFile.isEmpty()) {
       throw new JobAbendException(PROGRAM, "ERROR READING TRNXFILE RETURN CODE: 10");
     }
-    List<Card> table = new ArrayList<>();
+    Map<String, List<String>> table = new HashMap<>();
+    String maxCard = null;
     for (String raw : trnxFile) {
       String r = pad(raw, 350);
       String card = r.substring(0, 16);
-      if (table.isEmpty() || !table.get(table.size() - 1).cardNum().equals(card)) {
-        if (table.size() == MAX_CARDS) {
-          throw new JobAbendException(PROGRAM, "WS-CARD-TBL overflow (> 51 cards)");
-        }
-        table.add(new Card(card, new ArrayList<>()));
+      if (maxCard == null || card.compareTo(maxCard) >= 0) {
+        maxCard = card;
+        table.computeIfAbsent(card, k -> new ArrayList<>()).add(r);
       }
-      List<String> trans = table.get(table.size() - 1).trans();
-      if (trans.size() == MAX_TRANS_PER_CARD) {
-        throw new JobAbendException(PROGRAM, "WS-TRAN-TBL overflow for card " + card);
-      }
-      trans.add(r);
     }
     return table;
   }
@@ -210,33 +209,26 @@ public final class Cbstm03aService {
   }
 
   /** 4000-TRNXFILE-GET with 6000-WRITE-TRANS. */
-  private void writeTransactions(List<Card> table, String xrefCard) {
+  private void writeTransactions(Map<String, List<String>> table, String xrefCard) {
     BigDecimal total = BigDecimal.ZERO.setScale(2);
-    for (Card c : table) {
-      if (c.cardNum().compareTo(xrefCard) > 0) {
-        break;
-      }
-      if (c.cardNum().equals(xrefCard)) {
-        for (String raw : c.trans()) {
-          StatementTransactionRecord t = decode(raw);
-          String tranDt = pad(t.trnxDesc(), 49);
-          String amt = CobolEdit.zeroSuppressedTrailingSign(t.trnxAmt());
-          text(t.trnxId() + " " + tranDt + "$" + amt);
-          html(
-              TR_S,
-              td("25%", "#f2f2f2", "left"),
-              "<p>" + t.trnxId() + "</p>",
-              TD_E,
-              td("55%", "#f2f2f2", "left"),
-              "<p>" + tranDt + "</p>",
-              TD_E,
-              td("20%", "#f2f2f2", "right"),
-              "<p>" + amt + "</p>",
-              TD_E,
-              TR_E);
-          total = CobolMath.add(total, t.trnxAmt(), 9, 2, CobolMath.Mode.TRUNCATE);
-        }
-      }
+    for (String raw : table.getOrDefault(xrefCard, List.of())) {
+      StatementTransactionRecord t = decode(raw);
+      String tranDt = pad(t.trnxDesc(), 49);
+      String amt = CobolEdit.zeroSuppressedTrailingSign(t.trnxAmt());
+      text(t.trnxId() + " " + tranDt + "$" + amt);
+      html(
+          TR_S,
+          td("25%", "#f2f2f2", "left"),
+          "<p>" + t.trnxId() + "</p>",
+          TD_E,
+          td("55%", "#f2f2f2", "left"),
+          "<p>" + tranDt + "</p>",
+          TD_E,
+          td("20%", "#f2f2f2", "right"),
+          "<p>" + amt + "</p>",
+          TD_E,
+          TR_E);
+      total = CobolMath.add(total, t.trnxAmt(), 9, 2, CobolMath.Mode.TRUNCATE);
     }
     text("-".repeat(80));
     text("Total EXP:" + " ".repeat(56) + "$" + CobolEdit.zeroSuppressedTrailingSign(total));
