@@ -92,6 +92,7 @@
                PERFORM RETURN-TO-PREV-SCREEN
            ELSE
                MOVE DFHCOMMAREA(1:EIBCALEN) TO CARDDEMO-COMMAREA
+               PERFORM CHECK-ADMIN-AUTHORIZATION
                IF NOT CDEMO-PGM-REENTER
                    SET CDEMO-PGM-REENTER    TO TRUE
                    MOVE LOW-VALUES          TO COUSR3AO
@@ -189,6 +190,20 @@
                MOVE USRIDINI  OF COUSR3AI TO SEC-USR-ID
                PERFORM READ-USER-SEC-FILE
                PERFORM DELETE-USER-SEC-FILE
+           END-IF.
+
+      *----------------------------------------------------------------*
+      *                      CHECK-ADMIN-AUTHORIZATION
+      *----------------------------------------------------------------*
+       CHECK-ADMIN-AUTHORIZATION.
+
+           IF NOT CDEMO-USRTYP-ADMIN
+               IF CDEMO-USER-ID = SPACES OR LOW-VALUES
+                   MOVE 'COSGN00C' TO CDEMO-TO-PROGRAM
+               ELSE
+                   MOVE 'COMEN01C' TO CDEMO-TO-PROGRAM
+               END-IF
+               PERFORM RETURN-TO-PREV-SCREEN
            END-IF.
 
       *----------------------------------------------------------------*
