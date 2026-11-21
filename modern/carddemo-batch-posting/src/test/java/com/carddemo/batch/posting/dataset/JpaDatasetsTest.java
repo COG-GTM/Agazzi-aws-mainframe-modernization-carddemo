@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +17,7 @@ import com.carddemo.domain.entity.Account;
 import com.carddemo.domain.entity.DailyTransaction;
 import com.carddemo.domain.entity.TranCatBalance;
 import com.carddemo.domain.entity.TranCatBalanceId;
+import com.carddemo.domain.entity.Transaction;
 import com.carddemo.domain.repository.AccountRepository;
 import com.carddemo.domain.repository.CardRepository;
 import com.carddemo.domain.repository.CardXrefRepository;
@@ -110,11 +112,14 @@ class JpaDatasetsTest {
     TransactionRecord t =
         CoreCodecs.TRANSACTION.decodeLine(
             Golden.expected(Golden.batch("COMBTRAN"), "TRANSACT", 350).get(0));
-    when(trans.existsById(Keys.transaction(t))).thenReturn(false, true);
+    when(trans.findById(Keys.transaction(t)))
+        .thenReturn(Optional.empty(), Optional.of(Transaction.fromRecord(t)));
     KeyedDataset<TransactionRecord> ds = datasets(null).transactions();
     ds.write(t);
     verify(trans).save(any());
     assertThatThrownBy(() -> ds.write(t)).isInstanceOf(DuplicateKeyException.class);
+    // existsById is a JPQL query: it auto-flushes and dirty-checks the whole chunk on every WRITE.
+    verify(trans, never()).existsById(any());
     assertThatThrownBy(() -> ds.rewrite(t)).isInstanceOf(UnsupportedOperationException.class);
     ds.clear();
     verify(trans).deleteAllInBatch();

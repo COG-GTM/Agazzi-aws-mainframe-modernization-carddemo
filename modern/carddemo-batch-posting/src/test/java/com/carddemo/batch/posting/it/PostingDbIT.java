@@ -1,7 +1,11 @@
 package com.carddemo.batch.posting.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.carddemo.batch.posting.dataset.DuplicateKeyException;
+import com.carddemo.batch.posting.dataset.JpaDatasets;
+import com.carddemo.batch.posting.dataset.KeyedDataset;
 import com.carddemo.batch.posting.dataset.Keys;
 import com.carddemo.batch.posting.dataset.LineSequentialFile;
 import com.carddemo.batch.posting.golden.Golden;
@@ -10,13 +14,19 @@ import com.carddemo.batch.posting.job.PostingJobsConfiguration;
 import com.carddemo.contracts.port.GenerationStore;
 import com.carddemo.contracts.port.GenerationStore.Generation;
 import com.carddemo.contracts.record.AccountRecord;
+import com.carddemo.contracts.record.TransactionRecord;
 import com.carddemo.copybook.CoreCodecs;
 import com.carddemo.domain.entity.Account;
 import com.carddemo.domain.entity.TranCatBalance;
 import com.carddemo.domain.entity.Transaction;
 import com.carddemo.domain.repository.AccountRepository;
+import com.carddemo.domain.repository.CardRepository;
+import com.carddemo.domain.repository.CardXrefRepository;
+import com.carddemo.domain.repository.CustomerRepository;
+import com.carddemo.domain.repository.DailyTransactionRepository;
 import com.carddemo.domain.repository.TranCatBalanceRepository;
 import com.carddemo.domain.repository.TransactionRepository;
+import jakarta.persistence.EntityManager;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -36,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -62,6 +74,12 @@ class PostingDbIT {
   @Autowired AccountRepository accounts;
   @Autowired TranCatBalanceRepository tranCatBalances;
   @Autowired TransactionRepository transactions;
+  @Autowired DailyTransactionRepository dailyTransactions;
+  @Autowired CardXrefRepository cardXrefs;
+  @Autowired CustomerRepository customers;
+  @Autowired CardRepository cards;
+  @Autowired EntityManager entityManager;
+  @Autowired PlatformTransactionManager txManager;
 
   @Autowired
   @Qualifier(PostingJobsConfiguration.POSTTRAN)
@@ -166,6 +184,34 @@ class PostingDbIT {
 
     JobExecution verify = run(cbtrn01c, new JobParametersBuilder());
     assertThat(verify.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+  }
+
+  @Test
+  void writeRejectsDuplicateOfUnflushedRecordInSameChunk() {
+    TransactionRecord t =
+        CoreCodecs.TRANSACTION.decodeLine(
+            Golden.expected(Golden.b1("POSTTRAN"), "TRANSACT", 350).get(0));
+    long before = transactions.count();
+    new TransactionTemplate(txManager)
+        .executeWithoutResult(
+            tx -> {
+              KeyedDataset<TransactionRecord> ds =
+                  new JpaDatasets(
+                          dailyTransactions,
+                          cardXrefs,
+                          accounts,
+                          tranCatBalances,
+                          transactions,
+                          customers,
+                          cards,
+                          null)
+                      .withEntityManager(entityManager)
+                      .transactions();
+              ds.write(t);
+              assertThatThrownBy(() -> ds.write(t)).isInstanceOf(DuplicateKeyException.class);
+              tx.setRollbackOnly();
+            });
+    assertThat(transactions.count()).isEqualTo(before);
   }
 
   /** Account ids whose record differs between two unloads (the DB delta of the run). */

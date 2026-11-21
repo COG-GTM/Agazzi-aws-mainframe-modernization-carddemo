@@ -56,7 +56,7 @@ public final class JpaKeyedDataset<R, E, I> implements KeyedDataset<R> {
   @Override
   public void write(R record) {
     String key = keyFn.apply(record);
-    if (repository.existsById(idOfKey.apply(key))) {
+    if (repository.findById(idOfKey.apply(key)).isPresent()) {
       throw new DuplicateKeyException(name, key);
     }
     repository.save(fromRecord.apply(record));
